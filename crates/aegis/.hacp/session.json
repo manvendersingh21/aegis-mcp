@@ -1,0 +1,192 @@
+{
+  "format": 1,
+  "session": {
+    "session_id": "s-c4c37136cd504ddc89df37991cdaee04",
+    "participants": [
+      "urn:hacp:agent:a",
+      "urn:hacp:agent:b"
+    ],
+    "observers": {},
+    "state": "active",
+    "declared": {},
+    "close_reason": null
+  },
+  "peers": {
+    "a": {
+      "task": "e2e privacy test of the full app",
+      "owns": [
+        "tests/e2e.rs"
+      ]
+    },
+    "b": {
+      "task": "demo script + runbook",
+      "owns": [
+        "DEMO.md",
+        "demo.sh"
+      ]
+    }
+  },
+  "processed": [
+    "m-2301679b047d45648beac889e773a0b0"
+  ],
+  "messages": [
+    {
+      "protocol": "HACP/2.0",
+      "message_id": "m-2301679b047d45648beac889e773a0b0",
+      "session_id": "s-c4c37136cd504ddc89df37991cdaee04",
+      "from": "urn:hacp:agent:b",
+      "to": "urn:hacp:agent:a",
+      "kind": "contract.proposed",
+      "timestamp": "2026-10-22T18:33:24Z",
+      "body": {
+        "contract_id": "c-5a57ec5d32784b9fb7ba6bfb447e957c",
+        "next": "review terms and accept digest or counter",
+        "revision": null,
+        "state": "proposed",
+        "task": {
+          "owner": "urn:hacp:agent:b",
+          "summary": "demo script + runbook",
+          "task_id": "t-2c6f6a7f83da498285929063157bea11"
+        },
+        "terms": {
+          "acceptance": [
+            "sh -n demo.sh",
+            "grep -q \"claude mcp add\" DEMO.md",
+            "grep -q \"/u/maya\" DEMO.md"
+          ],
+          "inputs": [
+            "src/lib.rs"
+          ],
+          "outputs": [
+            "DEMO.md",
+            "demo.sh"
+          ]
+        },
+        "terms_digest": "30dc9e7fc063da845c54312f90539016954b9b6df63be4f705d4dd9faf0dc2b1"
+      }
+    }
+  ],
+  "fetched": {},
+  "contracts": {
+    "c-5a57ec5d32784b9fb7ba6bfb447e957c": {
+      "artifacts": [],
+      "attempts": [],
+      "contract": {
+        "agreed_by": [
+          "urn:hacp:agent:b"
+        ],
+        "agreed_terms_digest": "30dc9e7fc063da845c54312f90539016954b9b6df63be4f705d4dd9faf0dc2b1",
+        "amendments": 0,
+        "contract_id": "c-5a57ec5d32784b9fb7ba6bfb447e957c",
+        "escalation_path": [],
+        "limits": {
+          "max_amendments": 3,
+          "max_rounds": 3
+        },
+        "participants": [
+          "urn:hacp:agent:a",
+          "urn:hacp:agent:b"
+        ],
+        "pending_submission": null,
+        "pending_submitter": null,
+        "relationship": "collaboration",
+        "revisions": [],
+        "rework_scope": null,
+        "rounds": 0,
+        "state": "proposed",
+        "task": {
+          "owner": "urn:hacp:agent:b",
+          "summary": "demo script + runbook",
+          "task_id": "t-2c6f6a7f83da498285929063157bea11"
+        }
+      },
+      "pending_digest": "30dc9e7fc063da845c54312f90539016954b9b6df63be4f705d4dd9faf0dc2b1",
+      "pending_terms": {
+        "acceptance": [
+          "sh -n demo.sh",
+          "grep -q \"claude mcp add\" DEMO.md",
+          "grep -q \"/u/maya\" DEMO.md"
+        ],
+        "inputs": [
+          "src/lib.rs"
+        ],
+        "outputs": [
+          "DEMO.md",
+          "demo.sh"
+        ]
+      },
+      "proposer": "b",
+      "submissions": [],
+      "verifications": []
+    }
+  },
+  "events": [
+    {
+      "action": "start",
+      "detail": {
+        "files": [
+          "tests/e2e.rs"
+        ],
+        "next": "peer b joins",
+        "task": "e2e privacy test of the full app"
+      },
+      "id": "e-f12896dab3ca42f1aea1f74ec213e49b",
+      "peer": "a",
+      "rendered": "2026-10-22T18:33:11Z | Peer a | start\nEvent e-f12896dab3ca42f1aea1f74ec213e49b\n    {\n      \"files\": [\n        \"tests/e2e.rs\"\n      ],\n      \"next\": \"peer b joins\",\n      \"task\": \"e2e privacy test of the full app\"\n    }\n",
+      "time": "2026-10-22T18:33:11Z"
+    },
+    {
+      "action": "join",
+      "detail": {
+        "files": [
+          "DEMO.md",
+          "demo.sh"
+        ],
+        "next": "propose contracts",
+        "task": "demo script + runbook"
+      },
+      "id": "e-26c0c9a0066a4119960748c30b0d7fec",
+      "peer": "b",
+      "rendered": "2026-10-22T18:33:18Z | Peer b | join\nEvent e-26c0c9a0066a4119960748c30b0d7fec\n    {\n      \"files\": [\n        \"DEMO.md\",\n        \"demo.sh\"\n      ],\n      \"next\": \"propose contracts\",\n      \"task\": \"demo script + runbook\"\n    }\n",
+      "time": "2026-10-22T18:33:18Z"
+    },
+    {
+      "action": "contract.proposed",
+      "detail": {
+        "body": {
+          "contract_id": "c-5a57ec5d32784b9fb7ba6bfb447e957c",
+          "next": "review terms and accept digest or counter",
+          "revision": null,
+          "state": "proposed",
+          "task": {
+            "owner": "urn:hacp:agent:b",
+            "summary": "demo script + runbook",
+            "task_id": "t-2c6f6a7f83da498285929063157bea11"
+          },
+          "terms": {
+            "acceptance": [
+              "sh -n demo.sh",
+              "grep -q \"claude mcp add\" DEMO.md",
+              "grep -q \"/u/maya\" DEMO.md"
+            ],
+            "inputs": [
+              "src/lib.rs"
+            ],
+            "outputs": [
+              "DEMO.md",
+              "demo.sh"
+            ]
+          },
+          "terms_digest": "30dc9e7fc063da845c54312f90539016954b9b6df63be4f705d4dd9faf0dc2b1"
+        },
+        "in_reply_to": null,
+        "message_id": "m-2301679b047d45648beac889e773a0b0",
+        "to": "urn:hacp:agent:a"
+      },
+      "id": "e-b2de98d34e5649959dfe15e80e8078aa",
+      "peer": "b",
+      "rendered": "2026-10-22T18:33:24Z | Peer b | contract.proposed\nEvent e-b2de98d34e5649959dfe15e80e8078aa\n    {\n      \"body\": {\n        \"contract_id\": \"c-5a57ec5d32784b9fb7ba6bfb447e957c\",\n        \"next\": \"review terms and accept digest or counter\",\n        \"revision\": null,\n        \"state\": \"proposed\",\n        \"task\": {\n          \"owner\": \"urn:hacp:agent:b\",\n          \"summary\": \"demo script + runbook\",\n          \"task_id\": \"t-2c6f6a7f83da498285929063157bea11\"\n        },\n        \"terms\": {\n          \"acceptance\": [\n            \"sh -n demo.sh\",\n            \"grep -q \\\"claude mcp add\\\" DEMO.md\",\n            \"grep -q \\\"/u/maya\\\" DEMO.md\"\n          ],\n          \"inputs\": [\n            \"src/lib.rs\"\n          ],\n          \"outputs\": [\n            \"DEMO.md\",\n            \"demo.sh\"\n          ]\n        },\n        \"terms_digest\": \"30dc9e7fc063da845c54312f90539016954b9b6df63be4f705d4dd9faf0dc2b1\"\n      },\n      \"in_reply_to\": null,\n      \"message_id\": \"m-2301679b047d45648beac889e773a0b0\",\n      \"to\": \"urn:hacp:agent:a\"\n    }\n",
+      "time": "2026-10-22T18:33:24Z"
+    }
+  ]
+}

@@ -1,0 +1,168 @@
+{
+  "artifacts": [
+    {
+      "path": "crates/aegis-integrations/src/lib.rs",
+      "record": {
+        "artifact_id": "urn:hacp:artifact:e380ecf2-16f9-4d5b-a279-0381d74c602c",
+        "contract_id": "c-f9bdf304a1b44f6eb71c496e223ee8cf",
+        "contract_revision": "dda5085490376096690d3921f1591de6434930c1ae2161650b0a53cb7510e131",
+        "derived_from": [],
+        "digest": "6525547f2cd0de48ed6fc67dcf70bb855b0a5b42085ae366f4a48575c74ca22e",
+        "location": ".hacp/artifacts/e380ecf2-16f9-4d5b-a279-0381d74c602c.bin",
+        "media_type": "application/octet-stream",
+        "producer": "urn:hacp:agent:b",
+        "size": 8701,
+        "task_id": "t-443ab66f5f474d88ad003e0288161f1c",
+        "visibility": "participants"
+      }
+    },
+    {
+      "path": "crates/aegis-integrations/tests/offline.rs",
+      "record": {
+        "artifact_id": "urn:hacp:artifact:aa51ab0b-111a-4b0e-8dac-2dae9001ece5",
+        "contract_id": "c-f9bdf304a1b44f6eb71c496e223ee8cf",
+        "contract_revision": "dda5085490376096690d3921f1591de6434930c1ae2161650b0a53cb7510e131",
+        "derived_from": [],
+        "digest": "9794d83cecafba7b600d978c467f0b4c8f342bffcb3fd62b4d2c94243d079407",
+        "location": ".hacp/artifacts/aa51ab0b-111a-4b0e-8dac-2dae9001ece5.bin",
+        "media_type": "application/octet-stream",
+        "producer": "urn:hacp:agent:b",
+        "size": 7324,
+        "task_id": "t-443ab66f5f474d88ad003e0288161f1c",
+        "visibility": "participants"
+      }
+    }
+  ],
+  "attempts": [
+    {
+      "commands": [
+        {
+          "command": "cargo test -p aegis-integrations --offline -q",
+          "duration_ms": 440,
+          "exit_code": 0,
+          "signal": null,
+          "stderr": "",
+          "stdout": "\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 8 tests\nii......\ntest result: ok. 6 passed; 0 failed; 2 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n",
+          "timed_out": false
+        }
+      ],
+      "id": "v-232d4e8e403a4c188c3da77af2b69382",
+      "peer": "a",
+      "status": "completed"
+    }
+  ],
+  "contract": {
+    "agreed_by": [],
+    "agreed_terms_digest": null,
+    "amendments": 0,
+    "contract_id": "c-f9bdf304a1b44f6eb71c496e223ee8cf",
+    "escalation_path": [],
+    "limits": {
+      "max_amendments": 3,
+      "max_rounds": 3
+    },
+    "participants": [
+      "urn:hacp:agent:a",
+      "urn:hacp:agent:b"
+    ],
+    "pending_submission": null,
+    "pending_submitter": null,
+    "relationship": "collaboration",
+    "revisions": [
+      {
+        "content": {
+          "acceptance": [
+            "cargo test -p aegis-integrations --offline -q"
+          ],
+          "inputs": [
+            "SPEC.md",
+            "crates/aegis-core/src/lib.rs"
+          ],
+          "outputs": [
+            "crates/aegis-integrations/src/lib.rs",
+            "crates/aegis-integrations/tests/offline.rs"
+          ]
+        },
+        "digest": "dda5085490376096690d3921f1591de6434930c1ae2161650b0a53cb7510e131",
+        "number": 1
+      }
+    ],
+    "rework_scope": null,
+    "rounds": 0,
+    "state": "settled",
+    "task": {
+      "owner": "urn:hacp:agent:b",
+      "summary": "aegis-integrations: Jev + Stripe clients",
+      "task_id": "t-443ab66f5f474d88ad003e0288161f1c"
+    }
+  },
+  "pending_digest": "a1db330a603800720357bfe69b1ecce95218ee04a59199d216a0c002a9593d48",
+  "pending_terms": {
+    "acceptance": [
+      "cargo test -p aegis-integrations --offline -q"
+    ],
+    "inputs": [
+      "SPEC.md",
+      "crates/aegis-core/src/lib.rs"
+    ],
+    "outputs": [
+      "crates/aegis-integrations/src/lib.rs",
+      "crates/aegis-integrations/tests/offline.rs"
+    ]
+  },
+  "proposer": "b",
+  "submissions": [
+    {
+      "against_revision": "dda5085490376096690d3921f1591de6434930c1ae2161650b0a53cb7510e131",
+      "artifacts": [
+        "urn:hacp:artifact:e380ecf2-16f9-4d5b-a279-0381d74c602c",
+        "urn:hacp:artifact:aa51ab0b-111a-4b0e-8dac-2dae9001ece5"
+      ],
+      "claim": "Implemented JevScorer, StripePayments, DemoPayments, helpers (jev_request_body/parse_jev_response/stripe_form/load_dotenv), plus offline coverage and ignored live Jev+Stripe tests; cargo test -p aegis-integrations --offline -q passes.",
+      "evidence": []
+    }
+  ],
+  "verifications": [
+    {
+      "against_revision": "dda5085490376096690d3921f1591de6434930c1ae2161650b0a53cb7510e131",
+      "artifacts": [
+        "urn:hacp:artifact:e380ecf2-16f9-4d5b-a279-0381d74c602c",
+        "urn:hacp:artifact:aa51ab0b-111a-4b0e-8dac-2dae9001ece5"
+      ],
+      "attests": [],
+      "checks": [
+        {
+          "detail": "SHA-256 6525547f2cd0de48ed6fc67dcf70bb855b0a5b42085ae366f4a48575c74ca22e and 8701 bytes match working file and immutable copy",
+          "name": "before: crates/aegis-integrations/src/lib.rs",
+          "passed": true
+        },
+        {
+          "detail": "SHA-256 9794d83cecafba7b600d978c467f0b4c8f342bffcb3fd62b4d2c94243d079407 and 7324 bytes match working file and immutable copy",
+          "name": "before: crates/aegis-integrations/tests/offline.rs",
+          "passed": true
+        },
+        {
+          "detail": "{\"command\":\"cargo test -p aegis-integrations --offline -q\",\"stdout\":\"\\nrunning 0 tests\\n\\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\\n\\n\\nrunning 8 tests\\nii......\\ntest result: ok. 6 passed; 0 failed; 2 ignored; 0 measured; 0 filtered out; finished in 0.00s\\n\\n\\nrunning 0 tests\\n\\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\\n\\n\",\"stderr\":\"\",\"duration_ms\":440,\"exit_code\":0,\"signal\":null,\"timed_out\":false}",
+          "name": "cargo test -p aegis-integrations --offline -q",
+          "passed": true
+        },
+        {
+          "detail": "SHA-256 6525547f2cd0de48ed6fc67dcf70bb855b0a5b42085ae366f4a48575c74ca22e and 8701 bytes match working file and immutable copy",
+          "name": "after: crates/aegis-integrations/src/lib.rs",
+          "passed": true
+        },
+        {
+          "detail": "SHA-256 9794d83cecafba7b600d978c467f0b4c8f342bffcb3fd62b4d2c94243d079407 and 7324 bytes match working file and immutable copy",
+          "name": "after: crates/aegis-integrations/tests/offline.rs",
+          "passed": true
+        }
+      ],
+      "contract_id": "c-f9bdf304a1b44f6eb71c496e223ee8cf",
+      "evidence": [],
+      "reasons": [],
+      "verdict": "accept",
+      "verification_id": "v-232d4e8e403a4c188c3da77af2b69382",
+      "verifier": "urn:hacp:agent:a"
+    }
+  ]
+}

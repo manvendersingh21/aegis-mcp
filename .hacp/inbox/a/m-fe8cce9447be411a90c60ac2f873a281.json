@@ -1,0 +1,34 @@
+{
+  "protocol": "HACP/2.0",
+  "message_id": "m-fe8cce9447be411a90c60ac2f873a281",
+  "session_id": "s-d34a617b4954497e97c7d313e42747dd",
+  "from": "urn:hacp:agent:b",
+  "to": "urn:hacp:agent:a",
+  "kind": "contract.proposed",
+  "timestamp": "2026-10-22T18:30:13Z",
+  "body": {
+    "contract_id": "c-f9bdf304a1b44f6eb71c496e223ee8cf",
+    "next": "review terms and accept digest or counter",
+    "revision": null,
+    "state": "proposed",
+    "task": {
+      "owner": "urn:hacp:agent:b",
+      "summary": "aegis-integrations: Jev + Stripe clients",
+      "task_id": "t-443ab66f5f474d88ad003e0288161f1c"
+    },
+    "terms": {
+      "acceptance": [
+        "cargo test -p aegis-integrations --offline -q"
+      ],
+      "inputs": [
+        "SPEC.md",
+        "crates/aegis-core/src/lib.rs"
+      ],
+      "outputs": [
+        "crates/aegis-integrations/src/lib.rs",
+        "crates/aegis-integrations/tests/offline.rs"
+      ]
+    },
+    "terms_digest": "a1db330a603800720357bfe69b1ecce95218ee04a59199d216a0c002a9593d48"
+  }
+}

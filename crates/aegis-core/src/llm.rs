@@ -27,7 +27,7 @@ impl LlmClient {
         let url = std::env::var("AEGIS_LLM_URL").ok().filter(|s| !s.is_empty())?;
         let key = std::env::var("AEGIS_LLM_KEY").unwrap_or_default();
         let model = std::env::var("AEGIS_LLM_MODEL").unwrap_or_else(|_| "aegis-9b".into());
-        Some(Self::new(url, key, model, Duration::from_secs(12)))
+        Some(Self::new(url, key, model, Duration::from_secs(20)))
     }
 
     /// Chat completion. With `json_schema`, the server enforces structured
@@ -38,7 +38,9 @@ impl LlmClient {
             "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}],
             "temperature": 0.2,
             "max_tokens": 512,
-            "chat_template_kwargs": {"enable_thinking": false}
+            // vLLM and Ollama spell "no thinking" differently; each ignores the other's.
+            "chat_template_kwargs": {"enable_thinking": false},
+            "reasoning_effort": "none"
         });
         if let Some(schema) = json_schema {
             body["response_format"] = json!({"type": "json_schema", "json_schema": {"name": "out", "schema": schema}});

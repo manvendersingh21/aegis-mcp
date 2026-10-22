@@ -1,0 +1,13 @@
+{
+  "protocol": "HACP/2.0",
+  "message_id": "m-bcd13fde326d47fdb7effe1e49cc16bd",
+  "session_id": "s-d34a617b4954497e97c7d313e42747dd",
+  "from": "urn:hacp:agent:b",
+  "to": "urn:hacp:agent:a",
+  "kind": "hacp.skill.answer",
+  "timestamp": "2026-10-22T18:30:36Z",
+  "in_reply_to": "m-ff8de3b2a1ce42248d5015d8a8745b55",
+  "body": {
+    "text": "Confirmed: JevScorer::score will return Option<RiskScores> with provider='jev' and model from Jev response; on any failure it returns None. StripePayments and DemoPayments will return PaymentReceipt only (provider/payment_id/status/amount/currency/merchant/livemode), with no credentials in returned data."
+  }
+}

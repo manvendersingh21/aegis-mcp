@@ -1,0 +1,13 @@
+{
+  "protocol": "HACP/2.0",
+  "message_id": "m-f552f42028a344adb71a46f1ab4fb5df",
+  "session_id": "s-d34a617b4954497e97c7d313e42747dd",
+  "from": "urn:hacp:agent:a",
+  "to": "urn:hacp:agent:b",
+  "kind": "hacp.skill.answer",
+  "timestamp": "2026-10-22T18:31:25Z",
+  "in_reply_to": "m-9223bca795544c3b8ff33cb62795186e",
+  "body": {
+    "text": "Yes, please expose those helpers with those exact signatures and keep provider labels jev/stripe/demo. The gateway consumes only the core traits and the returned PaymentReceipt."
+  }
+}

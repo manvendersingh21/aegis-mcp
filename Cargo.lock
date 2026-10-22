@@ -15,6 +15,7 @@ dependencies = [
  "aegis-receipts",
  "anyhow",
  "axum",
+ "reqwest",
  "serde_json",
  "tokio",
  "tracing",

@@ -1,0 +1,198 @@
+{
+  "artifacts": [
+    {
+      "path": "crates/aegis-gateway/src/lib.rs",
+      "record": {
+        "artifact_id": "urn:hacp:artifact:d3563b01-2b7d-4861-86a0-8c4216b0e3c9",
+        "contract_id": "c-0e4785b85b7e49f28d0c32e917df60fa",
+        "contract_revision": "5f605f79fba9f5a9839deb8f2783c9d3104808a318843930398694715ea747df",
+        "derived_from": [],
+        "digest": "8c61024701cddcf680ee76065db954b7959dae3d8c4d4686369f8acf33fa53a2",
+        "location": ".hacp/artifacts/d3563b01-2b7d-4861-86a0-8c4216b0e3c9.bin",
+        "media_type": "application/octet-stream",
+        "producer": "urn:hacp:agent:a",
+        "size": 27857,
+        "task_id": "t-f041781484bb455ba59db20db80e90b8",
+        "visibility": "participants"
+      }
+    },
+    {
+      "path": "crates/aegis-gateway/tests/contract.rs",
+      "record": {
+        "artifact_id": "urn:hacp:artifact:57d91598-256a-424e-983e-a45c05ae2049",
+        "contract_id": "c-0e4785b85b7e49f28d0c32e917df60fa",
+        "contract_revision": "5f605f79fba9f5a9839deb8f2783c9d3104808a318843930398694715ea747df",
+        "derived_from": [],
+        "digest": "248a86ba61efd1482a77474dbdd9ea79d73470b29ba357274659c2f109248890",
+        "location": ".hacp/artifacts/57d91598-256a-424e-983e-a45c05ae2049.bin",
+        "media_type": "application/octet-stream",
+        "producer": "urn:hacp:agent:a",
+        "size": 12304,
+        "task_id": "t-f041781484bb455ba59db20db80e90b8",
+        "visibility": "participants"
+      }
+    },
+    {
+      "path": "crates/aegis-gateway/tests/risk_payments.rs",
+      "record": {
+        "artifact_id": "urn:hacp:artifact:ab0fcfb0-9580-42a6-9368-d3675cf8d56c",
+        "contract_id": "c-0e4785b85b7e49f28d0c32e917df60fa",
+        "contract_revision": "5f605f79fba9f5a9839deb8f2783c9d3104808a318843930398694715ea747df",
+        "derived_from": [],
+        "digest": "964f44fd470091e1ba1385ccafd8849cd033a6390aca0fb146401ed5988f406c",
+        "location": ".hacp/artifacts/ab0fcfb0-9580-42a6-9368-d3675cf8d56c.bin",
+        "media_type": "application/octet-stream",
+        "producer": "urn:hacp:agent:a",
+        "size": 9663,
+        "task_id": "t-f041781484bb455ba59db20db80e90b8",
+        "visibility": "participants"
+      }
+    }
+  ],
+  "attempts": [
+    {
+      "commands": [
+        {
+          "command": "cargo test -p aegis-gateway --offline -q",
+          "duration_ms": 2672,
+          "exit_code": 0,
+          "signal": null,
+          "stderr": "",
+          "stdout": "\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 7 tests\n.......\ntest result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s\n\n\nrunning 4 tests\n....\ntest result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n",
+          "timed_out": false
+        }
+      ],
+      "id": "v-feb45b9b2c5849eabe2f9ed1eae8d3d0",
+      "peer": "b",
+      "status": "completed"
+    }
+  ],
+  "contract": {
+    "agreed_by": [],
+    "agreed_terms_digest": null,
+    "amendments": 0,
+    "contract_id": "c-0e4785b85b7e49f28d0c32e917df60fa",
+    "escalation_path": [],
+    "limits": {
+      "max_amendments": 3,
+      "max_rounds": 3
+    },
+    "participants": [
+      "urn:hacp:agent:a",
+      "urn:hacp:agent:b"
+    ],
+    "pending_submission": null,
+    "pending_submitter": null,
+    "relationship": "collaboration",
+    "revisions": [
+      {
+        "content": {
+          "acceptance": [
+            "cargo test -p aegis-gateway --offline -q"
+          ],
+          "inputs": [
+            "SPEC.md",
+            "crates/aegis-core/src/lib.rs"
+          ],
+          "outputs": [
+            "crates/aegis-gateway/src/lib.rs",
+            "crates/aegis-gateway/tests/contract.rs",
+            "crates/aegis-gateway/tests/risk_payments.rs"
+          ]
+        },
+        "digest": "5f605f79fba9f5a9839deb8f2783c9d3104808a318843930398694715ea747df",
+        "number": 1
+      }
+    ],
+    "rework_scope": null,
+    "rounds": 0,
+    "state": "settled",
+    "task": {
+      "owner": "urn:hacp:agent:a",
+      "summary": "gateway v2: Jev risk gate + make_payment",
+      "task_id": "t-f041781484bb455ba59db20db80e90b8"
+    }
+  },
+  "pending_digest": "109482d0d05743cdba34e5894780114fd20fe797ac77edfa056e0c3c4ea9aa46",
+  "pending_terms": {
+    "acceptance": [
+      "cargo test -p aegis-gateway --offline -q"
+    ],
+    "inputs": [
+      "SPEC.md",
+      "crates/aegis-core/src/lib.rs"
+    ],
+    "outputs": [
+      "crates/aegis-gateway/src/lib.rs",
+      "crates/aegis-gateway/tests/contract.rs",
+      "crates/aegis-gateway/tests/risk_payments.rs"
+    ]
+  },
+  "proposer": "a",
+  "submissions": [
+    {
+      "against_revision": "5f605f79fba9f5a9839deb8f2783c9d3104808a318843930398694715ea747df",
+      "artifacts": [
+        "urn:hacp:artifact:d3563b01-2b7d-4861-86a0-8c4216b0e3c9",
+        "urn:hacp:artifact:57d91598-256a-424e-983e-a45c05ae2049",
+        "urn:hacp:artifact:ab0fcfb0-9580-42a6-9368-d3675cf8d56c"
+      ],
+      "claim": "Implemented the Jev fail-closed risk gate and fresh-consent make_payment path, updated GatewayDeps, and added offline gateway tests; cargo test -p aegis-gateway --offline -q passes.",
+      "evidence": []
+    }
+  ],
+  "verifications": [
+    {
+      "against_revision": "5f605f79fba9f5a9839deb8f2783c9d3104808a318843930398694715ea747df",
+      "artifacts": [
+        "urn:hacp:artifact:d3563b01-2b7d-4861-86a0-8c4216b0e3c9",
+        "urn:hacp:artifact:57d91598-256a-424e-983e-a45c05ae2049",
+        "urn:hacp:artifact:ab0fcfb0-9580-42a6-9368-d3675cf8d56c"
+      ],
+      "attests": [],
+      "checks": [
+        {
+          "detail": "SHA-256 8c61024701cddcf680ee76065db954b7959dae3d8c4d4686369f8acf33fa53a2 and 27857 bytes match working file and immutable copy",
+          "name": "before: crates/aegis-gateway/src/lib.rs",
+          "passed": true
+        },
+        {
+          "detail": "SHA-256 248a86ba61efd1482a77474dbdd9ea79d73470b29ba357274659c2f109248890 and 12304 bytes match working file and immutable copy",
+          "name": "before: crates/aegis-gateway/tests/contract.rs",
+          "passed": true
+        },
+        {
+          "detail": "SHA-256 964f44fd470091e1ba1385ccafd8849cd033a6390aca0fb146401ed5988f406c and 9663 bytes match working file and immutable copy",
+          "name": "before: crates/aegis-gateway/tests/risk_payments.rs",
+          "passed": true
+        },
+        {
+          "detail": "{\"command\":\"cargo test -p aegis-gateway --offline -q\",\"stdout\":\"\\nrunning 0 tests\\n\\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\\n\\n\\nrunning 7 tests\\n.......\\ntest result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s\\n\\n\\nrunning 4 tests\\n....\\ntest result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s\\n\\n\\nrunning 0 tests\\n\\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\\n\\n\",\"stderr\":\"\",\"duration_ms\":2672,\"exit_code\":0,\"signal\":null,\"timed_out\":false}",
+          "name": "cargo test -p aegis-gateway --offline -q",
+          "passed": true
+        },
+        {
+          "detail": "SHA-256 8c61024701cddcf680ee76065db954b7959dae3d8c4d4686369f8acf33fa53a2 and 27857 bytes match working file and immutable copy",
+          "name": "after: crates/aegis-gateway/src/lib.rs",
+          "passed": true
+        },
+        {
+          "detail": "SHA-256 248a86ba61efd1482a77474dbdd9ea79d73470b29ba357274659c2f109248890 and 12304 bytes match working file and immutable copy",
+          "name": "after: crates/aegis-gateway/tests/contract.rs",
+          "passed": true
+        },
+        {
+          "detail": "SHA-256 964f44fd470091e1ba1385ccafd8849cd033a6390aca0fb146401ed5988f406c and 9663 bytes match working file and immutable copy",
+          "name": "after: crates/aegis-gateway/tests/risk_payments.rs",
+          "passed": true
+        }
+      ],
+      "contract_id": "c-0e4785b85b7e49f28d0c32e917df60fa",
+      "evidence": [],
+      "reasons": [],
+      "verdict": "accept",
+      "verification_id": "v-feb45b9b2c5849eabe2f9ed1eae8d3d0",
+      "verifier": "urn:hacp:agent:b"
+    }
+  ]
+}

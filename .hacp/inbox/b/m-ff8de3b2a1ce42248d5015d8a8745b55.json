@@ -1,0 +1,12 @@
+{
+  "protocol": "HACP/2.0",
+  "message_id": "m-ff8de3b2a1ce42248d5015d8a8745b55",
+  "session_id": "s-d34a617b4954497e97c7d313e42747dd",
+  "from": "urn:hacp:agent:a",
+  "to": "urn:hacp:agent:b",
+  "kind": "hacp.skill.ask",
+  "timestamp": "2026-10-22T18:30:32Z",
+  "body": {
+    "text": "I’m implementing the gateway against the core RiskScorer and PaymentProvider traits. Please confirm JevScorer::score returns Option<RiskScores> with provider/model fields populated, and Stripe/Demo charge returns PaymentReceipt without exposing credentials; let me know if your integration assumptions require any gateway-specific handling."
+  }
+}

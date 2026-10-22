@@ -1,0 +1,35 @@
+{
+  "protocol": "HACP/2.0",
+  "message_id": "m-7492fb1fe0ce43fb9dd524e2bee135c5",
+  "session_id": "s-d34a617b4954497e97c7d313e42747dd",
+  "from": "urn:hacp:agent:a",
+  "to": "urn:hacp:agent:b",
+  "kind": "contract.proposed",
+  "timestamp": "2026-10-22T18:30:17Z",
+  "body": {
+    "contract_id": "c-0e4785b85b7e49f28d0c32e917df60fa",
+    "next": "review terms and accept digest or counter",
+    "revision": null,
+    "state": "proposed",
+    "task": {
+      "owner": "urn:hacp:agent:a",
+      "summary": "gateway v2: Jev risk gate + make_payment",
+      "task_id": "t-f041781484bb455ba59db20db80e90b8"
+    },
+    "terms": {
+      "acceptance": [
+        "cargo test -p aegis-gateway --offline -q"
+      ],
+      "inputs": [
+        "SPEC.md",
+        "crates/aegis-core/src/lib.rs"
+      ],
+      "outputs": [
+        "crates/aegis-gateway/src/lib.rs",
+        "crates/aegis-gateway/tests/contract.rs",
+        "crates/aegis-gateway/tests/risk_payments.rs"
+      ]
+    },
+    "terms_digest": "109482d0d05743cdba34e5894780114fd20fe797ac77edfa056e0c3c4ea9aa46"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "protocol": "HACP/2.0",
+  "message_id": "m-b9d1a1fa4a0a483ba9bb357055a07871",
+  "session_id": "s-d34a617b4954497e97c7d313e42747dd",
+  "from": "urn:hacp:agent:a",
+  "to": "urn:hacp:agent:b",
+  "kind": "session.close",
+  "timestamp": "2026-10-22T18:33:13Z",
+  "body": {
+    "reason": "Both gateway and integrations contracts settled; offline acceptance and verification passed."
+  }
+}

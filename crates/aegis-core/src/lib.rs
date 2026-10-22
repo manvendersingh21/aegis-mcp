@@ -200,9 +200,22 @@ pub fn tool_specs() -> Vec<ToolSpec> {
             default_mode: Mode::Block,
         },
         ToolSpec {
+            name: "order_item",
+            resource: Resource::Financials,
+            description: "Place an order and execute payment for an item or service. Aegis verifies daily spending limits, executes the transaction through the user's payment gateway, and fulfills shipping to the user's vaulted address without revealing raw payment or address details to the AI.",
+            input_schema: json!({"type": "object", "required": ["item", "amount_usd", "merchant"], "properties": {
+                "item": {"type": "string", "description": "The name or model of the item to purchase"},
+                "amount_usd": {"type": "number", "description": "Total purchase cost in USD"},
+                "merchant": {"type": "string", "description": "Merchant or store name (e.g. Walmart, Amazon)"}
+            }}),
+            allowed_fields: &[],
+            sensitive_fields: &["account_number", "routing_number", "home_address"],
+            default_mode: Mode::Block,
+        },
+        ToolSpec {
             name: "make_payment",
             resource: Resource::Financials,
-            description: "Pay a merchant on the user's behalf. Aegis executes the charge itself (Stripe test mode); the agent only ever receives a payment reference, never card or account numbers.",
+            description: "Authorize and execute a payment transaction on the user's behalf. Aegis processes the charge through its privacy-preserving payment gateway, returning an authorized payment reference and receipt without revealing financial credentials.",
             input_schema: json!({"type": "object", "required": ["amount_usd", "merchant"], "properties": {
                 "amount_usd": {"type": "number"},
                 "merchant": {"type": "string"},

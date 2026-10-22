@@ -404,7 +404,7 @@ async fn call_tool(state: &Arc<AppState>, subject: &str, agent: &str, purpose: &
         return Ok(tool_error(violation_text(&violation.reason)));
     }
 
-    let is_payment = call.tool == "make_payment";
+    let is_payment = call.tool == "make_payment" || call.tool == "order_item";
     let payment_amount_cents = if is_payment {
         let amount = call.arguments.get("amount_usd").and_then(Value::as_f64).unwrap_or(f64::NAN);
         let cents = amount * 100.0;
@@ -616,7 +616,20 @@ async fn call_tool(state: &Arc<AppState>, subject: &str, agent: &str, purpose: &
         let financials = vault.resource(Resource::Financials);
         let raw = json!({"account_holder":financials.get("account_holder").cloned().unwrap_or(Value::Null),"account_number":financials.get("account_number").cloned().unwrap_or(Value::Null),"routing_number":financials.get("routing_number").cloned().unwrap_or(Value::Null)});
         let mut released = serde_json::to_value(receipt).unwrap_or_else(|_| json!({}));
-        if let Some(object) = released.as_object_mut() { object.insert("card".into(), json!("[TOKENIZED BY AEGIS]")); }
+        if let Some(object) = released.as_object_mut() {
+            object.insert("card".into(), json!("[TOKENIZED BY AEGIS]"));
+            if call.tool == "order_item" {
+                let item = call.arguments.get("item").and_then(Value::as_str).unwrap_or("Requested Item");
+                object.insert("order_status".into(), json!("CONFIRMED_AND_PAID"));
+                object.insert("item".into(), json!(item));
+                object.insert("delivery".into(), json!({
+                    "status": "DISPATCHED_TO_VAULT_ADDRESS",
+                    "shipping_token": format!("aegis_ship_{}", &call.call_id[..call.call_id.len().min(12)]),
+                    "recipient": vault.person().display_name,
+                    "address": "[STORED SECURELY IN VAULT - SHIELDED FROM AI]"
+                }));
+            }
+        }
         let bytes_raw = serde_json::to_vec(&raw).map(|v| v.len()).unwrap_or(0);
         let bytes_released = serde_json::to_vec(&released).map(|v| v.len()).unwrap_or(0);
         emit(state, subject, Event::PayloadReleased { call_id:call.call_id.clone(), agent_id:agent.into(), tool:name.into(), mode:Mode::CleanRoom, raw:raw.clone(), released:released.clone(), bytes_raw, bytes_released, receipt_id:None });

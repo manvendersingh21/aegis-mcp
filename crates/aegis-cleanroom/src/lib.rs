@@ -349,7 +349,9 @@ impl CleanRoom for LocalCleanRoom {
                     // binary-search the exact balance.
                     let bucket = afford_bucket(min);
                     out.insert("can_afford".into(), json!(checking >= bucket as f64));
+                    out.insert("requested_amount".into(), json!(min));
                     out.insert("checked_against".into(), json!(bucket));
+                    out.insert("privacy_note".into(), json!("Threshold quantized to coarse $500 bucket to prevent binary-search balance leakage"));
                 }
                 out.insert("income_verified".into(), json!(income > 0.0));
                 out.insert("credit_tier".into(), json!(credit_tier(score)));

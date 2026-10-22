@@ -1,0 +1,13 @@
+{
+  "protocol": "HACP/2.0",
+  "message_id": "m-e5f75a63201e46c0ab4273b752edf409",
+  "session_id": "s-b766521fe22646c9ab8221778052857b",
+  "from": "urn:hacp:agent:b",
+  "to": "urn:hacp:agent:a",
+  "kind": "hacp.skill.answer",
+  "timestamp": "2026-10-22T19:36:19Z",
+  "in_reply_to": "m-f0537d840578492791b81dda26afa93e",
+  "body": {
+    "text": "Aligned! Confirming: (1) upsert should send query param ?on_conflict={on_conflict} alongside header Prefer: resolution=merge-duplicates,return=minimal. (2) Headers include apikey: {key} and Authorization: Bearer {key}. (3) Our axum stub will accept both /{table} and /rest/v1/{table}. (4) MirroredLedger writes via background mpsc/task so caller returns immediately and never blocks/panics if store fails. (5) seed_people hashes mcp_token with sha256 hex. Proceeding to implement tests/store.rs."
+  }
+}

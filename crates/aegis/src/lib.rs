@@ -117,6 +117,11 @@ struct Providers {
     broker: Option<broker_client::BrokerClient>,
     /// Red team's raw-vault model client (loopback via the broker), if any.
     raw_llm: Option<LlmClient>,
+    /// Supabase-mirrored ledger (live mode); otherwise a local SQLite ledger.
+    ledger: Option<Arc<dyn aegis_core::Ledger>>,
+    /// Persisted wallet links + where to save new ones (live mode).
+    wallet_links: Vec<(String, String)>,
+    wallet_store: Option<Arc<aegis_store::WalletStore>>,
 }
 
 fn providers_from_env(opts: &Options) -> Providers {
@@ -137,6 +142,9 @@ fn providers_from_env(opts: &Options) -> Providers {
         vaults: demo_vaults(),
         broker: None,
         raw_llm: None,
+        ledger: None,
+        wallet_links: Vec::new(),
+        wallet_store: None,
     }
 }
 
@@ -182,7 +190,47 @@ async fn providers_from_broker(opts: &Options, broker: broker_client::BrokerClie
     // The broker's LLM upstream is the ssh loopback forward, so the red team's
     // raw-vault prompt never crosses the public tunnel.
     let raw_llm = llm.clone();
-    Providers { llm, risk, payments, vaults, broker: Some(broker), raw_llm }
+    let (ledger, wallet_links, wallet_store) = supabase_state(opts, &vaults).await;
+    Providers { llm, risk, payments, vaults, broker: Some(broker), raw_llm, ledger, wallet_links, wallet_store }
+}
+
+/// Supabase as the system of record: mirrored ledger (rehydrated on boot),
+/// people table, and persisted wallet links. Degrades to local-only on error.
+async fn supabase_state(
+    opts: &Options,
+    vaults: &[aegis_core::Vault],
+) -> (Option<Arc<dyn aegis_core::Ledger>>, Vec<(String, String)>, Option<Arc<aegis_store::WalletStore>>) {
+    let Some(store) = aegis_store::SupabaseStore::from_env() else { return (None, Vec::new(), None) };
+    let sqlite = match &opts.db_path {
+        Some(path) => SqliteLedger::open(path),
+        None => SqliteLedger::open_in_memory(),
+    };
+    let ledger = match sqlite {
+        Ok(sqlite) => {
+            let mirrored = aegis_store::MirroredLedger::new(sqlite, Some(store.clone()));
+            if let Err(e) = mirrored.rehydrate().await {
+                tracing::warn!("ledger rehydrate from Supabase failed: {e}");
+            }
+            Some(Arc::new(mirrored) as Arc<dyn aegis_core::Ledger>)
+        }
+        Err(e) => {
+            tracing::warn!("ledger: {e}");
+            None
+        }
+    };
+    let wallets = aegis_store::WalletStore::new(store);
+    if let Err(e) = wallets.seed_people(vaults).await {
+        tracing::warn!("seeding aegis_people failed (did you run supabase/schema.sql?): {e}");
+    }
+    let links = match wallets.load().await {
+        Ok(rows) => rows.into_iter().filter(|(_, _, kind)| kind == "user").map(|(s, a, _)| (s, a)).collect(),
+        Err(e) => {
+            tracing::warn!("loading wallet links failed: {e}");
+            Vec::new()
+        }
+    };
+    tracing::info!("system of record: Supabase (ledger mirrored, {} wallet link(s) restored)", links.len());
+    (ledger, links, Some(Arc::new(wallets)))
 }
 
 /// Offline / env-key build (tests, `AEGIS_OFFLINE=1`).
@@ -204,14 +252,17 @@ fn opts_offline() -> bool {
 }
 
 fn assemble(opts: &Options, providers: Providers) -> anyhow::Result<axum::Router> {
-    let Providers { llm, risk, payments, vaults, broker, raw_llm } = providers;
+    let Providers { llm, risk, payments, vaults, broker, raw_llm, ledger: mirrored, wallet_links, wallet_store } = providers;
 
     let ledger = match &opts.db_path {
         Some(path) => SqliteLedger::open(path),
         None => SqliteLedger::open_in_memory(),
     }
     .map_err(|e| anyhow::anyhow!("ledger: {e}"))?;
-    let ledger: Arc<dyn aegis_core::Ledger> = Arc::new(ledger);
+    let ledger: Arc<dyn aegis_core::Ledger> = match mirrored {
+        Some(m) => m,
+        None => Arc::new(ledger),
+    };
     let signer = match opts.signing_seed_hex.as_deref().and_then(parse_seed) {
         Some(seed) => Ed25519Signer::from_seed(seed),
         None => Ed25519Signer::generate(),
@@ -242,6 +293,19 @@ fn assemble(opts: &Options, providers: Providers) -> anyhow::Result<axum::Router
     let siwe_domain = std::env::var("AEGIS_SIWE_DOMAIN").unwrap_or_else(|_| format!("127.0.0.1:{}", opts.port));
     let chain = onchain::OnChain::from_env();
     let siwe = Arc::new(aegis_chain::SiweAuth::new(siwe_domain, 84532));
+    for (subject, address) in &wallet_links {
+        siwe.preload_link(subject, address);
+    }
+    if let Some(store) = wallet_store {
+        siwe.set_on_link(Box::new(move |subject, address| {
+            let (store, subject, address) = (store.clone(), subject.to_string(), address.to_string());
+            tokio::spawn(async move {
+                if let Err(e) = store.save(&subject, &address, "user").await {
+                    tracing::warn!("persisting wallet link failed: {e}");
+                }
+            });
+        }));
+    }
     let subjects: Vec<String> = demo_vaults().iter().map(|v| v.subject()).collect();
     let demo = demo_wallet::router(&siwe, &subjects);
     let wallet = siwe.clone() as Arc<dyn aegis_core::WalletAuth>;

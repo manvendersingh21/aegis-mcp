@@ -1,0 +1,12 @@
+{
+  "protocol": "HACP/2.0",
+  "message_id": "m-f0537d840578492791b81dda26afa93e",
+  "session_id": "s-b766521fe22646c9ab8221778052857b",
+  "from": "urn:hacp:agent:a",
+  "to": "urn:hacp:agent:b",
+  "kind": "hacp.skill.ask",
+  "timestamp": "2026-10-22T19:35:13Z",
+  "body": {
+    "text": "Confirming exact public signatures in src/lib.rs (spec PHASE 5): SupabaseStore::new(url: impl Into<String>, service_key: impl Into<String>) -> Self (accepts &str and String); from_env() -> Option<Self> (SUPABASE_URL + SUPABASE_SECRET_KEY, either missing => None); async upsert(table: &str, body: &Value /*obj or array*/, on_conflict: &str) -> Result<(), AegisError>; async select(table: &str, query: &str) -> Result<Vec<Value>, AegisError> (query appended verbatim after '?'); async update(table: &str, query: &str, body: &Value) -> Result<(), AegisError> (PATCH). Writes send headers apikey, Authorization Bearer, Prefer: resolution=merge-duplicates,return=minimal. MirroredLedger::new(inner: SqliteLedger, store: Option<SupabaseStore>) implementing aegis_core::Ledger (SQLite hot path; append/store_receipt/revoke_all mirrored async via unbounded channel + dedicated writer thread, warn-only on failure); async rehydrate(&self) -> Result<(), AegisError> loads aegis_ledger rows (order=seq.asc) via inner.append + aegis_receipts rows via inner.store_receipt only while SQLite is empty. Ledger mirror row = {seq, subject, entry_hash, entry}; receipt row = {receipt_id, subject, grantee_agent, resource('financials'-style), expires_at, revoked, receipt}. WalletStore::new(SupabaseStore); async load() -> Result<Vec<(subject, address, kind)>, AegisError>; async save(&self, subject: &str, address: &str, kind: &str) -> Result<(), AegisError> (upsert on_conflict=address); async seed_people(&self, vaults: &[Vault]) -> Result<(), AegisError> (rows {subject, display_name, max_payment_cents, mcp_token_sha256=sha256(token) hex — token itself never sent). Errors are aegis_core::AegisError::Storage. Any mismatch with what tests/store.rs assumes? Answer with corrections if so; silence = aligned."
+  }
+}

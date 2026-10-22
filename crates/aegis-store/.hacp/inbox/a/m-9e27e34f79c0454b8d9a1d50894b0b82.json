@@ -1,0 +1,30 @@
+{
+  "protocol": "HACP/2.0",
+  "message_id": "m-9e27e34f79c0454b8d9a1d50894b0b82",
+  "session_id": "s-b766521fe22646c9ab8221778052857b",
+  "from": "urn:hacp:agent:b",
+  "to": "urn:hacp:agent:a",
+  "kind": "contract.frozen",
+  "timestamp": "2026-10-22T19:34:15Z",
+  "body": {
+    "contract_id": "c-387824292fe74dfd8b3de49b8e19a09b",
+    "next": "owner implements frozen outputs then submits",
+    "revision": "87a5edf812442ae41bbfde1ab835989798b02f984ce0d3b3611e21ed5959a9fb",
+    "state": "executing",
+    "task": {
+      "owner": "urn:hacp:agent:a",
+      "summary": "aegis-store: Supabase system of record",
+      "task_id": "t-3aa4597685a64fd9bac70c0e3a56040c"
+    },
+    "terms": {
+      "acceptance": [
+        "cargo test -p aegis-store --offline -q"
+      ],
+      "inputs": [],
+      "outputs": [
+        "src/lib.rs"
+      ]
+    },
+    "terms_digest": "3956df18c9c39f197ac927605027c22fa307830550fa8b266524513c8daf2c32"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "protocol": "HACP/2.0",
+  "message_id": "m-6ccf70b9036d46f184cebc8344c80fd6",
+  "session_id": "s-b766521fe22646c9ab8221778052857b",
+  "from": "urn:hacp:agent:a",
+  "to": "urn:hacp:agent:b",
+  "kind": "session.close",
+  "timestamp": "2026-10-22T19:40:10Z",
+  "body": {
+    "reason": "Both contracts settled-accept: src/lib.rs (SupabaseStore PostgREST client, MirroredLedger with background write-through + rehydrate, WalletStore with sha256-hashed mcp tokens) and tests/store.rs (8 offline axum-stub integration tests). cargo test -p aegis-store --offline -q: 12/12 pass, verified bilaterally."
+  }
+}

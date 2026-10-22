@@ -1,0 +1,132 @@
+{
+  "artifacts": [
+    {
+      "path": "src/lib.rs",
+      "record": {
+        "artifact_id": "urn:hacp:artifact:89ce6505-9b09-4ba6-9708-49d8a05867d9",
+        "contract_id": "c-387824292fe74dfd8b3de49b8e19a09b",
+        "contract_revision": "87a5edf812442ae41bbfde1ab835989798b02f984ce0d3b3611e21ed5959a9fb",
+        "derived_from": [],
+        "digest": "13a05fbf270b559344561a30588f182d470163b10feb2713752c35ff22bb6d40",
+        "location": ".hacp/artifacts/89ce6505-9b09-4ba6-9708-49d8a05867d9.bin",
+        "media_type": "application/octet-stream",
+        "producer": "urn:hacp:agent:a",
+        "size": 24462,
+        "task_id": "t-3aa4597685a64fd9bac70c0e3a56040c",
+        "visibility": "participants"
+      }
+    }
+  ],
+  "attempts": [
+    {
+      "commands": [
+        {
+          "command": "cargo test -p aegis-store --offline -q",
+          "duration_ms": 273,
+          "exit_code": 0,
+          "signal": null,
+          "stderr": "",
+          "stdout": "\nrunning 4 tests\n....\ntest result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 8 tests\n........\ntest result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n",
+          "timed_out": false
+        }
+      ],
+      "id": "v-04c6ad0f22f046e2adc9d3f3e5eba138",
+      "peer": "b",
+      "status": "completed"
+    }
+  ],
+  "contract": {
+    "agreed_by": [],
+    "agreed_terms_digest": null,
+    "amendments": 0,
+    "contract_id": "c-387824292fe74dfd8b3de49b8e19a09b",
+    "escalation_path": [],
+    "limits": {
+      "max_amendments": 3,
+      "max_rounds": 3
+    },
+    "participants": [
+      "urn:hacp:agent:a",
+      "urn:hacp:agent:b"
+    ],
+    "pending_submission": null,
+    "pending_submitter": null,
+    "relationship": "collaboration",
+    "revisions": [
+      {
+        "content": {
+          "acceptance": [
+            "cargo test -p aegis-store --offline -q"
+          ],
+          "inputs": [],
+          "outputs": [
+            "src/lib.rs"
+          ]
+        },
+        "digest": "87a5edf812442ae41bbfde1ab835989798b02f984ce0d3b3611e21ed5959a9fb",
+        "number": 1
+      }
+    ],
+    "rework_scope": null,
+    "rounds": 0,
+    "state": "settled",
+    "task": {
+      "owner": "urn:hacp:agent:a",
+      "summary": "aegis-store: Supabase system of record",
+      "task_id": "t-3aa4597685a64fd9bac70c0e3a56040c"
+    }
+  },
+  "pending_digest": "3956df18c9c39f197ac927605027c22fa307830550fa8b266524513c8daf2c32",
+  "pending_terms": {
+    "acceptance": [
+      "cargo test -p aegis-store --offline -q"
+    ],
+    "inputs": [],
+    "outputs": [
+      "src/lib.rs"
+    ]
+  },
+  "proposer": "a",
+  "submissions": [
+    {
+      "against_revision": "87a5edf812442ae41bbfde1ab835989798b02f984ce0d3b3611e21ed5959a9fb",
+      "artifacts": [
+        "urn:hacp:artifact:89ce6505-9b09-4ba6-9708-49d8a05867d9"
+      ],
+      "claim": "src/lib.rs: SupabaseStore PostgREST client (injectable base URL, apikey+Bearer, Prefer merge-duplicates/return=minimal, upsert/select/update); MirroredLedger (aegis_core::Ledger over SqliteLedger, unbounded mpsc + dedicated writer task mirroring append->aegis_ledger {seq,subject,entry_hash,entry} and store_receipt/revoke_all->aegis_receipts, warn-only on failure, rehydrate from Supabase into empty SQLite); WalletStore (load/save aegis_wallets, seed_people aegis_people with sha256-hashed mcp token via dependency-free SHA-256). 12/12 offline tests pass (4 unit + 8 stub integration).",
+      "evidence": []
+    }
+  ],
+  "verifications": [
+    {
+      "against_revision": "87a5edf812442ae41bbfde1ab835989798b02f984ce0d3b3611e21ed5959a9fb",
+      "artifacts": [
+        "urn:hacp:artifact:89ce6505-9b09-4ba6-9708-49d8a05867d9"
+      ],
+      "attests": [],
+      "checks": [
+        {
+          "detail": "SHA-256 13a05fbf270b559344561a30588f182d470163b10feb2713752c35ff22bb6d40 and 24462 bytes match working file and immutable copy",
+          "name": "before: src/lib.rs",
+          "passed": true
+        },
+        {
+          "detail": "{\"command\":\"cargo test -p aegis-store --offline -q\",\"stdout\":\"\\nrunning 4 tests\\n....\\ntest result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\\n\\n\\nrunning 8 tests\\n........\\ntest result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s\\n\\n\\nrunning 0 tests\\n\\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\\n\\n\",\"stderr\":\"\",\"duration_ms\":273,\"exit_code\":0,\"signal\":null,\"timed_out\":false}",
+          "name": "cargo test -p aegis-store --offline -q",
+          "passed": true
+        },
+        {
+          "detail": "SHA-256 13a05fbf270b559344561a30588f182d470163b10feb2713752c35ff22bb6d40 and 24462 bytes match working file and immutable copy",
+          "name": "after: src/lib.rs",
+          "passed": true
+        }
+      ],
+      "contract_id": "c-387824292fe74dfd8b3de49b8e19a09b",
+      "evidence": [],
+      "reasons": [],
+      "verdict": "accept",
+      "verification_id": "v-04c6ad0f22f046e2adc9d3f3e5eba138",
+      "verifier": "urn:hacp:agent:b"
+    }
+  ]
+}

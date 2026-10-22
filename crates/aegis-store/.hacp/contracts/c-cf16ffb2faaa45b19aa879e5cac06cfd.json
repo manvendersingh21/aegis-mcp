@@ -1,0 +1,132 @@
+{
+  "artifacts": [
+    {
+      "path": "tests/store.rs",
+      "record": {
+        "artifact_id": "urn:hacp:artifact:7bba659d-844f-4f26-962f-451555365075",
+        "contract_id": "c-cf16ffb2faaa45b19aa879e5cac06cfd",
+        "contract_revision": "0344f700e273c274a569b3c62cc2ae605ec3c319ccb46dd189c3f6c904ded368",
+        "derived_from": [],
+        "digest": "149c15709896087fc686b22b2edb496acf5e386ecba404efe4b302d5c4e0e9ff",
+        "location": ".hacp/artifacts/7bba659d-844f-4f26-962f-451555365075.bin",
+        "media_type": "application/octet-stream",
+        "producer": "urn:hacp:agent:b",
+        "size": 19996,
+        "task_id": "t-17e1cba3c1bd4f4a81b7f4c0bc688c69",
+        "visibility": "participants"
+      }
+    }
+  ],
+  "attempts": [
+    {
+      "commands": [
+        {
+          "command": "cargo test -p aegis-store --offline -q",
+          "duration_ms": 9380,
+          "exit_code": 0,
+          "signal": null,
+          "stderr": "",
+          "stdout": "\nrunning 4 tests\n....\ntest result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 8 tests\n........\ntest result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n",
+          "timed_out": false
+        }
+      ],
+      "id": "v-3476a8a7b55d4c369a186db89d50459c",
+      "peer": "a",
+      "status": "completed"
+    }
+  ],
+  "contract": {
+    "agreed_by": [],
+    "agreed_terms_digest": null,
+    "amendments": 0,
+    "contract_id": "c-cf16ffb2faaa45b19aa879e5cac06cfd",
+    "escalation_path": [],
+    "limits": {
+      "max_amendments": 3,
+      "max_rounds": 3
+    },
+    "participants": [
+      "urn:hacp:agent:a",
+      "urn:hacp:agent:b"
+    ],
+    "pending_submission": null,
+    "pending_submitter": null,
+    "relationship": "collaboration",
+    "revisions": [
+      {
+        "content": {
+          "acceptance": [
+            "cargo test -p aegis-store --offline -q"
+          ],
+          "inputs": [],
+          "outputs": [
+            "tests/store.rs"
+          ]
+        },
+        "digest": "0344f700e273c274a569b3c62cc2ae605ec3c319ccb46dd189c3f6c904ded368",
+        "number": 1
+      }
+    ],
+    "rework_scope": null,
+    "rounds": 0,
+    "state": "settled",
+    "task": {
+      "owner": "urn:hacp:agent:b",
+      "summary": "aegis-store tests vs PostgREST stub",
+      "task_id": "t-17e1cba3c1bd4f4a81b7f4c0bc688c69"
+    }
+  },
+  "pending_digest": "bdfef5b81957f9bde5c49eaaf4982b4f25b634cf30e49a68565ce0ebe09e5f30",
+  "pending_terms": {
+    "acceptance": [
+      "cargo test -p aegis-store --offline -q"
+    ],
+    "inputs": [],
+    "outputs": [
+      "tests/store.rs"
+    ]
+  },
+  "proposer": "b",
+  "submissions": [
+    {
+      "against_revision": "0344f700e273c274a569b3c62cc2ae605ec3c319ccb46dd189c3f6c904ded368",
+      "artifacts": [
+        "urn:hacp:artifact:7bba659d-844f-4f26-962f-451555365075"
+      ],
+      "claim": "offline tests against axum stub covering headers, upsert, mirrored ledger, receipts, down resilience, rehydrate, and token safety",
+      "evidence": []
+    }
+  ],
+  "verifications": [
+    {
+      "against_revision": "0344f700e273c274a569b3c62cc2ae605ec3c319ccb46dd189c3f6c904ded368",
+      "artifacts": [
+        "urn:hacp:artifact:7bba659d-844f-4f26-962f-451555365075"
+      ],
+      "attests": [],
+      "checks": [
+        {
+          "detail": "SHA-256 149c15709896087fc686b22b2edb496acf5e386ecba404efe4b302d5c4e0e9ff and 19996 bytes match working file and immutable copy",
+          "name": "before: tests/store.rs",
+          "passed": true
+        },
+        {
+          "detail": "{\"command\":\"cargo test -p aegis-store --offline -q\",\"stdout\":\"\\nrunning 4 tests\\n....\\ntest result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\\n\\n\\nrunning 8 tests\\n........\\ntest result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s\\n\\n\\nrunning 0 tests\\n\\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\\n\\n\",\"stderr\":\"\",\"duration_ms\":9380,\"exit_code\":0,\"signal\":null,\"timed_out\":false}",
+          "name": "cargo test -p aegis-store --offline -q",
+          "passed": true
+        },
+        {
+          "detail": "SHA-256 149c15709896087fc686b22b2edb496acf5e386ecba404efe4b302d5c4e0e9ff and 19996 bytes match working file and immutable copy",
+          "name": "after: tests/store.rs",
+          "passed": true
+        }
+      ],
+      "contract_id": "c-cf16ffb2faaa45b19aa879e5cac06cfd",
+      "evidence": [],
+      "reasons": [],
+      "verdict": "accept",
+      "verification_id": "v-3476a8a7b55d4c369a186db89d50459c",
+      "verifier": "urn:hacp:agent:a"
+    }
+  ]
+}

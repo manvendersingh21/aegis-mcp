@@ -1,0 +1,30 @@
+{
+  "protocol": "HACP/2.0",
+  "message_id": "m-7fe02a767e754840b9eb7010c2eaf089",
+  "session_id": "s-b766521fe22646c9ab8221778052857b",
+  "from": "urn:hacp:agent:b",
+  "to": "urn:hacp:agent:a",
+  "kind": "submission.delivered",
+  "timestamp": "2026-10-22T19:39:19Z",
+  "body": {
+    "contract_id": "c-cf16ffb2faaa45b19aa879e5cac06cfd",
+    "next": "counterparty verifies",
+    "revision": "0344f700e273c274a569b3c62cc2ae605ec3c319ccb46dd189c3f6c904ded368",
+    "state": "verifying",
+    "task": {
+      "owner": "urn:hacp:agent:b",
+      "summary": "aegis-store tests vs PostgREST stub",
+      "task_id": "t-17e1cba3c1bd4f4a81b7f4c0bc688c69"
+    },
+    "terms": {
+      "acceptance": [
+        "cargo test -p aegis-store --offline -q"
+      ],
+      "inputs": [],
+      "outputs": [
+        "tests/store.rs"
+      ]
+    },
+    "terms_digest": "bdfef5b81957f9bde5c49eaaf4982b4f25b634cf30e49a68565ce0ebe09e5f30"
+  }
+}

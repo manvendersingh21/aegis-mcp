@@ -24,6 +24,7 @@ dependencies = [
  "aegis-gateway",
  "aegis-integrations",
  "aegis-receipts",
+ "aegis-store",
  "anyhow",
  "axum",
  "chrono",

@@ -430,6 +430,45 @@ impl CleanRoom for LocalCleanRoom {
                     "contact_count": raw.as_array().map(|a| a.len()).unwrap_or(0),
                 })
             }
+            Resource::DeveloperSecrets => {
+                let provider = args.get("provider").and_then(Value::as_str).unwrap_or("all");
+                let purpose = args.get("purpose").and_then(Value::as_str).unwrap_or("developer_project");
+                let mut out = Map::new();
+                out.insert("access_status".into(), json!("SURROGATE_PROXY_ACTIVE"));
+                out.insert("protection_level".into(), json!("ZERO_KNOWLEDGE_VAULT"));
+                out.insert("purpose".into(), json!(purpose));
+                out.insert("requested_provider".into(), json!(provider));
+
+                let providers = match provider {
+                    "all" => vec!["openai", "anthropic", "aws", "github", "database", "stripe"],
+                    p => vec![p],
+                };
+
+                let mut credentials = Map::new();
+                for p in providers {
+                    let (masked, tier, proxy) = match p {
+                        "openai" => ("sk-proj-...b2c1", "Tier 5 (Unlimited)", "https://aviation-certain-lovely-composer.trycloudflare.com/api/proxy/openai"),
+                        "anthropic" => ("sk-ant-api03-...eeff", "Scale Plan (Claude 3.5 & Opus)", "https://aviation-certain-lovely-composer.trycloudflare.com/api/proxy/anthropic"),
+                        "aws" => ("AKIAIOSFODNN...KEY", "Production IAM Scoped", "https://aviation-certain-lovely-composer.trycloudflare.com/api/proxy/aws"),
+                        "github" => ("ghp_AegisProt...k123", "Repo & Package Scoped", "https://aviation-certain-lovely-composer.trycloudflare.com/api/proxy/github"),
+                        "database" => ("postgres://maya:***@db.aegismcp.local/prod", "Read/Write Pooler", "https://aviation-certain-lovely-composer.trycloudflare.com/api/proxy/db"),
+                        "stripe" => ("sec_stripe_mock_99", "Live Restricted Key", "https://aviation-certain-lovely-composer.trycloudflare.com/api/proxy/stripe"),
+                        _ => ("[UNKNOWN_PROVIDER]", "None", ""),
+                    };
+                    credentials.insert(p.into(), json!({
+                        "status": "AUTHORIZED",
+                        "masked_key": masked,
+                        "tier": tier,
+                        "surrogate_token": format!("aegis_fk_{p}_8f9c2e7a"),
+                        "proxy_endpoint": proxy,
+                        "raw_key": "BLOCKED_BY_AEGIS_VAULT - ZERO KNOWLEDGE PROXY"
+                    }));
+                }
+                out.insert("managed_credentials".into(), Value::Object(credentials));
+                out.insert("crypto_seed_phrase".into(), json!("BLOCKED_BY_POLICY - NEVER RELEASED TO AI AGENTS"));
+                out.insert("policy_enforcement".into(), json!("Agents use surrogate tokens (aegis_fk_...) or proxy endpoints. Raw keys never enter agent context."));
+                Value::Object(out)
+            }
         }
     }
 }

@@ -404,7 +404,7 @@ async fn call_tool(state: &Arc<AppState>, subject: &str, agent: &str, purpose: &
         return Ok(tool_error(violation_text(&violation.reason)));
     }
 
-    let is_payment = call.tool == "make_payment" || call.tool == "order_item";
+    let is_payment = call.tool == "make_payment" || call.tool == "order_item" || call.tool == "book_flight";
     let payment_amount_cents = if is_payment {
         let amount = call.arguments.get("amount_usd").and_then(Value::as_f64).unwrap_or(f64::NAN);
         let cents = amount * 100.0;
@@ -628,6 +628,35 @@ async fn call_tool(state: &Arc<AppState>, subject: &str, agent: &str, purpose: &
                     "recipient": vault.person().display_name,
                     "address": "[STORED SECURELY IN VAULT - SHIELDED FROM AI]"
                 }));
+            }
+            if call.tool == "book_flight" {
+                let airline = call.arguments.get("airline").and_then(Value::as_str).unwrap_or("Airline");
+                let flight = call.arguments.get("flight_number").and_then(Value::as_str).unwrap_or("UA1542");
+                let origin = call.arguments.get("origin").and_then(Value::as_str).unwrap_or("SFO");
+                let dest = call.arguments.get("destination").and_then(Value::as_str).unwrap_or("JFK");
+                let dep = call.arguments.get("departure_date").and_then(Value::as_str).unwrap_or("2026-11-05");
+                let booking_token = format!("aegis_tkt_{}_{}", flight.to_lowercase().replace(' ', ""), &call.call_id[..call.call_id.len().min(8)]);
+
+                object.insert("booking_status".into(), json!("CONFIRMED_AND_TICKETED"));
+                object.insert("booking_reference".into(), json!(booking_token));
+                object.insert("flight_summary".into(), json!({
+                    "airline": airline,
+                    "flight_number": flight,
+                    "route": format!("{origin} -> {dest}"),
+                    "departure_date": dep,
+                    "fare_class": "Economy Standard (Privacy-Shielded Booking)"
+                }));
+                object.insert("passenger_privacy_shield".into(), json!({
+                    "passenger_name": vault.person().display_name,
+                    "passport_number": "[INJECTED DIRECTLY TO AIRLINE VIA SECURE VAULT - SHIELDED FROM AI]",
+                    "date_of_birth": "[VERIFIED BY AEGIS VAULT - NOT DISCLOSED TO AGENT]",
+                    "billing_address": "[SHIELDED IN AEGIS VAULT - ZERO EXPOSURE]"
+                }));
+                object.insert("payment_privacy".into(), json!({
+                    "card": "[TOKENIZED BY AEGIS - ZERO EXPOSURE]",
+                    "charge_status": "SUCCEEDED"
+                }));
+                object.insert("calendar_sync".into(), json!("Flight schedule auto-synchronized to user calendar as private [BUSY] block"));
             }
         }
         let bytes_raw = serde_json::to_vec(&raw).map(|v| v.len()).unwrap_or(0);

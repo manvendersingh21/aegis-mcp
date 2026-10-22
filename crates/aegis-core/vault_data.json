@@ -163,6 +163,16 @@
         "relation": "mother"
       }
     ],
+    "developer_secrets": {
+      "openai_api_key": "sk-proj-49f9c2e7a1b8d00923847a98c7e6d5f4a3b2c1",
+      "anthropic_api_key": "sk-ant-api03-9b2e1c4a8f3d778899aabbccddeeff",
+      "aws_access_key_id": "AKIAIOSFODNN7EXAMPLE",
+      "aws_secret_access_key": "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
+      "github_personal_access_token": "ghp_AegisProtectedGitHubDeveloperToken123",
+      "database_url": "postgres://maya:prod_db_p@ssw0rd99!@db.aegismcp.local:5432/production_warehouse",
+      "stripe_secret_key": "mock_sec_stripe_aegis_vault_99",
+      "crypto_seed_phrase": "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
+    },
     "display_name": "Maya Okafor",
     "credentials": {
       "password_sha256": "78df404b4f38d2011da01ef33b341c9fb9234d532c504c4698fb2e9e1dcca473",
@@ -285,6 +295,16 @@
         "relation": "roommate"
       }
     ],
+    "developer_secrets": {
+      "openai_api_key": "sk-proj-dev882233445566778899aabbccddeeff0011",
+      "anthropic_api_key": "sk-ant-api03-dev33445566778899aabbccddeeff",
+      "aws_access_key_id": "AKIAIOSFDEVEXAMPLE",
+      "aws_secret_access_key": "devSecretKeyEXAMPLEKEY1234567890",
+      "github_personal_access_token": "ghp_DevProtectedToken987654321",
+      "database_url": "postgres://dev:dev_password123@db.dev.local:5432/analytics",
+      "stripe_secret_key": "mock_sec_stripe_aegis_vault_456",
+      "crypto_seed_phrase": "zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo wrong"
+    },
     "credentials": {
       "password_sha256": "85308915824051e8a7333caa84c94651efc8c48a033c111ec9f6f75c5cace888",
       "mcp_token": "aegis_sk_dev_9a1e5c3f7b2d"

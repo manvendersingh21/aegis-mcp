@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "aegis-firewall": {
+      "url": "https://aviation-certain-lovely-composer.trycloudflare.com/mcp",
+      "headers": {
+        "Authorization": "Bearer aegis_sk_maya_4f9c2e7a1b8d"
+      }
+    }
+  }
+}

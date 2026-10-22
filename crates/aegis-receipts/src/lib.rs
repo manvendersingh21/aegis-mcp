@@ -21,6 +21,7 @@ fn resource_label(resource: Resource) -> &'static str {
         Resource::Health => "health",
         Resource::Identity => "identity",
         Resource::Contacts => "contacts",
+        Resource::DeveloperSecrets => "developer_secrets",
     }
 }
 

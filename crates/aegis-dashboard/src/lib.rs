@@ -375,13 +375,35 @@ const ag = (id, safe) => isAddr(id) ? addrLink(id) : safe;
 const ago = ts => { const d = Math.max(0, nowS() - Number(ts || 0)); return d < 60 ? d + 's ago' : d < 3600 ? Math.floor(d / 60) + 'm ago' : d < 86400 ? Math.floor(d / 3600) + 'h ago' : Math.floor(d / 86400) + 'd ago'; };
 const nowS = () => Math.floor(Date.now() / 1000);
 
+function saveTerm() {
+  try {
+    const t = $('agent');
+    if (t) {
+      while (t.children.length > 50) t.firstChild.remove();
+      localStorage.setItem('aegis_term_' + SUBJECT, t.innerHTML);
+    }
+  } catch(e) {}
+}
+
+function saveReleases() {
+  try {
+    const r = $('releases');
+    if (r) {
+      while (r.children.length > 15) r.lastChild.remove();
+      localStorage.setItem('aegis_releases_' + SUBJECT, r.innerHTML);
+    }
+  } catch(e) {}
+}
+
 function term(cls, html) {
   const t = $('agent');
+  if (!t) return;
   const d = document.createElement('div');
   d.className = 'ln ' + cls;
   d.innerHTML = '<span class="ts">[' + hhmm() + ']</span> ' + html;
   t.appendChild(d);
   t.scrollTop = t.scrollHeight;
+  saveTerm();
 }
 
 function post(url, body) {
@@ -527,6 +549,20 @@ async function loadState() {
     receipts = s.active_receipts || [];
     renderReceipts();
     renderLedger(s.recent_ledger);
+    if ($('releases') && !$('releases').children.length && s.recent_ledger && s.recent_ledger.length) {
+      for (const e of s.recent_ledger.slice().reverse()) {
+        if (e.outcome === 'released' || e.outcome === 'RELEASED') {
+          const d = document.createElement('div');
+          d.className = 'rel';
+          d.innerHTML = '<div class="hd"><span class="pill-ok">Released</span> ' + ag(e.agent_id, esc(e.agent_id)) + ' → <b>' + esc(e.tool) + '</b> · mode <b>' + esc(e.policy_applied) + '</b></div>'
+            + '<div class="diff"><div class="pane raw"><div class="t">REQUESTED RESOURCE</div><pre>' + esc(e.tool) + (e.purpose ? ' (' + esc(e.purpose) + ')' : '') + '</pre></div>'
+            + '<div class="pane ok"><div class="t">RELEASED TO AGENT</div><pre>' + pretty(e.payload_returned) + '</pre></div></div>'
+            + '<div class="saved">' + fmtBytes(e.bytes_raw || 0) + ' → ' + fmtBytes(e.bytes_released || 0) + ' · ' + fmtBytes(Math.max(0, (e.bytes_raw || 0) - (e.bytes_released || 0))) + ' withheld</div>';
+          $('releases').prepend(d);
+        }
+      }
+      saveReleases();
+    }
     const t = nowS();
     for (const k of Object.keys(pending)) delete pending[k];
     for (const r of (s.pending || [])) if (Number(r.deadline) > t) pending[r.request_id] = r;
@@ -544,7 +580,8 @@ function addRelease(ev) {
     + '<div class="pane ok"><div class="t">RELEASED TO AGENT</div><pre>' + pretty(ev.released) + '</pre></div></div>'
     + '<div class="saved">' + fmtBytes(ev.bytes_raw || 0) + ' → ' + fmtBytes(ev.bytes_released || 0) + ' · ' + fmtBytes(saved) + ' withheld</div>';
   $('releases').prepend(d);
-  while ($('releases').children.length > 6) $('releases').lastChild.remove();
+  while ($('releases').children.length > 15) $('releases').lastChild.remove();
+  saveReleases();
 }
 
 function addPayment(ev) {
@@ -558,7 +595,8 @@ function addPayment(ev) {
     + '<div class="kv"><b>Payment</b> <code>' + esc(r.payment_id) + '</code></div>'
     + '<div class="kv"><b>Card</b> <code class="tok">[TOKENIZED BY AEGIS]</code></div>';
   $('releases').prepend(d);
-  while ($('releases').children.length > 6) $('releases').lastChild.remove();
+  while ($('releases').children.length > 15) $('releases').lastChild.remove();
+  saveReleases();
   term('aegis', 'payment executed ' + usd((r.amount_cents || 0) / 100) + ' → ' + esc(r.merchant));
 }
 
@@ -675,6 +713,12 @@ async function loadChain() {
 setInterval(loadChain, 15000);
 
 (async function init() {
+  try {
+    const savedRel = localStorage.getItem('aegis_releases_' + SUBJECT);
+    if (savedRel && $('releases')) $('releases').innerHTML = savedRel;
+    const savedT = localStorage.getItem('aegis_term_' + SUBJECT);
+    if (savedT && $('agent')) $('agent').innerHTML = savedT;
+  } catch(e) {}
   try {
     const res = await fetch('/api/me');
     if (res.status === 401) { location.href = '/login?next=' + encodeURIComponent(location.pathname); return; }

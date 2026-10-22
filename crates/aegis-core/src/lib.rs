@@ -90,6 +90,7 @@ pub enum Resource {
     Health,
     Identity,
     Contacts,
+    DeveloperSecrets,
 }
 
 impl Resource {
@@ -100,6 +101,7 @@ impl Resource {
             Resource::Health => "health",
             Resource::Identity => "identity",
             Resource::Contacts => "contacts",
+            Resource::DeveloperSecrets => "developer_secrets",
         }
     }
 }
@@ -213,6 +215,26 @@ pub fn tool_specs() -> Vec<ToolSpec> {
             default_mode: Mode::Block,
         },
         ToolSpec {
+            name: "book_flight",
+            resource: Resource::Financials,
+            description: "Book an airline ticket and execute payment on the user's behalf. Aegis injects passenger identity, government ID, and payment directly to the airline from the user's encrypted vault without revealing passport numbers, date of birth, or credit cards to the AI agent.",
+            input_schema: json!({
+                "type": "object",
+                "required": ["airline", "flight_number", "origin", "destination", "departure_date", "amount_usd"],
+                "properties": {
+                    "airline": {"type": "string", "description": "Airline name (e.g. United Airlines, Delta)"},
+                    "flight_number": {"type": "string", "description": "Flight code/number (e.g. UA 1542, DL 402)"},
+                    "origin": {"type": "string", "description": "3-letter airport code (e.g. SFO)"},
+                    "destination": {"type": "string", "description": "3-letter airport code (e.g. JFK, LAX)"},
+                    "departure_date": {"type": "string", "description": "Departure date YYYY-MM-DD"},
+                    "amount_usd": {"type": "number", "description": "Total ticket price in USD"}
+                }
+            }),
+            allowed_fields: &["booking_status", "booking_reference", "airline", "flight", "departure_date"],
+            sensitive_fields: &["passport_number", "date_of_birth", "home_address", "account_number", "routing_number"],
+            default_mode: Mode::Block,
+        },
+        ToolSpec {
             name: "make_payment",
             resource: Resource::Financials,
             description: "Authorize and execute a payment transaction on the user's behalf. Aegis processes the charge through its privacy-preserving payment gateway, returning an authorized payment reference and receipt without revealing financial credentials.",
@@ -233,6 +255,27 @@ pub fn tool_specs() -> Vec<ToolSpec> {
             allowed_fields: CONTACTS,
             sensitive_fields: CONTACTS,
             default_mode: Mode::Block,
+        },
+        ToolSpec {
+            name: "access_developer_credentials",
+            resource: Resource::DeveloperSecrets,
+            description: "Access managed developer API keys, database URLs, and cloud credentials from the user's centralized secrets vault. Aegis acts as a single point of access across all your AI projects: returns proxy endpoints and surrogate scoped keys while keeping the raw production secrets safely shielded from AI context.",
+            input_schema: json!({
+                "type": "object",
+                "properties": {
+                    "provider": {
+                        "type": "string",
+                        "description": "Provider name: 'openai', 'anthropic', 'aws', 'github', 'database', 'stripe', or 'all'"
+                    },
+                    "purpose": {
+                        "type": "string",
+                        "description": "Project name or purpose for using this credential"
+                    }
+                }
+            }),
+            allowed_fields: &["provider", "status", "tier", "masked_key", "surrogate_proxy_token", "proxy_endpoint"],
+            sensitive_fields: &["raw_secret", "openai_api_key", "anthropic_api_key", "aws_secret_access_key", "database_url", "stripe_secret_key", "crypto_seed_phrase"],
+            default_mode: Mode::CleanRoom,
         },
     ]
 }

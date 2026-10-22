@@ -1,0 +1,46 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/aegis-core",
+    "crates/aegis-cleanroom",
+    "crates/aegis-receipts",
+    "crates/aegis-gateway",
+    "crates/aegis-agent",
+    "crates/aegis-dashboard",
+    "crates/aegis",
+]
+
+[workspace.package]
+edition = "2021"
+version = "0.1.0"
+
+[workspace.dependencies]
+aegis-core = { path = "crates/aegis-core" }
+aegis-cleanroom = { path = "crates/aegis-cleanroom" }
+aegis-receipts = { path = "crates/aegis-receipts" }
+aegis-gateway = { path = "crates/aegis-gateway" }
+aegis-agent = { path = "crates/aegis-agent" }
+aegis-dashboard = { path = "crates/aegis-dashboard" }
+
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "2"
+anyhow = "1"
+futures = "0.3"
+tokio = { version = "1.53", features = ["full"] }
+tokio-stream = { version = "0.1", features = ["sync"] }
+axum = { version = "0.8.9", features = ["macros"] }
+tower-http = { version = "0.6", features = ["cors"] }
+reqwest = { version = "0.12.28", default-features = false, features = ["json", "rustls-tls"] }
+ed25519-dalek = { version = "2.2", features = ["rand_core"] }
+rand = "0.8"
+rusqlite = { version = "0.32.1", features = ["bundled"] }
+regex = "1"
+maud = { version = "0.27", features = ["axum"] }
+uuid = { version = "1", features = ["v4"] }
+chrono = { version = "0.4", features = ["serde"] }
+hex = "0.4"
+base64 = "0.22"
+sha2 = "0.10"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }

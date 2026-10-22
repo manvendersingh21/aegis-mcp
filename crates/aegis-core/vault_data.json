@@ -1,0 +1,282 @@
+[
+  {
+    "subject": "maya",
+    "financials": {
+      "account_holder": "Maya R. Okafor",
+      "checking_balance": 14250.0,
+      "savings_balance": 38900.0,
+      "monthly_income": 11800.0,
+      "credit_score": 781,
+      "account_number": "4417 1234 5678 9113",
+      "routing_number": "121000358",
+      "ssn": "523-45-8812",
+      "transactions": [
+        {
+          "date": "2026-10-20",
+          "merchant": "Kaiser Permanente Copay",
+          "amount": -45.0
+        },
+        {
+          "date": "2026-10-19",
+          "merchant": "Blue Bottle Coffee Oakland",
+          "amount": -6.5
+        },
+        {
+          "date": "2026-10-18",
+          "merchant": "Payroll - Anthropic PBC",
+          "amount": 5900.0
+        },
+        {
+          "date": "2026-10-17",
+          "merchant": "Rent - Lakeshore Apartments",
+          "amount": -3200.0
+        },
+        {
+          "date": "2026-10-16",
+          "merchant": "Planned Parenthood",
+          "amount": -120.0
+        },
+        {
+          "date": "2026-10-15",
+          "merchant": "Venmo to J. Alvarez",
+          "amount": -400.0
+        },
+        {
+          "date": "2026-10-14",
+          "merchant": "Whole Foods Market",
+          "amount": -132.4
+        },
+        {
+          "date": "2026-10-13",
+          "merchant": "BART Clipper Reload",
+          "amount": -50.0
+        },
+        {
+          "date": "2026-10-12",
+          "merchant": "Alcoholics Anonymous Donation",
+          "amount": -20.0
+        },
+        {
+          "date": "2026-10-11",
+          "merchant": "United Airlines",
+          "amount": -612.3
+        }
+      ]
+    },
+    "calendar": {
+      "timezone": "America/Los_Angeles",
+      "events": [
+        {
+          "start": "2026-10-23T09:00:00-07:00",
+          "end": "2026-10-23T10:00:00-07:00",
+          "title": "Interview with Sequoia Capital",
+          "location": "2800 Sand Hill Rd, Menlo Park",
+          "attendees": [
+            "partner@sequoiacap.com"
+          ],
+          "notes": "Do not tell current manager"
+        },
+        {
+          "start": "2026-10-23T14:00:00-07:00",
+          "end": "2026-10-23T14:45:00-07:00",
+          "title": "Dr. Patel - Oncology follow-up",
+          "location": "UCSF Mission Bay",
+          "attendees": [],
+          "notes": "Bring biopsy results"
+        },
+        {
+          "start": "2026-10-24T11:00:00-07:00",
+          "end": "2026-10-24T12:00:00-07:00",
+          "title": "1:1 with manager",
+          "location": "Zoom",
+          "attendees": [
+            "boss@company.com"
+          ],
+          "notes": ""
+        },
+        {
+          "start": "2026-10-25T18:30:00-07:00",
+          "end": "2026-10-25T20:00:00-07:00",
+          "title": "Couples therapy",
+          "location": "1420 Broadway, Oakland",
+          "attendees": [
+            "j.alvarez@gmail.com"
+          ],
+          "notes": ""
+        },
+        {
+          "start": "2026-10-27T08:00:00-07:00",
+          "end": "2026-10-27T17:00:00-07:00",
+          "title": "Flight SFO -> JFK (UA 1542)",
+          "location": "SFO Terminal 3",
+          "attendees": [],
+          "notes": "Confirmation K7QX2P"
+        }
+      ]
+    },
+    "health": {
+      "resting_heart_rate": 58,
+      "sleep_hours_avg": 6.4,
+      "steps_avg": 9120,
+      "conditions": [
+        "Stage I melanoma (in remission)",
+        "Generalized anxiety disorder"
+      ],
+      "medications": [
+        "Sertraline 50mg",
+        "Lisinopril 10mg"
+      ],
+      "last_location_trace": [
+        "37.8044,-122.2712",
+        "37.7680,-122.3874"
+      ],
+      "insurance_member_id": "KP-99812-4471"
+    },
+    "identity": {
+      "full_name": "Maya R. Okafor",
+      "date_of_birth": "1993-04-17",
+      "home_address": "5521 Shafter Ave, Oakland, CA 94618",
+      "phone": "+1 (510) 555-0147",
+      "email": "maya.okafor@protonmail.com",
+      "passport_number": "X41927736",
+      "drivers_license": "D7731942",
+      "citizenship": "US",
+      "age_over_21": true
+    },
+    "contacts": [
+      {
+        "name": "J. Alvarez",
+        "phone": "+1 (415) 555-0199",
+        "email": "j.alvarez@gmail.com",
+        "relation": "partner"
+      },
+      {
+        "name": "Dr. Anil Patel",
+        "phone": "+1 (415) 555-0123",
+        "email": "apatel@ucsf.edu",
+        "relation": "oncologist"
+      },
+      {
+        "name": "Grace Okafor",
+        "phone": "+1 (510) 555-0177",
+        "email": "grace.o@yahoo.com",
+        "relation": "mother"
+      }
+    ],
+    "display_name": "Maya Okafor"
+  },
+  {
+    "subject": "dev",
+    "display_name": "Dev Raman",
+    "financials": {
+      "account_holder": "Dev Raman",
+      "checking_balance": 1830.55,
+      "savings_balance": 2100.0,
+      "monthly_income": 4200.0,
+      "credit_score": 642,
+      "account_number": "6011 0009 9013 9424",
+      "routing_number": "026009593",
+      "ssn": "611-22-4098",
+      "transactions": [
+        {
+          "date": "2026-10-20",
+          "merchant": "Payday Advance Co",
+          "amount": -300.0
+        },
+        {
+          "date": "2026-10-18",
+          "merchant": "DoorDash",
+          "amount": -41.2
+        },
+        {
+          "date": "2026-10-16",
+          "merchant": "Payroll - Lyft",
+          "amount": 1400.0
+        },
+        {
+          "date": "2026-10-15",
+          "merchant": "Gamblers Anonymous",
+          "amount": -15.0
+        },
+        {
+          "date": "2026-10-12",
+          "merchant": "Rent - Mission St Studio",
+          "amount": -1650.0
+        }
+      ]
+    },
+    "calendar": {
+      "timezone": "America/Los_Angeles",
+      "events": [
+        {
+          "start": "2026-10-23T10:00:00-07:00",
+          "end": "2026-10-23T11:00:00-07:00",
+          "title": "Immigration attorney - H1B",
+          "location": "450 Golden Gate Ave, SF",
+          "attendees": [
+            "counsel@visalaw.com"
+          ],
+          "notes": "Bring I-797"
+        },
+        {
+          "start": "2026-10-24T16:00:00-07:00",
+          "end": "2026-10-24T17:00:00-07:00",
+          "title": "Job interview - Stripe",
+          "location": "Zoom",
+          "attendees": [
+            "recruiter@stripe.com"
+          ],
+          "notes": ""
+        },
+        {
+          "start": "2026-10-26T19:00:00-07:00",
+          "end": "2026-10-26T21:00:00-07:00",
+          "title": "Support group",
+          "location": "2101 Mission St, SF",
+          "attendees": [],
+          "notes": ""
+        }
+      ]
+    },
+    "health": {
+      "resting_heart_rate": 71,
+      "sleep_hours_avg": 5.1,
+      "steps_avg": 4300,
+      "conditions": [
+        "Type 1 diabetes"
+      ],
+      "medications": [
+        "Insulin glargine"
+      ],
+      "last_location_trace": [
+        "37.7599,-122.4148"
+      ],
+      "insurance_member_id": "BS-44102-7781"
+    },
+    "identity": {
+      "full_name": "Dev Raman",
+      "date_of_birth": "2001-09-02",
+      "home_address": "2290 Mission St Apt 4, San Francisco, CA 94110",
+      "phone": "+1 (415) 555-0162",
+      "email": "dev.raman@gmail.com",
+      "passport_number": "Z88213409",
+      "drivers_license": "Y5520781",
+      "citizenship": "IN",
+      "age_over_21": true
+    },
+    "contacts": [
+      {
+        "name": "Priya Raman",
+        "phone": "+91 98450 00112",
+        "email": "priya.r@gmail.com",
+        "relation": "sister"
+      },
+      {
+        "name": "Sam Ortiz",
+        "phone": "+1 (415) 555-0134",
+        "email": "sam.o@pm.me",
+        "relation": "roommate"
+      }
+    ]
+  }
+]

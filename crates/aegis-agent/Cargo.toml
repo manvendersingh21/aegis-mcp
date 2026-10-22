@@ -1,0 +1,14 @@
+[package]
+name = "aegis-agent"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+aegis-core.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+tokio.workspace = true
+reqwest.workspace = true
+futures.workspace = true
+anyhow.workspace = true
+uuid.workspace = true

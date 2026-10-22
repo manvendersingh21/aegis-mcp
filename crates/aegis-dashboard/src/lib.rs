@@ -2,6 +2,8 @@
 //! per-person live consent console (`GET /u/{subject}`). Server-rendered with
 //! maud; one inline vanilla-JS `<script>` per page, no build step.
 
+mod p5;
+
 use aegis_core::{demo_vaults, Person};
 use axum::extract::Path;
 use axum::http::StatusCode;

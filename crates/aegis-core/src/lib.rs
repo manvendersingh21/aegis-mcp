@@ -602,6 +602,46 @@ pub trait WalletAuth: Send + Sync {
     fn wallet_of(&self, subject: &str) -> Option<String>;
 }
 
+// --------------------------------------------------------- key broker ----
+
+/// Metadata about a stored provider secret. The value itself never leaves the
+/// broker (AES-256-GCM at rest in Supabase); only `last4` is shown.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct SecretMeta {
+    pub secret_id: String,
+    /// `None` = platform secret (Jev, LLM, ...); `Some(subject)` = that person's.
+    pub subject: Option<String>,
+    /// "stripe" | "jev" | "llm" | ...
+    pub provider: String,
+    pub label: String,
+    pub last4: String,
+    pub created_at: i64,
+    pub revoked: bool,
+}
+
+/// Returned exactly once when a fake key is issued.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct IssuedFakeKey {
+    /// `aegis_fk_<provider>_<24 alnum>` — the only credential an agent/model ever sees.
+    pub fake_key: String,
+    pub info: FakeKeyInfo,
+}
+
+/// A fake key as listed on the dashboard (never includes the key itself).
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct FakeKeyInfo {
+    /// First 20 chars of the fake key, for display and revocation.
+    pub prefix: String,
+    pub subject: String,
+    pub agent_id: String,
+    pub provider: String,
+    pub issued_at: i64,
+    pub expires_at: i64,
+    pub revoked: bool,
+    pub last_used_at: Option<i64>,
+    pub uses: u64,
+}
+
 /// Runs a pre-scripted demo scenario against a gateway base URL (aegis-agent).
 pub trait ScenarioRunner: Send + Sync {
     /// Spawned in the background by `POST /api/scenario/{n}?subject=X`;

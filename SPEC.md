@@ -135,3 +135,35 @@ Gateway (done by orchestrator): `router_with_wallet(deps, Option<Arc<dyn WalletA
 - /u/{subject}: credentials card shows linked wallet (short 0x…, basescan address link) or a "Link wallet" button (same signing flow → POST /api/wallet/link).
 - Ledger column: "Anchored on Base Sepolia ✓ <short tx> · <time ago>" linking to explorer_url from GET /api/chain/anchors (own subject only), next to the existing Supabase anchor line; if `/api/chain/info.enabled` is false show "on-chain anchoring off".
 - Agent ids that look like 0x addresses render as short address chips with a basescan link.
+
+## PHASE 5 — Wallet-only sign-in, Supabase system of record, fake-key broker
+Goal: the model/agents and even the main :8787 process never hold a real provider key. They hold FAKE keys `aegis_fk_<provider>_<24 alnum>`; a separate REST service, **aegis-broker on 127.0.0.1:8788**, swaps fake→real at call time. Every sign-in is an Ethereum wallet (SIWE); a clearly labelled demo wallet exists for stage safety. Supabase (tables in `supabase/schema.sql`) is the system of record.
+Shared JSON types are in aegis-core: `SecretMeta`, `IssuedFakeKey`, `FakeKeyInfo`.
+
+### aegis-broker (crates/aegis-broker; lib.rs = workers, main.rs = orchestrator)
+Env (broker only, from `.env.broker`): `AEGIS_MASTER_KEY` (64 hex = 32 bytes), `AEGIS_BROKER_TOKEN`, `AEGIS_BROKER_PORT` (8788), real `STRIPE_API_KEY`, `JEV_API_KEY`, `AEGIS_LLM_UPSTREAM` (+ its key), `SUPABASE_URL`, `SUPABASE_SECRET_KEY`.
+- Crypto: AES-256-GCM (aes-gcm =0.11.1), random 96-bit nonce per secret, base64 nonce + ciphertext. `pub struct Sealer` with `new([u8;32])`, `seal(&[u8]) -> (String, String)`, `open(nonce_b64, ct_b64) -> Result<Vec<u8>, AegisError>`.
+- Storage abstraction `pub trait BrokerStore: Send + Sync` (async via BoxFuture) with `put_secret(StoredSecret)`, `secrets(subject: Option<&str>) -> Vec<StoredSecret>`, `secret(id)`, `put_fake_key(StoredFakeKey)`, `fake_key_by_hash(sha256_hex)`, `fake_keys(subject)`, `update_fake_key(StoredFakeKey)`, `log_usage(UsageRow)`. Provide `MemoryStore`. (Orchestrator writes the Supabase-backed impl over aegis-store.) Only `sha256(fake_key)` is stored, never the fake key.
+- Fake keys: issue with (subject, agent_id, provider, ttl_secs) → `IssuedFakeKey`; resolve picks that subject's non-revoked secret for the provider, else the platform secret (subject None). Rejected if unknown/expired/revoked or provider mismatch.
+- `pub fn router(state: BrokerState) -> axum::Router`:
+  - Admin API (requires `Authorization: Bearer <AEGIS_BROKER_TOKEN>`, else 401):
+    `POST /admin/secrets {subject|null, provider, label, value}` → SecretMeta (value never echoed);
+    `GET /admin/secrets?subject=` → [SecretMeta]; `POST /admin/fake-keys {subject, agent_id, provider, ttl_secs}` → IssuedFakeKey;
+    `GET /admin/fake-keys?subject=` → [FakeKeyInfo]; `POST /admin/fake-keys/revoke {subject, prefix|null}` → {"revoked":[prefix]};
+    `GET /admin/vault/{subject}` → decrypted vault JSON (vaults sealed in the store; seeded from aegis_core::demo_vaults() when empty) — so personal data is encrypted at rest in Supabase.
+  - Key-swapping proxy (auth = the FAKE key): `ANY /proxy/stripe/{*path}` (fake key as HTTP Basic user, like Stripe) → https://api.stripe.com/{path}; refuses if the real key is not sk_test_/rk_test_. `ANY /proxy/jev/{*path}` (Bearer) → https://api.typesafe.ai/{path}. `ANY /proxy/llm/{*path}` (Bearer) → `AEGIS_LLM_UPSTREAM`/{path} with the upstream's real key. Forward method, query, body, content-type, Idempotency-Key. Response body and headers are scrubbed of the real key (replace with `[AEGIS-SCRUBBED]`). Every call logs a usage row (fake key hash, subject, agent, provider, path, ok). Upstream base URLs are configurable in `BrokerState` so tests can point at a local stub.
+- Upstream errors pass through status + scrubbed body; a bad fake key → 401 `{"error":"invalid aegis key"}`.
+
+### aegis-store (crates/aegis-store)
+- `SupabaseStore::new(url, service_key)`, `from_env()` (SUPABASE_URL, SUPABASE_SECRET_KEY); async `upsert(table, &Value /*obj or array*/, on_conflict: &str)`, `select(table, query: &str /*PostgREST: "subject=eq.maya&order=seq.asc"*/) -> Vec<Value>`, `update(table, query, &Value)`. Headers: apikey + Bearer service key, `Prefer: resolution=merge-duplicates,return=minimal`. Base URL injectable for tests.
+- `MirroredLedger::new(inner: SqliteLedger, store: Option<SupabaseStore>)` impl `aegis_core::Ledger`: all reads/writes on the SQLite hot path; every `append` → background upsert into `aegis_ledger {seq, subject, entry_hash, entry}`; every `store_receipt` / `revoke_all` → upsert `aegis_receipts`. Use an unbounded mpsc + one writer task (never block the caller, never panic if Supabase is down; log warn). `async fn rehydrate(&self)` loads receipts + ledger rows from Supabase into SQLite on boot (if SQLite is empty).
+- `WalletStore::new(SupabaseStore)`: `async load() -> Vec<(subject, address, kind)>`, `async save(subject, address, kind)` (upsert `aegis_wallets`), `async seed_people(&[Vault])` (upsert `aegis_people` with display_name, max_payment_cents, sha256 of mcp token — never the token).
+
+### Main app :8787 (orchestrator wiring)
+- Wallet-only: password `/api/login` is removed from the live router (`router_with_wallet`); SIWE only. Demo wallets (only when `AEGIS_DEMO_WALLETS=1`, default 1 for the hackathon): `GET /api/demo-wallet/{subject}` → `{"address","demo":true}`; `POST /api/demo-wallet/sign {subject, message}` → `{"signature"}`; dashboards then call the normal `POST /api/login/siwe`.
+- Keys API (session required, subject = session): `GET /api/keys` → `{"secrets":[SecretMeta],"fake_keys":[FakeKeyInfo]}`; `POST /api/keys/secrets {provider,label,value}` → SecretMeta; `POST /api/keys/fake {agent_id, provider, ttl_secs}` → IssuedFakeKey (shown once); `POST /api/keys/revoke {prefix|null}` → {"revoked":[...]}.
+- Main process gets its own fake keys from the broker at boot and uses `StripePayments::via_broker`, `JevScorer::via_broker`, `LlmClient` pointed at `/proxy/llm/v1`.
+
+### Dashboard
+- `/login`: primary "Sign in with Ethereum" (MetaMask/Rabby); secondary "Use demo wallet" per person (labelled DEMO, calls the demo-wallet endpoints then /api/login/siwe). No password field anywhere.
+- `/u/{subject}` "Keys" card: add provider secret (password-type input, value cleared after submit, never rendered back; shows provider/label/last4), issue fake key for an agent (show the `aegis_fk_…` once with copy button + "this key is worthless outside Aegis"), list fake keys (agent, provider, expires countdown, uses, last used, revoke button). KILL SWITCH also calls `POST /api/keys/revoke {prefix:null}`.

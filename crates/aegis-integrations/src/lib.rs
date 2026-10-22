@@ -10,12 +10,19 @@ const STRIPE_PAYMENT_INTENTS_URL: &str = "https://api.stripe.com/v1/payment_inte
 
 pub struct JevScorer {
     api_key: String,
+    endpoint: String,
     http: reqwest::Client,
 }
 
 impl JevScorer {
     pub fn new(api_key: String) -> Self {
-        Self { api_key, http: reqwest::Client::new() }
+        Self { api_key, endpoint: JEV_URL.to_string(), http: reqwest::Client::new() }
+    }
+
+    /// Talk to Jev through the AegisMCP key broker: `fake_key` is an
+    /// `aegis_fk_jev_…` key and `endpoint` the broker's proxy URL.
+    pub fn via_broker(fake_key: String, endpoint: String) -> Self {
+        Self { api_key: fake_key, endpoint, http: reqwest::Client::new() }
     }
 
     pub fn from_env() -> Option<Self> {
@@ -35,7 +42,7 @@ impl RiskScorer for JevScorer {
             tokio::time::timeout(Duration::from_secs(8), async {
                 let resp = self
                     .http
-                    .post(JEV_URL)
+                    .post(&self.endpoint)
                     .bearer_auth(&self.api_key)
                     .json(&jev_request_body(call))
                     .send()
@@ -102,6 +109,7 @@ fn valid_probability(v: f64) -> bool {
 
 pub struct StripePayments {
     secret_key: String,
+    endpoint: String,
     http: reqwest::Client,
 }
 
@@ -121,8 +129,23 @@ impl StripePayments {
 
         Ok(Self {
             secret_key: key.to_string(),
+            endpoint: STRIPE_PAYMENT_INTENTS_URL.to_string(),
             http,
         })
+    }
+
+    /// Charge through the AegisMCP key broker: `fake_key` is an
+    /// `aegis_fk_stripe_…` key (the broker swaps in the real sk_test_ key and
+    /// enforces test mode), `endpoint` the broker's payment_intents proxy URL.
+    pub fn via_broker(fake_key: String, endpoint: String) -> Result<Self, AegisError> {
+        if !fake_key.starts_with("aegis_fk_stripe_") {
+            return Err(AegisError::Other("via_broker requires an aegis_fk_stripe_ key".to_string()));
+        }
+        let http = reqwest::Client::builder()
+            .timeout(Duration::from_secs(20))
+            .build()
+            .map_err(|e| AegisError::Other(format!("failed to build Stripe HTTP client: {e}")))?;
+        Ok(Self { secret_key: fake_key, endpoint, http })
     }
 
     pub fn from_env() -> Option<Result<Self, AegisError>> {
@@ -142,7 +165,7 @@ impl PaymentProvider for StripePayments {
             let form = stripe_form(&req);
             let resp = self
                 .http
-                .post(STRIPE_PAYMENT_INTENTS_URL)
+                .post(&self.endpoint)
                 .basic_auth(&self.secret_key, Some(""))
                 .header("Idempotency-Key", req.idempotency_key.clone())
                 .form(&form)

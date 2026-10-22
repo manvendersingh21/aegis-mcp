@@ -4,3 +4,5 @@ target/
 .env
 .hacp-terms/
 aegis.db*
+.orchestrator/
+.env.broker

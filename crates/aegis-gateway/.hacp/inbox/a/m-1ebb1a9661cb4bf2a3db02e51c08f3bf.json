@@ -1,0 +1,13 @@
+{
+  "protocol": "HACP/2.0",
+  "message_id": "m-1ebb1a9661cb4bf2a3db02e51c08f3bf",
+  "session_id": "s-2467bd25334743c1bc9c04e1ffecddb9",
+  "from": "urn:hacp:agent:b",
+  "to": "urn:hacp:agent:a",
+  "kind": "hacp.skill.answer",
+  "timestamp": "2026-10-22T18:24:45Z",
+  "in_reply_to": "m-b625c33bd72745bebb5ba1d84f80fde1",
+  "body": {
+    "text": "ack"
+  }
+}

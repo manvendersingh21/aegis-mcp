@@ -1,0 +1,136 @@
+{
+  "artifacts": [
+    {
+      "path": "tests/contract.rs",
+      "record": {
+        "artifact_id": "urn:hacp:artifact:6a95d2bf-f44b-4233-a924-7379a9eacc53",
+        "contract_id": "c-aef560dbec844338b2fa9e814ab7cbcd",
+        "contract_revision": "c550b67285c82ebf61575078a76d4b8643125aaacbee7456b3f20ecf6ceb87c5",
+        "derived_from": [],
+        "digest": "c7dc69871da961c0b44180456260ba0e26c3fe36485e8a895dc55e2ae09fa9c5",
+        "location": ".hacp/artifacts/6a95d2bf-f44b-4233-a924-7379a9eacc53.bin",
+        "media_type": "application/octet-stream",
+        "producer": "urn:hacp:agent:a",
+        "size": 1370,
+        "task_id": "t-c3efbf11962348c4951205decd0455c7",
+        "visibility": "participants"
+      }
+    }
+  ],
+  "attempts": [
+    {
+      "commands": [
+        {
+          "command": "grep -q 'fn ' tests/contract.rs",
+          "duration_ms": 26,
+          "exit_code": 0,
+          "signal": null,
+          "stderr": "",
+          "stdout": "",
+          "timed_out": false
+        }
+      ],
+      "id": "v-308f2ab79e2c4d3b91a2096dd172ce3a",
+      "peer": "b",
+      "status": "completed"
+    }
+  ],
+  "contract": {
+    "agreed_by": [],
+    "agreed_terms_digest": null,
+    "amendments": 0,
+    "contract_id": "c-aef560dbec844338b2fa9e814ab7cbcd",
+    "escalation_path": [],
+    "limits": {
+      "max_amendments": 3,
+      "max_rounds": 3
+    },
+    "participants": [
+      "urn:hacp:agent:a",
+      "urn:hacp:agent:b"
+    ],
+    "pending_submission": null,
+    "pending_submitter": null,
+    "relationship": "collaboration",
+    "revisions": [
+      {
+        "content": {
+          "acceptance": [
+            "grep -q 'fn ' tests/contract.rs"
+          ],
+          "inputs": [
+            "Cargo.toml"
+          ],
+          "outputs": [
+            "tests/contract.rs"
+          ]
+        },
+        "digest": "c550b67285c82ebf61575078a76d4b8643125aaacbee7456b3f20ecf6ceb87c5",
+        "number": 1
+      }
+    ],
+    "rework_scope": null,
+    "rounds": 0,
+    "state": "settled",
+    "task": {
+      "owner": "urn:hacp:agent:a",
+      "summary": "aegis-dashboard: orchestrator owns contract test; worker implements src/lib.rs per /SPEC.md",
+      "task_id": "t-c3efbf11962348c4951205decd0455c7"
+    }
+  },
+  "pending_digest": "02c4e64b46f66852596d771f5797f2b9b3a159f371c5daa56e08d8557d9fee61",
+  "pending_terms": {
+    "acceptance": [
+      "grep -q 'fn ' tests/contract.rs"
+    ],
+    "inputs": [
+      "Cargo.toml"
+    ],
+    "outputs": [
+      "tests/contract.rs"
+    ]
+  },
+  "proposer": "a",
+  "submissions": [
+    {
+      "against_revision": "c550b67285c82ebf61575078a76d4b8643125aaacbee7456b3f20ecf6ceb87c5",
+      "artifacts": [
+        "urn:hacp:artifact:6a95d2bf-f44b-4233-a924-7379a9eacc53"
+      ],
+      "claim": "contract test pinning the public API in SPEC.md (incl. multi-tenant + credentials)",
+      "evidence": []
+    }
+  ],
+  "verifications": [
+    {
+      "against_revision": "c550b67285c82ebf61575078a76d4b8643125aaacbee7456b3f20ecf6ceb87c5",
+      "artifacts": [
+        "urn:hacp:artifact:6a95d2bf-f44b-4233-a924-7379a9eacc53"
+      ],
+      "attests": [],
+      "checks": [
+        {
+          "detail": "SHA-256 c7dc69871da961c0b44180456260ba0e26c3fe36485e8a895dc55e2ae09fa9c5 and 1370 bytes match working file and immutable copy",
+          "name": "before: tests/contract.rs",
+          "passed": true
+        },
+        {
+          "detail": "{\"command\":\"grep -q 'fn ' tests/contract.rs\",\"stdout\":\"\",\"stderr\":\"\",\"duration_ms\":26,\"exit_code\":0,\"signal\":null,\"timed_out\":false}",
+          "name": "grep -q 'fn ' tests/contract.rs",
+          "passed": true
+        },
+        {
+          "detail": "SHA-256 c7dc69871da961c0b44180456260ba0e26c3fe36485e8a895dc55e2ae09fa9c5 and 1370 bytes match working file and immutable copy",
+          "name": "after: tests/contract.rs",
+          "passed": true
+        }
+      ],
+      "contract_id": "c-aef560dbec844338b2fa9e814ab7cbcd",
+      "evidence": [],
+      "reasons": [],
+      "verdict": "accept",
+      "verification_id": "v-308f2ab79e2c4d3b91a2096dd172ce3a",
+      "verifier": "urn:hacp:agent:b"
+    }
+  ]
+}

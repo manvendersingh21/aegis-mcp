@@ -1,0 +1,12 @@
+{
+  "protocol": "HACP/2.0",
+  "message_id": "m-d755c4cb7bec4f6c9801dc34843311b8",
+  "session_id": "s-75d62bf293b54a2697e1128b68a1d06c",
+  "from": "urn:hacp:agent:a",
+  "to": "urn:hacp:agent:b",
+  "kind": "hacp.skill.ask",
+  "timestamp": "2026-10-22T18:24:35Z",
+  "body": {
+    "text": "SPEC UPDATE (user request) — the look changes: IGNORE the dark cyber theme from your prompt. Re-read /Users/manubaba/Documents/aegis-mcp/SPEC.md sections 'Credentials', 'Exact public APIs' (aegis-dashboard) and 'DESIGN' (light editorial AgentLedger style: #EFEFEF canvas, white cards, electric blue #0000FF, Inter Tight/Inter/JetBrains Mono, floating pill header, pixel globe, black kill-switch). Reference source to match: /private/tmp/claude-501/-Users-manubaba-Documents-aegis-mcp/ref/agentledger (app/globals.css, docs/DESIGN.md, app/page.tsx). Add GET /login page and on /u/{subject} call /api/me first (401 -> /login?next=...), show 'Your MCP credential' card with token + copy, Log out button. tests/contract.rs was updated accordingly. Reply 'ack' and proceed."
+  }
+}

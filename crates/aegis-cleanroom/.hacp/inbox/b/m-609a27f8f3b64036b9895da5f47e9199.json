@@ -1,0 +1,33 @@
+{
+  "protocol": "HACP/2.0",
+  "message_id": "m-609a27f8f3b64036b9895da5f47e9199",
+  "session_id": "s-9361b96ce7b845f9a9d37562e47c8172",
+  "from": "urn:hacp:agent:a",
+  "to": "urn:hacp:agent:b",
+  "kind": "contract.frozen",
+  "timestamp": "2026-10-22T18:24:45Z",
+  "body": {
+    "contract_id": "c-dc937786d3be4bf884ab15ff7437f8fe",
+    "next": "owner implements frozen outputs then submits",
+    "revision": "2abfc9707fddcb610505a920c346badb613a8804dc4468af2fae3338d5baa8cf",
+    "state": "executing",
+    "task": {
+      "owner": "urn:hacp:agent:b",
+      "summary": "aegis-cleanroom: implement src/lib.rs",
+      "task_id": "t-029d9993c77f448e94b6c0656847fcf0"
+    },
+    "terms": {
+      "acceptance": [
+        "cargo test --offline -q"
+      ],
+      "inputs": [
+        "Cargo.toml",
+        "tests/contract.rs"
+      ],
+      "outputs": [
+        "src/lib.rs"
+      ]
+    },
+    "terms_digest": "490e28009203f8f425aecb87445ae5dd0cb32086ac7bd4c1e3bfd1c9f9d32bb9"
+  }
+}

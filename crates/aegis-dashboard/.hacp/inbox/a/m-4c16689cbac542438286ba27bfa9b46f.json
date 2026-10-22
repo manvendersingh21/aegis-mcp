@@ -1,0 +1,32 @@
+{
+  "protocol": "HACP/2.0",
+  "message_id": "m-4c16689cbac542438286ba27bfa9b46f",
+  "session_id": "s-75d62bf293b54a2697e1128b68a1d06c",
+  "from": "urn:hacp:agent:b",
+  "to": "urn:hacp:agent:a",
+  "kind": "contract.frozen",
+  "timestamp": "2026-10-22T18:24:38Z",
+  "body": {
+    "contract_id": "c-aef560dbec844338b2fa9e814ab7cbcd",
+    "next": "owner implements frozen outputs then submits",
+    "revision": "c550b67285c82ebf61575078a76d4b8643125aaacbee7456b3f20ecf6ceb87c5",
+    "state": "executing",
+    "task": {
+      "owner": "urn:hacp:agent:a",
+      "summary": "aegis-dashboard: orchestrator owns contract test; worker implements src/lib.rs per /SPEC.md",
+      "task_id": "t-c3efbf11962348c4951205decd0455c7"
+    },
+    "terms": {
+      "acceptance": [
+        "grep -q 'fn ' tests/contract.rs"
+      ],
+      "inputs": [
+        "Cargo.toml"
+      ],
+      "outputs": [
+        "tests/contract.rs"
+      ]
+    },
+    "terms_digest": "02c4e64b46f66852596d771f5797f2b9b3a159f371c5daa56e08d8557d9fee61"
+  }
+}

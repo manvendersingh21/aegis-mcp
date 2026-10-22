@@ -1,0 +1,33 @@
+{
+  "protocol": "HACP/2.0",
+  "message_id": "m-8cdfdb1f92e94170a35c1b4d69efa057",
+  "session_id": "s-75d62bf293b54a2697e1128b68a1d06c",
+  "from": "urn:hacp:agent:b",
+  "to": "urn:hacp:agent:a",
+  "kind": "contract.proposed",
+  "timestamp": "2026-10-22T18:21:56Z",
+  "body": {
+    "contract_id": "c-617b489c8ce24aca90737964491a009a",
+    "next": "review terms and accept digest or counter",
+    "revision": null,
+    "state": "proposed",
+    "task": {
+      "owner": "urn:hacp:agent:b",
+      "summary": "aegis-dashboard: implement src/lib.rs",
+      "task_id": "t-bb0d3df6b9d64b2c884d2c426638a988"
+    },
+    "terms": {
+      "acceptance": [
+        "cargo test --offline -q"
+      ],
+      "inputs": [
+        "Cargo.toml",
+        "tests/contract.rs"
+      ],
+      "outputs": [
+        "src/lib.rs"
+      ]
+    },
+    "terms_digest": "490e28009203f8f425aecb87445ae5dd0cb32086ac7bd4c1e3bfd1c9f9d32bb9"
+  }
+}

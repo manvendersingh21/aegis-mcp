@@ -163,7 +163,14 @@
         "relation": "mother"
       }
     ],
-    "display_name": "Maya Okafor"
+    "display_name": "Maya Okafor",
+    "credentials": {
+      "password_sha256": "78df404b4f38d2011da01ef33b341c9fb9234d532c504c4698fb2e9e1dcca473",
+      "mcp_token": "aegis_sk_maya_4f9c2e7a1b8d"
+    },
+    "policy": {
+      "max_payment_cents": 300000
+    }
   },
   {
     "subject": "dev",
@@ -277,6 +284,13 @@
         "email": "sam.o@pm.me",
         "relation": "roommate"
       }
-    ]
+    ],
+    "credentials": {
+      "password_sha256": "85308915824051e8a7333caa84c94651efc8c48a033c111ec9f6f75c5cace888",
+      "mcp_token": "aegis_sk_dev_9a1e5c3f7b2d"
+    },
+    "policy": {
+      "max_payment_cents": 50000
+    }
   }
 ]

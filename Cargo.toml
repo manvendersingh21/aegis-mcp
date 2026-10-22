@@ -7,6 +7,7 @@ members = [
     "crates/aegis-gateway",
     "crates/aegis-agent",
     "crates/aegis-dashboard",
+    "crates/aegis-integrations",
     "crates/aegis",
 ]
 
@@ -21,6 +22,7 @@ aegis-receipts = { path = "crates/aegis-receipts" }
 aegis-gateway = { path = "crates/aegis-gateway" }
 aegis-agent = { path = "crates/aegis-agent" }
 aegis-dashboard = { path = "crates/aegis-dashboard" }
+aegis-integrations = { path = "crates/aegis-integrations" }
 
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"

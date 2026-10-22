@@ -1,0 +1,32 @@
+{
+  "protocol": "HACP/2.0",
+  "message_id": "m-1921d0a06ea34d40987a70f296b84717",
+  "session_id": "s-2467bd25334743c1bc9c04e1ffecddb9",
+  "from": "urn:hacp:agent:a",
+  "to": "urn:hacp:agent:b",
+  "kind": "submission.delivered",
+  "timestamp": "2026-10-22T18:25:15Z",
+  "body": {
+    "contract_id": "c-caf93a203e8b4146a433ac7a83cc1141",
+    "next": "counterparty verifies",
+    "revision": "df2b6d751e8a6accbb3bc850db3af908b8ac6b145e02d0a33e9c621fedbac964",
+    "state": "verifying",
+    "task": {
+      "owner": "urn:hacp:agent:a",
+      "summary": "aegis-gateway: orchestrator owns contract test; worker implements src/lib.rs per /SPEC.md",
+      "task_id": "t-80d8f03a7fa34be183da320e15e07d30"
+    },
+    "terms": {
+      "acceptance": [
+        "grep -q 'fn ' tests/contract.rs"
+      ],
+      "inputs": [
+        "Cargo.toml"
+      ],
+      "outputs": [
+        "tests/contract.rs"
+      ]
+    },
+    "terms_digest": "02c4e64b46f66852596d771f5797f2b9b3a159f371c5daa56e08d8557d9fee61"
+  }
+}

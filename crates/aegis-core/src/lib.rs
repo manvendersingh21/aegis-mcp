@@ -36,6 +36,11 @@ pub struct Person {
     pub display_name: String,
 }
 
+/// Find the person an MCP bearer token belongs to.
+pub fn vault_for_token<'a>(vaults: &'a [Vault], token: &str) -> Option<&'a Vault> {
+    vaults.iter().find(|v| !token.is_empty() && v.mcp_token() == token)
+}
+
 /// All demo people, in file order (first = default subject).
 pub fn demo_vaults() -> Vec<Vault> {
     let all: Vec<Value> = serde_json::from_str(DEMO_VAULT_JSON).expect("vault_data.json is valid");
@@ -53,6 +58,20 @@ impl Vault {
     }
     pub fn subject(&self) -> String {
         self.0["subject"].as_str().unwrap_or("unknown").to_string()
+    }
+    /// Dashboard login check. Demo passwords are "<subject>-demo".
+    pub fn verify_password(&self, password: &str) -> bool {
+        use sha2::{Digest, Sha256};
+        let want = self.0["credentials"]["password_sha256"].as_str().unwrap_or("");
+        !want.is_empty() && hex::encode(Sha256::digest(password.as_bytes())) == want
+    }
+    /// This person's MCP credential: agents send `Authorization: Bearer <token>`.
+    pub fn mcp_token(&self) -> String {
+        self.0["credentials"]["mcp_token"].as_str().unwrap_or("").to_string()
+    }
+    /// Per-person hard cap for `make_payment` (deterministic, never LLM-decided).
+    pub fn max_payment_cents(&self) -> i64 {
+        self.0["policy"]["max_payment_cents"].as_i64().unwrap_or(0)
     }
     pub fn person(&self) -> Person {
         Person { subject: self.subject(), display_name: self.0["display_name"].as_str().unwrap_or("Unknown").to_string() }
@@ -178,6 +197,19 @@ pub fn tool_specs() -> Vec<ToolSpec> {
             allowed_fields: ID,
             sensitive_fields: &["full_name", "date_of_birth", "home_address", "phone", "email",
                 "passport_number", "drivers_license"],
+            default_mode: Mode::Block,
+        },
+        ToolSpec {
+            name: "make_payment",
+            resource: Resource::Financials,
+            description: "Pay a merchant on the user's behalf. Aegis executes the charge itself (Stripe test mode); the agent only ever receives a payment reference, never card or account numbers.",
+            input_schema: json!({"type": "object", "required": ["amount_usd", "merchant"], "properties": {
+                "amount_usd": {"type": "number"},
+                "merchant": {"type": "string"},
+                "description": {"type": "string"}
+            }}),
+            allowed_fields: &[],
+            sensitive_fields: &["account_number", "routing_number"],
             default_mode: Mode::Block,
         },
         ToolSpec {
@@ -328,6 +360,49 @@ pub struct Metrics {
     pub violations: u64,
 }
 
+// ------------------------------------------------- risk & payments -------
+
+/// Second-layer risk signal (Jev / TypeSafe System One). Scores are
+/// probabilities 0..=1; policy compares them to a fixed threshold.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct RiskScores {
+    /// e.g. "jev"
+    pub provider: String,
+    /// e.g. "jev-1.14.0"
+    pub model: String,
+    pub prompt_injection: f64,
+    pub data_exfiltration: f64,
+}
+
+/// A charge Aegis executes on the person's behalf after consent.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct PaymentRequest {
+    pub subject: String,
+    pub agent_id: String,
+    pub amount_cents: i64,
+    /// Always "usd".
+    pub currency: String,
+    pub merchant: String,
+    pub description: String,
+    /// Stable per tool call (use the call_id) so retries never double-charge.
+    pub idempotency_key: String,
+}
+
+/// What the agent gets back: a reference, never payment credentials.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct PaymentReceipt {
+    /// "stripe" or "demo"
+    pub provider: String,
+    /// e.g. "pi_3Q..." (Stripe PaymentIntent id)
+    pub payment_id: String,
+    /// e.g. "succeeded"
+    pub status: String,
+    pub amount_cents: i64,
+    pub currency: String,
+    pub merchant: String,
+    pub livemode: bool,
+}
+
 // --------------------------------------------------------------- events ----
 
 /// SSE wire format on `GET /events?subject=X`: the event plus its tenant,
@@ -363,6 +438,9 @@ pub enum Event {
     CallDenied { call_id: String, agent_id: String, tool: String, reason: String },
     PolicyViolation { call_id: String, agent_id: String, tool: String, reason: String, offending: Vec<String> },
     LeaseRevoked { receipt_ids: Vec<String> },
+    /// `blocked == true` when a score crossed the threshold (→ PolicyViolation follows).
+    RiskScored { call_id: String, agent_id: String, tool: String, scores: RiskScores, blocked: bool },
+    PaymentExecuted { call_id: String, agent_id: String, receipt: PaymentReceipt },
     AgentLog { agent_id: String, text: String },
     Metrics { metrics: Metrics },
 }
@@ -477,6 +555,19 @@ pub trait Ledger: Send + Sync {
     fn revoke_all(&self, subject: Option<&str>) -> Vec<String>;
     /// Scoped to `subject` (None = global).
     fn metrics(&self, subject: Option<&str>, now: i64) -> Metrics;
+}
+
+/// Second-layer risk scoring (aegis-integrations: Jev). Implementations
+/// time out (8s) and return `None` on any failure; the gateway then escalates
+/// to human consent instead of auto-resolving.
+pub trait RiskScorer: Send + Sync {
+    fn score<'a>(&'a self, call: &'a ToolCall) -> BoxFuture<'a, Option<RiskScores>>;
+}
+
+/// Executes payments server-side (aegis-integrations: Stripe test mode, or a
+/// clearly-labelled demo provider). Must refuse live keys.
+pub trait PaymentProvider: Send + Sync {
+    fn charge<'a>(&'a self, req: PaymentRequest) -> BoxFuture<'a, Result<PaymentReceipt, AegisError>>;
 }
 
 /// Runs a pre-scripted demo scenario against a gateway base URL (aegis-agent).

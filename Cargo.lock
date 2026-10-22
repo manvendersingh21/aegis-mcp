@@ -11,6 +11,7 @@ dependencies = [
  "aegis-core",
  "aegis-dashboard",
  "aegis-gateway",
+ "aegis-integrations",
  "aegis-receipts",
  "anyhow",
  "axum",
@@ -52,9 +53,11 @@ version = "0.1.0"
 dependencies = [
  "chrono",
  "futures",
+ "hex",
  "reqwest",
  "serde",
  "serde_json",
+ "sha2",
  "thiserror",
  "uuid",
 ]
@@ -89,6 +92,19 @@ dependencies = [
  "tower-http",
  "tracing",
  "uuid",
+]
+
+[[package]]
+name = "aegis-integrations"
+version = "0.1.0"
+dependencies = [
+ "aegis-core",
+ "hex",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "sha2",
+ "tokio",
 ]
 
 [[package]]

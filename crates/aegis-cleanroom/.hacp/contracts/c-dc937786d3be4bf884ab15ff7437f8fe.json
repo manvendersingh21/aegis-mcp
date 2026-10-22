@@ -1,0 +1,138 @@
+{
+  "artifacts": [
+    {
+      "path": "src/lib.rs",
+      "record": {
+        "artifact_id": "urn:hacp:artifact:4cb1063c-e24a-495b-85a4-a64d4a869e13",
+        "contract_id": "c-dc937786d3be4bf884ab15ff7437f8fe",
+        "contract_revision": "2abfc9707fddcb610505a920c346badb613a8804dc4468af2fae3338d5baa8cf",
+        "derived_from": [],
+        "digest": "09105577b391b97c0b8deaafa64742213541821a15f2aec992a01e777ef98432",
+        "location": ".hacp/artifacts/4cb1063c-e24a-495b-85a4-a64d4a869e13.bin",
+        "media_type": "application/octet-stream",
+        "producer": "urn:hacp:agent:b",
+        "size": 15033,
+        "task_id": "t-029d9993c77f448e94b6c0656847fcf0",
+        "visibility": "participants"
+      }
+    }
+  ],
+  "attempts": [
+    {
+      "commands": [
+        {
+          "command": "cargo test --offline -q",
+          "duration_ms": 4125,
+          "exit_code": 0,
+          "signal": null,
+          "stderr": "",
+          "stdout": "\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 4 tests\n....\ntest result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n",
+          "timed_out": false
+        }
+      ],
+      "id": "v-03a4a9b31e8c432a8ee7e08dc69bd139",
+      "peer": "a",
+      "status": "completed"
+    }
+  ],
+  "contract": {
+    "agreed_by": [],
+    "agreed_terms_digest": null,
+    "amendments": 0,
+    "contract_id": "c-dc937786d3be4bf884ab15ff7437f8fe",
+    "escalation_path": [],
+    "limits": {
+      "max_amendments": 3,
+      "max_rounds": 3
+    },
+    "participants": [
+      "urn:hacp:agent:a",
+      "urn:hacp:agent:b"
+    ],
+    "pending_submission": null,
+    "pending_submitter": null,
+    "relationship": "collaboration",
+    "revisions": [
+      {
+        "content": {
+          "acceptance": [
+            "cargo test --offline -q"
+          ],
+          "inputs": [
+            "Cargo.toml",
+            "tests/contract.rs"
+          ],
+          "outputs": [
+            "src/lib.rs"
+          ]
+        },
+        "digest": "2abfc9707fddcb610505a920c346badb613a8804dc4468af2fae3338d5baa8cf",
+        "number": 1
+      }
+    ],
+    "rework_scope": null,
+    "rounds": 0,
+    "state": "settled",
+    "task": {
+      "owner": "urn:hacp:agent:b",
+      "summary": "aegis-cleanroom: implement src/lib.rs",
+      "task_id": "t-029d9993c77f448e94b6c0656847fcf0"
+    }
+  },
+  "pending_digest": "490e28009203f8f425aecb87445ae5dd0cb32086ac7bd4c1e3bfd1c9f9d32bb9",
+  "pending_terms": {
+    "acceptance": [
+      "cargo test --offline -q"
+    ],
+    "inputs": [
+      "Cargo.toml",
+      "tests/contract.rs"
+    ],
+    "outputs": [
+      "src/lib.rs"
+    ]
+  },
+  "proposer": "b",
+  "submissions": [
+    {
+      "against_revision": "2abfc9707fddcb610505a920c346badb613a8804dc4468af2fae3338d5baa8cf",
+      "artifacts": [
+        "urn:hacp:artifact:4cb1063c-e24a-495b-85a4-a64d4a869e13"
+      ],
+      "claim": "Implemented src/lib.rs: RegexRedactor (key-based redaction + SSN/card/phone/email/address regex scrubbing, calendar free/busy with Busy titles, transactions -> [REDACTED BY AEGIS POLICY #402]), SchemaGuard (unknown fields/args + injection phrases), LocalCleanRoom (can_afford, income_verified, credit_tier, balance_band, busy_slots, age_over_21+city/state, health bands, contact_count), LlmPurposeJudge (8s timeout, None on failure). cargo test --offline -q: 4/4 pass.",
+      "evidence": []
+    }
+  ],
+  "verifications": [
+    {
+      "against_revision": "2abfc9707fddcb610505a920c346badb613a8804dc4468af2fae3338d5baa8cf",
+      "artifacts": [
+        "urn:hacp:artifact:4cb1063c-e24a-495b-85a4-a64d4a869e13"
+      ],
+      "attests": [],
+      "checks": [
+        {
+          "detail": "SHA-256 09105577b391b97c0b8deaafa64742213541821a15f2aec992a01e777ef98432 and 15033 bytes match working file and immutable copy",
+          "name": "before: src/lib.rs",
+          "passed": true
+        },
+        {
+          "detail": "{\"command\":\"cargo test --offline -q\",\"stdout\":\"\\nrunning 0 tests\\n\\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\\n\\n\\nrunning 4 tests\\n....\\ntest result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s\\n\\n\\nrunning 0 tests\\n\\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\\n\\n\",\"stderr\":\"\",\"duration_ms\":4125,\"exit_code\":0,\"signal\":null,\"timed_out\":false}",
+          "name": "cargo test --offline -q",
+          "passed": true
+        },
+        {
+          "detail": "SHA-256 09105577b391b97c0b8deaafa64742213541821a15f2aec992a01e777ef98432 and 15033 bytes match working file and immutable copy",
+          "name": "after: src/lib.rs",
+          "passed": true
+        }
+      ],
+      "contract_id": "c-dc937786d3be4bf884ab15ff7437f8fe",
+      "evidence": [],
+      "reasons": [],
+      "verdict": "accept",
+      "verification_id": "v-03a4a9b31e8c432a8ee7e08dc69bd139",
+      "verifier": "urn:hacp:agent:a"
+    }
+  ]
+}

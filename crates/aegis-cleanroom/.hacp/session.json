@@ -1,0 +1,1130 @@
+{
+  "format": 1,
+  "session": {
+    "session_id": "s-9361b96ce7b845f9a9d37562e47c8172",
+    "participants": [
+      "urn:hacp:agent:a",
+      "urn:hacp:agent:b"
+    ],
+    "observers": {},
+    "state": "closed",
+    "declared": {},
+    "close_reason": "both contracts settled: orchestrator contract test + worker src/lib.rs verified (cargo test passes). Follow-ups tracked in REVIEW.md / phase-2 root session."
+  },
+  "peers": {
+    "a": {
+      "task": "aegis-cleanroom: orchestrator owns contract test; worker implements src/lib.rs per /SPEC.md",
+      "owns": [
+        "tests/contract.rs"
+      ]
+    },
+    "b": {
+      "task": "aegis-cleanroom: implement src/lib.rs",
+      "owns": [
+        "src/lib.rs"
+      ]
+    }
+  },
+  "processed": [
+    "m-1017fbe78f8d445ca6637d7690d6faed",
+    "m-23f4b96d801c4d7eb72715a504e43534",
+    "m-307710a1b29b45bda9030bf50de8ad86",
+    "m-38e2460a6d1d43f698a9de3c5ccd5984",
+    "m-4e63ba2886aa4e96a5a9295d5ce05781",
+    "m-609a27f8f3b64036b9895da5f47e9199",
+    "m-674c7a478b4845a98b555c81bcc59856",
+    "m-7f72e705b8b54ed58b33fa38bb366faa",
+    "m-ab42c684efe14df8a3cd028fff28b1de"
+  ],
+  "messages": [
+    {
+      "protocol": "HACP/2.0",
+      "message_id": "m-674c7a478b4845a98b555c81bcc59856",
+      "session_id": "s-9361b96ce7b845f9a9d37562e47c8172",
+      "from": "urn:hacp:agent:b",
+      "to": "urn:hacp:agent:a",
+      "kind": "contract.proposed",
+      "timestamp": "2026-10-22T18:23:31Z",
+      "body": {
+        "contract_id": "c-dc937786d3be4bf884ab15ff7437f8fe",
+        "next": "review terms and accept digest or counter",
+        "revision": null,
+        "state": "proposed",
+        "task": {
+          "owner": "urn:hacp:agent:b",
+          "summary": "aegis-cleanroom: implement src/lib.rs",
+          "task_id": "t-029d9993c77f448e94b6c0656847fcf0"
+        },
+        "terms": {
+          "acceptance": [
+            "cargo test --offline -q"
+          ],
+          "inputs": [
+            "Cargo.toml",
+            "tests/contract.rs"
+          ],
+          "outputs": [
+            "src/lib.rs"
+          ]
+        },
+        "terms_digest": "490e28009203f8f425aecb87445ae5dd0cb32086ac7bd4c1e3bfd1c9f9d32bb9"
+      }
+    },
+    {
+      "protocol": "HACP/2.0",
+      "message_id": "m-38e2460a6d1d43f698a9de3c5ccd5984",
+      "session_id": "s-9361b96ce7b845f9a9d37562e47c8172",
+      "from": "urn:hacp:agent:a",
+      "to": "urn:hacp:agent:b",
+      "kind": "contract.proposed",
+      "timestamp": "2026-10-22T18:24:45Z",
+      "body": {
+        "contract_id": "c-1fa76ace96924b82953ff2eeca91143a",
+        "next": "review terms and accept digest or counter",
+        "revision": null,
+        "state": "proposed",
+        "task": {
+          "owner": "urn:hacp:agent:a",
+          "summary": "aegis-cleanroom: orchestrator owns contract test; worker implements src/lib.rs per /SPEC.md",
+          "task_id": "t-58693d816d5a48d1825ab15a2c5a13a2"
+        },
+        "terms": {
+          "acceptance": [
+            "grep -q 'fn ' tests/contract.rs"
+          ],
+          "inputs": [
+            "Cargo.toml"
+          ],
+          "outputs": [
+            "tests/contract.rs"
+          ]
+        },
+        "terms_digest": "02c4e64b46f66852596d771f5797f2b9b3a159f371c5daa56e08d8557d9fee61"
+      }
+    },
+    {
+      "protocol": "HACP/2.0",
+      "message_id": "m-609a27f8f3b64036b9895da5f47e9199",
+      "session_id": "s-9361b96ce7b845f9a9d37562e47c8172",
+      "from": "urn:hacp:agent:a",
+      "to": "urn:hacp:agent:b",
+      "kind": "contract.frozen",
+      "timestamp": "2026-10-22T18:24:45Z",
+      "body": {
+        "contract_id": "c-dc937786d3be4bf884ab15ff7437f8fe",
+        "next": "owner implements frozen outputs then submits",
+        "revision": "2abfc9707fddcb610505a920c346badb613a8804dc4468af2fae3338d5baa8cf",
+        "state": "executing",
+        "task": {
+          "owner": "urn:hacp:agent:b",
+          "summary": "aegis-cleanroom: implement src/lib.rs",
+          "task_id": "t-029d9993c77f448e94b6c0656847fcf0"
+        },
+        "terms": {
+          "acceptance": [
+            "cargo test --offline -q"
+          ],
+          "inputs": [
+            "Cargo.toml",
+            "tests/contract.rs"
+          ],
+          "outputs": [
+            "src/lib.rs"
+          ]
+        },
+        "terms_digest": "490e28009203f8f425aecb87445ae5dd0cb32086ac7bd4c1e3bfd1c9f9d32bb9"
+      }
+    },
+    {
+      "protocol": "HACP/2.0",
+      "message_id": "m-4e63ba2886aa4e96a5a9295d5ce05781",
+      "session_id": "s-9361b96ce7b845f9a9d37562e47c8172",
+      "from": "urn:hacp:agent:b",
+      "to": "urn:hacp:agent:a",
+      "kind": "contract.frozen",
+      "timestamp": "2026-10-22T18:24:50Z",
+      "body": {
+        "contract_id": "c-1fa76ace96924b82953ff2eeca91143a",
+        "next": "owner implements frozen outputs then submits",
+        "revision": "28e340597fb6891da5805173d53c1d4787e43b3b7f0273879ef7e65703026690",
+        "state": "executing",
+        "task": {
+          "owner": "urn:hacp:agent:a",
+          "summary": "aegis-cleanroom: orchestrator owns contract test; worker implements src/lib.rs per /SPEC.md",
+          "task_id": "t-58693d816d5a48d1825ab15a2c5a13a2"
+        },
+        "terms": {
+          "acceptance": [
+            "grep -q 'fn ' tests/contract.rs"
+          ],
+          "inputs": [
+            "Cargo.toml"
+          ],
+          "outputs": [
+            "tests/contract.rs"
+          ]
+        },
+        "terms_digest": "02c4e64b46f66852596d771f5797f2b9b3a159f371c5daa56e08d8557d9fee61"
+      }
+    },
+    {
+      "protocol": "HACP/2.0",
+      "message_id": "m-7f72e705b8b54ed58b33fa38bb366faa",
+      "session_id": "s-9361b96ce7b845f9a9d37562e47c8172",
+      "from": "urn:hacp:agent:a",
+      "to": "urn:hacp:agent:b",
+      "kind": "submission.delivered",
+      "timestamp": "2026-10-22T18:25:15Z",
+      "body": {
+        "contract_id": "c-1fa76ace96924b82953ff2eeca91143a",
+        "next": "counterparty verifies",
+        "revision": "28e340597fb6891da5805173d53c1d4787e43b3b7f0273879ef7e65703026690",
+        "state": "verifying",
+        "task": {
+          "owner": "urn:hacp:agent:a",
+          "summary": "aegis-cleanroom: orchestrator owns contract test; worker implements src/lib.rs per /SPEC.md",
+          "task_id": "t-58693d816d5a48d1825ab15a2c5a13a2"
+        },
+        "terms": {
+          "acceptance": [
+            "grep -q 'fn ' tests/contract.rs"
+          ],
+          "inputs": [
+            "Cargo.toml"
+          ],
+          "outputs": [
+            "tests/contract.rs"
+          ]
+        },
+        "terms_digest": "02c4e64b46f66852596d771f5797f2b9b3a159f371c5daa56e08d8557d9fee61"
+      }
+    },
+    {
+      "protocol": "HACP/2.0",
+      "message_id": "m-ab42c684efe14df8a3cd028fff28b1de",
+      "session_id": "s-9361b96ce7b845f9a9d37562e47c8172",
+      "from": "urn:hacp:agent:b",
+      "to": "urn:hacp:agent:a",
+      "kind": "submission.delivered",
+      "timestamp": "2026-10-22T18:27:59Z",
+      "body": {
+        "contract_id": "c-dc937786d3be4bf884ab15ff7437f8fe",
+        "next": "counterparty verifies",
+        "revision": "2abfc9707fddcb610505a920c346badb613a8804dc4468af2fae3338d5baa8cf",
+        "state": "verifying",
+        "task": {
+          "owner": "urn:hacp:agent:b",
+          "summary": "aegis-cleanroom: implement src/lib.rs",
+          "task_id": "t-029d9993c77f448e94b6c0656847fcf0"
+        },
+        "terms": {
+          "acceptance": [
+            "cargo test --offline -q"
+          ],
+          "inputs": [
+            "Cargo.toml",
+            "tests/contract.rs"
+          ],
+          "outputs": [
+            "src/lib.rs"
+          ]
+        },
+        "terms_digest": "490e28009203f8f425aecb87445ae5dd0cb32086ac7bd4c1e3bfd1c9f9d32bb9"
+      }
+    },
+    {
+      "protocol": "HACP/2.0",
+      "message_id": "m-1017fbe78f8d445ca6637d7690d6faed",
+      "session_id": "s-9361b96ce7b845f9a9d37562e47c8172",
+      "from": "urn:hacp:agent:b",
+      "to": "urn:hacp:agent:a",
+      "kind": "verification.delivered",
+      "timestamp": "2026-10-22T18:28:02Z",
+      "body": {
+        "contract_id": "c-1fa76ace96924b82953ff2eeca91143a",
+        "next": "remain available to verify peer",
+        "revision": "28e340597fb6891da5805173d53c1d4787e43b3b7f0273879ef7e65703026690",
+        "state": "settled",
+        "task": {
+          "owner": "urn:hacp:agent:a",
+          "summary": "aegis-cleanroom: orchestrator owns contract test; worker implements src/lib.rs per /SPEC.md",
+          "task_id": "t-58693d816d5a48d1825ab15a2c5a13a2"
+        },
+        "terms": {
+          "acceptance": [
+            "grep -q 'fn ' tests/contract.rs"
+          ],
+          "inputs": [
+            "Cargo.toml"
+          ],
+          "outputs": [
+            "tests/contract.rs"
+          ]
+        },
+        "terms_digest": "02c4e64b46f66852596d771f5797f2b9b3a159f371c5daa56e08d8557d9fee61"
+      }
+    },
+    {
+      "protocol": "HACP/2.0",
+      "message_id": "m-307710a1b29b45bda9030bf50de8ad86",
+      "session_id": "s-9361b96ce7b845f9a9d37562e47c8172",
+      "from": "urn:hacp:agent:a",
+      "to": "urn:hacp:agent:b",
+      "kind": "verification.delivered",
+      "timestamp": "2026-10-22T18:30:35Z",
+      "body": {
+        "contract_id": "c-dc937786d3be4bf884ab15ff7437f8fe",
+        "next": "remain available to verify peer",
+        "revision": "2abfc9707fddcb610505a920c346badb613a8804dc4468af2fae3338d5baa8cf",
+        "state": "settled",
+        "task": {
+          "owner": "urn:hacp:agent:b",
+          "summary": "aegis-cleanroom: implement src/lib.rs",
+          "task_id": "t-029d9993c77f448e94b6c0656847fcf0"
+        },
+        "terms": {
+          "acceptance": [
+            "cargo test --offline -q"
+          ],
+          "inputs": [
+            "Cargo.toml",
+            "tests/contract.rs"
+          ],
+          "outputs": [
+            "src/lib.rs"
+          ]
+        },
+        "terms_digest": "490e28009203f8f425aecb87445ae5dd0cb32086ac7bd4c1e3bfd1c9f9d32bb9"
+      }
+    },
+    {
+      "protocol": "HACP/2.0",
+      "message_id": "m-23f4b96d801c4d7eb72715a504e43534",
+      "session_id": "s-9361b96ce7b845f9a9d37562e47c8172",
+      "from": "urn:hacp:agent:a",
+      "to": "urn:hacp:agent:b",
+      "kind": "session.close",
+      "timestamp": "2026-10-22T18:31:11Z",
+      "body": {
+        "reason": "both contracts settled: orchestrator contract test + worker src/lib.rs verified (cargo test passes). Follow-ups tracked in REVIEW.md / phase-2 root session."
+      }
+    }
+  ],
+  "fetched": {
+    "a": [
+      "m-1017fbe78f8d445ca6637d7690d6faed",
+      "m-4e63ba2886aa4e96a5a9295d5ce05781",
+      "m-674c7a478b4845a98b555c81bcc59856",
+      "m-ab42c684efe14df8a3cd028fff28b1de"
+    ],
+    "b": [
+      "m-307710a1b29b45bda9030bf50de8ad86",
+      "m-38e2460a6d1d43f698a9de3c5ccd5984",
+      "m-609a27f8f3b64036b9895da5f47e9199",
+      "m-7f72e705b8b54ed58b33fa38bb366faa"
+    ]
+  },
+  "contracts": {
+    "c-1fa76ace96924b82953ff2eeca91143a": {
+      "artifacts": [
+        {
+          "path": "tests/contract.rs",
+          "record": {
+            "artifact_id": "urn:hacp:artifact:f9f5cd90-7144-4ba1-a259-053fbc9e7682",
+            "contract_id": "c-1fa76ace96924b82953ff2eeca91143a",
+            "contract_revision": "28e340597fb6891da5805173d53c1d4787e43b3b7f0273879ef7e65703026690",
+            "derived_from": [],
+            "digest": "1b16d43a0daebbe60dec679579eb4fe80bc83a63163496d1a5429ebfd022f509",
+            "location": ".hacp/artifacts/f9f5cd90-7144-4ba1-a259-053fbc9e7682.bin",
+            "media_type": "application/octet-stream",
+            "producer": "urn:hacp:agent:a",
+            "size": 2801,
+            "task_id": "t-58693d816d5a48d1825ab15a2c5a13a2",
+            "visibility": "participants"
+          }
+        }
+      ],
+      "attempts": [
+        {
+          "commands": [
+            {
+              "command": "grep -q 'fn ' tests/contract.rs",
+              "duration_ms": 25,
+              "exit_code": 0,
+              "signal": null,
+              "stderr": "",
+              "stdout": "",
+              "timed_out": false
+            }
+          ],
+          "id": "v-3e50a4bc4f4c447fb520dcb36c727ef0",
+          "peer": "b",
+          "status": "completed"
+        }
+      ],
+      "contract": {
+        "agreed_by": [],
+        "agreed_terms_digest": null,
+        "amendments": 0,
+        "contract_id": "c-1fa76ace96924b82953ff2eeca91143a",
+        "escalation_path": [],
+        "limits": {
+          "max_amendments": 3,
+          "max_rounds": 3
+        },
+        "participants": [
+          "urn:hacp:agent:a",
+          "urn:hacp:agent:b"
+        ],
+        "pending_submission": null,
+        "pending_submitter": null,
+        "relationship": "collaboration",
+        "revisions": [
+          {
+            "content": {
+              "acceptance": [
+                "grep -q 'fn ' tests/contract.rs"
+              ],
+              "inputs": [
+                "Cargo.toml"
+              ],
+              "outputs": [
+                "tests/contract.rs"
+              ]
+            },
+            "digest": "28e340597fb6891da5805173d53c1d4787e43b3b7f0273879ef7e65703026690",
+            "number": 1
+          }
+        ],
+        "rework_scope": null,
+        "rounds": 0,
+        "state": "settled",
+        "task": {
+          "owner": "urn:hacp:agent:a",
+          "summary": "aegis-cleanroom: orchestrator owns contract test; worker implements src/lib.rs per /SPEC.md",
+          "task_id": "t-58693d816d5a48d1825ab15a2c5a13a2"
+        }
+      },
+      "pending_digest": "02c4e64b46f66852596d771f5797f2b9b3a159f371c5daa56e08d8557d9fee61",
+      "pending_terms": {
+        "acceptance": [
+          "grep -q 'fn ' tests/contract.rs"
+        ],
+        "inputs": [
+          "Cargo.toml"
+        ],
+        "outputs": [
+          "tests/contract.rs"
+        ]
+      },
+      "proposer": "a",
+      "submissions": [
+        {
+          "against_revision": "28e340597fb6891da5805173d53c1d4787e43b3b7f0273879ef7e65703026690",
+          "artifacts": [
+            "urn:hacp:artifact:f9f5cd90-7144-4ba1-a259-053fbc9e7682"
+          ],
+          "claim": "contract test pinning the public API in SPEC.md (incl. multi-tenant + credentials)",
+          "evidence": []
+        }
+      ],
+      "verifications": [
+        {
+          "against_revision": "28e340597fb6891da5805173d53c1d4787e43b3b7f0273879ef7e65703026690",
+          "artifacts": [
+            "urn:hacp:artifact:f9f5cd90-7144-4ba1-a259-053fbc9e7682"
+          ],
+          "attests": [],
+          "checks": [
+            {
+              "detail": "SHA-256 1b16d43a0daebbe60dec679579eb4fe80bc83a63163496d1a5429ebfd022f509 and 2801 bytes match working file and immutable copy",
+              "name": "before: tests/contract.rs",
+              "passed": true
+            },
+            {
+              "detail": "{\"command\":\"grep -q 'fn ' tests/contract.rs\",\"stdout\":\"\",\"stderr\":\"\",\"duration_ms\":25,\"exit_code\":0,\"signal\":null,\"timed_out\":false}",
+              "name": "grep -q 'fn ' tests/contract.rs",
+              "passed": true
+            },
+            {
+              "detail": "SHA-256 1b16d43a0daebbe60dec679579eb4fe80bc83a63163496d1a5429ebfd022f509 and 2801 bytes match working file and immutable copy",
+              "name": "after: tests/contract.rs",
+              "passed": true
+            }
+          ],
+          "contract_id": "c-1fa76ace96924b82953ff2eeca91143a",
+          "evidence": [],
+          "reasons": [],
+          "verdict": "accept",
+          "verification_id": "v-3e50a4bc4f4c447fb520dcb36c727ef0",
+          "verifier": "urn:hacp:agent:b"
+        }
+      ]
+    },
+    "c-dc937786d3be4bf884ab15ff7437f8fe": {
+      "artifacts": [
+        {
+          "path": "src/lib.rs",
+          "record": {
+            "artifact_id": "urn:hacp:artifact:4cb1063c-e24a-495b-85a4-a64d4a869e13",
+            "contract_id": "c-dc937786d3be4bf884ab15ff7437f8fe",
+            "contract_revision": "2abfc9707fddcb610505a920c346badb613a8804dc4468af2fae3338d5baa8cf",
+            "derived_from": [],
+            "digest": "09105577b391b97c0b8deaafa64742213541821a15f2aec992a01e777ef98432",
+            "location": ".hacp/artifacts/4cb1063c-e24a-495b-85a4-a64d4a869e13.bin",
+            "media_type": "application/octet-stream",
+            "producer": "urn:hacp:agent:b",
+            "size": 15033,
+            "task_id": "t-029d9993c77f448e94b6c0656847fcf0",
+            "visibility": "participants"
+          }
+        }
+      ],
+      "attempts": [
+        {
+          "commands": [
+            {
+              "command": "cargo test --offline -q",
+              "duration_ms": 4125,
+              "exit_code": 0,
+              "signal": null,
+              "stderr": "",
+              "stdout": "\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 4 tests\n....\ntest result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n",
+              "timed_out": false
+            }
+          ],
+          "id": "v-03a4a9b31e8c432a8ee7e08dc69bd139",
+          "peer": "a",
+          "status": "completed"
+        }
+      ],
+      "contract": {
+        "agreed_by": [],
+        "agreed_terms_digest": null,
+        "amendments": 0,
+        "contract_id": "c-dc937786d3be4bf884ab15ff7437f8fe",
+        "escalation_path": [],
+        "limits": {
+          "max_amendments": 3,
+          "max_rounds": 3
+        },
+        "participants": [
+          "urn:hacp:agent:a",
+          "urn:hacp:agent:b"
+        ],
+        "pending_submission": null,
+        "pending_submitter": null,
+        "relationship": "collaboration",
+        "revisions": [
+          {
+            "content": {
+              "acceptance": [
+                "cargo test --offline -q"
+              ],
+              "inputs": [
+                "Cargo.toml",
+                "tests/contract.rs"
+              ],
+              "outputs": [
+                "src/lib.rs"
+              ]
+            },
+            "digest": "2abfc9707fddcb610505a920c346badb613a8804dc4468af2fae3338d5baa8cf",
+            "number": 1
+          }
+        ],
+        "rework_scope": null,
+        "rounds": 0,
+        "state": "settled",
+        "task": {
+          "owner": "urn:hacp:agent:b",
+          "summary": "aegis-cleanroom: implement src/lib.rs",
+          "task_id": "t-029d9993c77f448e94b6c0656847fcf0"
+        }
+      },
+      "pending_digest": "490e28009203f8f425aecb87445ae5dd0cb32086ac7bd4c1e3bfd1c9f9d32bb9",
+      "pending_terms": {
+        "acceptance": [
+          "cargo test --offline -q"
+        ],
+        "inputs": [
+          "Cargo.toml",
+          "tests/contract.rs"
+        ],
+        "outputs": [
+          "src/lib.rs"
+        ]
+      },
+      "proposer": "b",
+      "submissions": [
+        {
+          "against_revision": "2abfc9707fddcb610505a920c346badb613a8804dc4468af2fae3338d5baa8cf",
+          "artifacts": [
+            "urn:hacp:artifact:4cb1063c-e24a-495b-85a4-a64d4a869e13"
+          ],
+          "claim": "Implemented src/lib.rs: RegexRedactor (key-based redaction + SSN/card/phone/email/address regex scrubbing, calendar free/busy with Busy titles, transactions -> [REDACTED BY AEGIS POLICY #402]), SchemaGuard (unknown fields/args + injection phrases), LocalCleanRoom (can_afford, income_verified, credit_tier, balance_band, busy_slots, age_over_21+city/state, health bands, contact_count), LlmPurposeJudge (8s timeout, None on failure). cargo test --offline -q: 4/4 pass.",
+          "evidence": []
+        }
+      ],
+      "verifications": [
+        {
+          "against_revision": "2abfc9707fddcb610505a920c346badb613a8804dc4468af2fae3338d5baa8cf",
+          "artifacts": [
+            "urn:hacp:artifact:4cb1063c-e24a-495b-85a4-a64d4a869e13"
+          ],
+          "attests": [],
+          "checks": [
+            {
+              "detail": "SHA-256 09105577b391b97c0b8deaafa64742213541821a15f2aec992a01e777ef98432 and 15033 bytes match working file and immutable copy",
+              "name": "before: src/lib.rs",
+              "passed": true
+            },
+            {
+              "detail": "{\"command\":\"cargo test --offline -q\",\"stdout\":\"\\nrunning 0 tests\\n\\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\\n\\n\\nrunning 4 tests\\n....\\ntest result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s\\n\\n\\nrunning 0 tests\\n\\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\\n\\n\",\"stderr\":\"\",\"duration_ms\":4125,\"exit_code\":0,\"signal\":null,\"timed_out\":false}",
+              "name": "cargo test --offline -q",
+              "passed": true
+            },
+            {
+              "detail": "SHA-256 09105577b391b97c0b8deaafa64742213541821a15f2aec992a01e777ef98432 and 15033 bytes match working file and immutable copy",
+              "name": "after: src/lib.rs",
+              "passed": true
+            }
+          ],
+          "contract_id": "c-dc937786d3be4bf884ab15ff7437f8fe",
+          "evidence": [],
+          "reasons": [],
+          "verdict": "accept",
+          "verification_id": "v-03a4a9b31e8c432a8ee7e08dc69bd139",
+          "verifier": "urn:hacp:agent:a"
+        }
+      ]
+    }
+  },
+  "events": [
+    {
+      "action": "start",
+      "detail": {
+        "files": [
+          "tests/contract.rs"
+        ],
+        "next": "peer b joins",
+        "task": "aegis-cleanroom: orchestrator owns contract test; worker implements src/lib.rs per /SPEC.md"
+      },
+      "id": "e-dfe736d96fa9497286dceec2b3b571dd",
+      "peer": "a",
+      "rendered": "2026-10-22T18:20:51Z | Peer a | start\nEvent e-dfe736d96fa9497286dceec2b3b571dd\n    {\n      \"files\": [\n        \"tests/contract.rs\"\n      ],\n      \"next\": \"peer b joins\",\n      \"task\": \"aegis-cleanroom: orchestrator owns contract test; worker implements src/lib.rs per /SPEC.md\"\n    }\n",
+      "time": "2026-10-22T18:20:51Z"
+    },
+    {
+      "action": "join",
+      "detail": {
+        "files": [
+          "src/lib.rs"
+        ],
+        "next": "propose contracts",
+        "task": "aegis-cleanroom: implement src/lib.rs"
+      },
+      "id": "e-df8b3aa3f43e42858d8d003797a4a20f",
+      "peer": "b",
+      "rendered": "2026-10-22T18:23:29Z | Peer b | join\nEvent e-df8b3aa3f43e42858d8d003797a4a20f\n    {\n      \"files\": [\n        \"src/lib.rs\"\n      ],\n      \"next\": \"propose contracts\",\n      \"task\": \"aegis-cleanroom: implement src/lib.rs\"\n    }\n",
+      "time": "2026-10-22T18:23:29Z"
+    },
+    {
+      "action": "contract.proposed",
+      "detail": {
+        "body": {
+          "contract_id": "c-dc937786d3be4bf884ab15ff7437f8fe",
+          "next": "review terms and accept digest or counter",
+          "revision": null,
+          "state": "proposed",
+          "task": {
+            "owner": "urn:hacp:agent:b",
+            "summary": "aegis-cleanroom: implement src/lib.rs",
+            "task_id": "t-029d9993c77f448e94b6c0656847fcf0"
+          },
+          "terms": {
+            "acceptance": [
+              "cargo test --offline -q"
+            ],
+            "inputs": [
+              "Cargo.toml",
+              "tests/contract.rs"
+            ],
+            "outputs": [
+              "src/lib.rs"
+            ]
+          },
+          "terms_digest": "490e28009203f8f425aecb87445ae5dd0cb32086ac7bd4c1e3bfd1c9f9d32bb9"
+        },
+        "in_reply_to": null,
+        "message_id": "m-674c7a478b4845a98b555c81bcc59856",
+        "to": "urn:hacp:agent:a"
+      },
+      "id": "e-3277ded8c502438094ef5467bb6587b2",
+      "peer": "b",
+      "rendered": "2026-10-22T18:23:31Z | Peer b | contract.proposed\nEvent e-3277ded8c502438094ef5467bb6587b2\n    {\n      \"body\": {\n        \"contract_id\": \"c-dc937786d3be4bf884ab15ff7437f8fe\",\n        \"next\": \"review terms and accept digest or counter\",\n        \"revision\": null,\n        \"state\": \"proposed\",\n        \"task\": {\n          \"owner\": \"urn:hacp:agent:b\",\n          \"summary\": \"aegis-cleanroom: implement src/lib.rs\",\n          \"task_id\": \"t-029d9993c77f448e94b6c0656847fcf0\"\n        },\n        \"terms\": {\n          \"acceptance\": [\n            \"cargo test --offline -q\"\n          ],\n          \"inputs\": [\n            \"Cargo.toml\",\n            \"tests/contract.rs\"\n          ],\n          \"outputs\": [\n            \"src/lib.rs\"\n          ]\n        },\n        \"terms_digest\": \"490e28009203f8f425aecb87445ae5dd0cb32086ac7bd4c1e3bfd1c9f9d32bb9\"\n      },\n      \"in_reply_to\": null,\n      \"message_id\": \"m-674c7a478b4845a98b555c81bcc59856\",\n      \"to\": \"urn:hacp:agent:a\"\n    }\n",
+      "time": "2026-10-22T18:23:31Z"
+    },
+    {
+      "action": "contract.proposed",
+      "detail": {
+        "body": {
+          "contract_id": "c-1fa76ace96924b82953ff2eeca91143a",
+          "next": "review terms and accept digest or counter",
+          "revision": null,
+          "state": "proposed",
+          "task": {
+            "owner": "urn:hacp:agent:a",
+            "summary": "aegis-cleanroom: orchestrator owns contract test; worker implements src/lib.rs per /SPEC.md",
+            "task_id": "t-58693d816d5a48d1825ab15a2c5a13a2"
+          },
+          "terms": {
+            "acceptance": [
+              "grep -q 'fn ' tests/contract.rs"
+            ],
+            "inputs": [
+              "Cargo.toml"
+            ],
+            "outputs": [
+              "tests/contract.rs"
+            ]
+          },
+          "terms_digest": "02c4e64b46f66852596d771f5797f2b9b3a159f371c5daa56e08d8557d9fee61"
+        },
+        "in_reply_to": null,
+        "message_id": "m-38e2460a6d1d43f698a9de3c5ccd5984",
+        "to": "urn:hacp:agent:b"
+      },
+      "id": "e-f6003b8230c942f2865840e968065f65",
+      "peer": "a",
+      "rendered": "2026-10-22T18:24:45Z | Peer a | contract.proposed\nEvent e-f6003b8230c942f2865840e968065f65\n    {\n      \"body\": {\n        \"contract_id\": \"c-1fa76ace96924b82953ff2eeca91143a\",\n        \"next\": \"review terms and accept digest or counter\",\n        \"revision\": null,\n        \"state\": \"proposed\",\n        \"task\": {\n          \"owner\": \"urn:hacp:agent:a\",\n          \"summary\": \"aegis-cleanroom: orchestrator owns contract test; worker implements src/lib.rs per /SPEC.md\",\n          \"task_id\": \"t-58693d816d5a48d1825ab15a2c5a13a2\"\n        },\n        \"terms\": {\n          \"acceptance\": [\n            \"grep -q 'fn ' tests/contract.rs\"\n          ],\n          \"inputs\": [\n            \"Cargo.toml\"\n          ],\n          \"outputs\": [\n            \"tests/contract.rs\"\n          ]\n        },\n        \"terms_digest\": \"02c4e64b46f66852596d771f5797f2b9b3a159f371c5daa56e08d8557d9fee61\"\n      },\n      \"in_reply_to\": null,\n      \"message_id\": \"m-38e2460a6d1d43f698a9de3c5ccd5984\",\n      \"to\": \"urn:hacp:agent:b\"\n    }\n",
+      "time": "2026-10-22T18:24:45Z"
+    },
+    {
+      "action": "contract.frozen",
+      "detail": {
+        "body": {
+          "contract_id": "c-dc937786d3be4bf884ab15ff7437f8fe",
+          "next": "owner implements frozen outputs then submits",
+          "revision": "2abfc9707fddcb610505a920c346badb613a8804dc4468af2fae3338d5baa8cf",
+          "state": "executing",
+          "task": {
+            "owner": "urn:hacp:agent:b",
+            "summary": "aegis-cleanroom: implement src/lib.rs",
+            "task_id": "t-029d9993c77f448e94b6c0656847fcf0"
+          },
+          "terms": {
+            "acceptance": [
+              "cargo test --offline -q"
+            ],
+            "inputs": [
+              "Cargo.toml",
+              "tests/contract.rs"
+            ],
+            "outputs": [
+              "src/lib.rs"
+            ]
+          },
+          "terms_digest": "490e28009203f8f425aecb87445ae5dd0cb32086ac7bd4c1e3bfd1c9f9d32bb9"
+        },
+        "in_reply_to": null,
+        "message_id": "m-609a27f8f3b64036b9895da5f47e9199",
+        "to": "urn:hacp:agent:b"
+      },
+      "id": "e-4241ac23b4f344a09bafdb13076329b3",
+      "peer": "a",
+      "rendered": "2026-10-22T18:24:45Z | Peer a | contract.frozen\nEvent e-4241ac23b4f344a09bafdb13076329b3\n    {\n      \"body\": {\n        \"contract_id\": \"c-dc937786d3be4bf884ab15ff7437f8fe\",\n        \"next\": \"owner implements frozen outputs then submits\",\n        \"revision\": \"2abfc9707fddcb610505a920c346badb613a8804dc4468af2fae3338d5baa8cf\",\n        \"state\": \"executing\",\n        \"task\": {\n          \"owner\": \"urn:hacp:agent:b\",\n          \"summary\": \"aegis-cleanroom: implement src/lib.rs\",\n          \"task_id\": \"t-029d9993c77f448e94b6c0656847fcf0\"\n        },\n        \"terms\": {\n          \"acceptance\": [\n            \"cargo test --offline -q\"\n          ],\n          \"inputs\": [\n            \"Cargo.toml\",\n            \"tests/contract.rs\"\n          ],\n          \"outputs\": [\n            \"src/lib.rs\"\n          ]\n        },\n        \"terms_digest\": \"490e28009203f8f425aecb87445ae5dd0cb32086ac7bd4c1e3bfd1c9f9d32bb9\"\n      },\n      \"in_reply_to\": null,\n      \"message_id\": \"m-609a27f8f3b64036b9895da5f47e9199\",\n      \"to\": \"urn:hacp:agent:b\"\n    }\n",
+      "time": "2026-10-22T18:24:45Z"
+    },
+    {
+      "action": "contract.frozen",
+      "detail": {
+        "body": {
+          "contract_id": "c-1fa76ace96924b82953ff2eeca91143a",
+          "next": "owner implements frozen outputs then submits",
+          "revision": "28e340597fb6891da5805173d53c1d4787e43b3b7f0273879ef7e65703026690",
+          "state": "executing",
+          "task": {
+            "owner": "urn:hacp:agent:a",
+            "summary": "aegis-cleanroom: orchestrator owns contract test; worker implements src/lib.rs per /SPEC.md",
+            "task_id": "t-58693d816d5a48d1825ab15a2c5a13a2"
+          },
+          "terms": {
+            "acceptance": [
+              "grep -q 'fn ' tests/contract.rs"
+            ],
+            "inputs": [
+              "Cargo.toml"
+            ],
+            "outputs": [
+              "tests/contract.rs"
+            ]
+          },
+          "terms_digest": "02c4e64b46f66852596d771f5797f2b9b3a159f371c5daa56e08d8557d9fee61"
+        },
+        "in_reply_to": null,
+        "message_id": "m-4e63ba2886aa4e96a5a9295d5ce05781",
+        "to": "urn:hacp:agent:a"
+      },
+      "id": "e-3d9e1da328324099bbbde7e971ae33dd",
+      "peer": "b",
+      "rendered": "2026-10-22T18:24:50Z | Peer b | contract.frozen\nEvent e-3d9e1da328324099bbbde7e971ae33dd\n    {\n      \"body\": {\n        \"contract_id\": \"c-1fa76ace96924b82953ff2eeca91143a\",\n        \"next\": \"owner implements frozen outputs then submits\",\n        \"revision\": \"28e340597fb6891da5805173d53c1d4787e43b3b7f0273879ef7e65703026690\",\n        \"state\": \"executing\",\n        \"task\": {\n          \"owner\": \"urn:hacp:agent:a\",\n          \"summary\": \"aegis-cleanroom: orchestrator owns contract test; worker implements src/lib.rs per /SPEC.md\",\n          \"task_id\": \"t-58693d816d5a48d1825ab15a2c5a13a2\"\n        },\n        \"terms\": {\n          \"acceptance\": [\n            \"grep -q 'fn ' tests/contract.rs\"\n          ],\n          \"inputs\": [\n            \"Cargo.toml\"\n          ],\n          \"outputs\": [\n            \"tests/contract.rs\"\n          ]\n        },\n        \"terms_digest\": \"02c4e64b46f66852596d771f5797f2b9b3a159f371c5daa56e08d8557d9fee61\"\n      },\n      \"in_reply_to\": null,\n      \"message_id\": \"m-4e63ba2886aa4e96a5a9295d5ce05781\",\n      \"to\": \"urn:hacp:agent:a\"\n    }\n",
+      "time": "2026-10-22T18:24:50Z"
+    },
+    {
+      "action": "submission.delivered",
+      "detail": {
+        "body": {
+          "contract_id": "c-1fa76ace96924b82953ff2eeca91143a",
+          "next": "counterparty verifies",
+          "revision": "28e340597fb6891da5805173d53c1d4787e43b3b7f0273879ef7e65703026690",
+          "state": "verifying",
+          "task": {
+            "owner": "urn:hacp:agent:a",
+            "summary": "aegis-cleanroom: orchestrator owns contract test; worker implements src/lib.rs per /SPEC.md",
+            "task_id": "t-58693d816d5a48d1825ab15a2c5a13a2"
+          },
+          "terms": {
+            "acceptance": [
+              "grep -q 'fn ' tests/contract.rs"
+            ],
+            "inputs": [
+              "Cargo.toml"
+            ],
+            "outputs": [
+              "tests/contract.rs"
+            ]
+          },
+          "terms_digest": "02c4e64b46f66852596d771f5797f2b9b3a159f371c5daa56e08d8557d9fee61"
+        },
+        "in_reply_to": null,
+        "message_id": "m-7f72e705b8b54ed58b33fa38bb366faa",
+        "to": "urn:hacp:agent:b"
+      },
+      "id": "e-bd596e12d26149639e253417c5e42dcb",
+      "peer": "a",
+      "rendered": "2026-10-22T18:25:15Z | Peer a | submission.delivered\nEvent e-bd596e12d26149639e253417c5e42dcb\n    {\n      \"body\": {\n        \"contract_id\": \"c-1fa76ace96924b82953ff2eeca91143a\",\n        \"next\": \"counterparty verifies\",\n        \"revision\": \"28e340597fb6891da5805173d53c1d4787e43b3b7f0273879ef7e65703026690\",\n        \"state\": \"verifying\",\n        \"task\": {\n          \"owner\": \"urn:hacp:agent:a\",\n          \"summary\": \"aegis-cleanroom: orchestrator owns contract test; worker implements src/lib.rs per /SPEC.md\",\n          \"task_id\": \"t-58693d816d5a48d1825ab15a2c5a13a2\"\n        },\n        \"terms\": {\n          \"acceptance\": [\n            \"grep -q 'fn ' tests/contract.rs\"\n          ],\n          \"inputs\": [\n            \"Cargo.toml\"\n          ],\n          \"outputs\": [\n            \"tests/contract.rs\"\n          ]\n        },\n        \"terms_digest\": \"02c4e64b46f66852596d771f5797f2b9b3a159f371c5daa56e08d8557d9fee61\"\n      },\n      \"in_reply_to\": null,\n      \"message_id\": \"m-7f72e705b8b54ed58b33fa38bb366faa\",\n      \"to\": \"urn:hacp:agent:b\"\n    }\n",
+      "time": "2026-10-22T18:25:15Z"
+    },
+    {
+      "action": "artifacts preserved",
+      "detail": {
+        "artifacts": [
+          {
+            "path": "tests/contract.rs",
+            "record": {
+              "artifact_id": "urn:hacp:artifact:f9f5cd90-7144-4ba1-a259-053fbc9e7682",
+              "contract_id": "c-1fa76ace96924b82953ff2eeca91143a",
+              "contract_revision": "28e340597fb6891da5805173d53c1d4787e43b3b7f0273879ef7e65703026690",
+              "derived_from": [],
+              "digest": "1b16d43a0daebbe60dec679579eb4fe80bc83a63163496d1a5429ebfd022f509",
+              "location": ".hacp/artifacts/f9f5cd90-7144-4ba1-a259-053fbc9e7682.bin",
+              "media_type": "application/octet-stream",
+              "producer": "urn:hacp:agent:a",
+              "size": 2801,
+              "task_id": "t-58693d816d5a48d1825ab15a2c5a13a2",
+              "visibility": "participants"
+            }
+          }
+        ],
+        "claim": "contract test pinning the public API in SPEC.md (incl. multi-tenant + credentials)",
+        "contract_id": "c-1fa76ace96924b82953ff2eeca91143a"
+      },
+      "id": "e-d7c1c76cdc5b4c118284ae252b0e9911",
+      "peer": "a",
+      "rendered": "2026-10-22T18:25:15Z | Peer a | artifacts preserved\nEvent e-d7c1c76cdc5b4c118284ae252b0e9911\n    {\n      \"artifacts\": [\n        {\n          \"path\": \"tests/contract.rs\",\n          \"record\": {\n            \"artifact_id\": \"urn:hacp:artifact:f9f5cd90-7144-4ba1-a259-053fbc9e7682\",\n            \"contract_id\": \"c-1fa76ace96924b82953ff2eeca91143a\",\n            \"contract_revision\": \"28e340597fb6891da5805173d53c1d4787e43b3b7f0273879ef7e65703026690\",\n            \"derived_from\": [],\n            \"digest\": \"1b16d43a0daebbe60dec679579eb4fe80bc83a63163496d1a5429ebfd022f509\",\n            \"location\": \".hacp/artifacts/f9f5cd90-7144-4ba1-a259-053fbc9e7682.bin\",\n            \"media_type\": \"application/octet-stream\",\n            \"producer\": \"urn:hacp:agent:a\",\n            \"size\": 2801,\n            \"task_id\": \"t-58693d816d5a48d1825ab15a2c5a13a2\",\n            \"visibility\": \"participants\"\n          }\n        }\n      ],\n      \"claim\": \"contract test pinning the public API in SPEC.md (incl. multi-tenant + credentials)\",\n      \"contract_id\": \"c-1fa76ace96924b82953ff2eeca91143a\"\n    }\n",
+      "time": "2026-10-22T18:25:15Z"
+    },
+    {
+      "action": "submission.delivered",
+      "detail": {
+        "body": {
+          "contract_id": "c-dc937786d3be4bf884ab15ff7437f8fe",
+          "next": "counterparty verifies",
+          "revision": "2abfc9707fddcb610505a920c346badb613a8804dc4468af2fae3338d5baa8cf",
+          "state": "verifying",
+          "task": {
+            "owner": "urn:hacp:agent:b",
+            "summary": "aegis-cleanroom: implement src/lib.rs",
+            "task_id": "t-029d9993c77f448e94b6c0656847fcf0"
+          },
+          "terms": {
+            "acceptance": [
+              "cargo test --offline -q"
+            ],
+            "inputs": [
+              "Cargo.toml",
+              "tests/contract.rs"
+            ],
+            "outputs": [
+              "src/lib.rs"
+            ]
+          },
+          "terms_digest": "490e28009203f8f425aecb87445ae5dd0cb32086ac7bd4c1e3bfd1c9f9d32bb9"
+        },
+        "in_reply_to": null,
+        "message_id": "m-ab42c684efe14df8a3cd028fff28b1de",
+        "to": "urn:hacp:agent:a"
+      },
+      "id": "e-c14d0adf721b4be5b94373b8762dc984",
+      "peer": "b",
+      "rendered": "2026-10-22T18:27:59Z | Peer b | submission.delivered\nEvent e-c14d0adf721b4be5b94373b8762dc984\n    {\n      \"body\": {\n        \"contract_id\": \"c-dc937786d3be4bf884ab15ff7437f8fe\",\n        \"next\": \"counterparty verifies\",\n        \"revision\": \"2abfc9707fddcb610505a920c346badb613a8804dc4468af2fae3338d5baa8cf\",\n        \"state\": \"verifying\",\n        \"task\": {\n          \"owner\": \"urn:hacp:agent:b\",\n          \"summary\": \"aegis-cleanroom: implement src/lib.rs\",\n          \"task_id\": \"t-029d9993c77f448e94b6c0656847fcf0\"\n        },\n        \"terms\": {\n          \"acceptance\": [\n            \"cargo test --offline -q\"\n          ],\n          \"inputs\": [\n            \"Cargo.toml\",\n            \"tests/contract.rs\"\n          ],\n          \"outputs\": [\n            \"src/lib.rs\"\n          ]\n        },\n        \"terms_digest\": \"490e28009203f8f425aecb87445ae5dd0cb32086ac7bd4c1e3bfd1c9f9d32bb9\"\n      },\n      \"in_reply_to\": null,\n      \"message_id\": \"m-ab42c684efe14df8a3cd028fff28b1de\",\n      \"to\": \"urn:hacp:agent:a\"\n    }\n",
+      "time": "2026-10-22T18:27:59Z"
+    },
+    {
+      "action": "artifacts preserved",
+      "detail": {
+        "artifacts": [
+          {
+            "path": "src/lib.rs",
+            "record": {
+              "artifact_id": "urn:hacp:artifact:4cb1063c-e24a-495b-85a4-a64d4a869e13",
+              "contract_id": "c-dc937786d3be4bf884ab15ff7437f8fe",
+              "contract_revision": "2abfc9707fddcb610505a920c346badb613a8804dc4468af2fae3338d5baa8cf",
+              "derived_from": [],
+              "digest": "09105577b391b97c0b8deaafa64742213541821a15f2aec992a01e777ef98432",
+              "location": ".hacp/artifacts/4cb1063c-e24a-495b-85a4-a64d4a869e13.bin",
+              "media_type": "application/octet-stream",
+              "producer": "urn:hacp:agent:b",
+              "size": 15033,
+              "task_id": "t-029d9993c77f448e94b6c0656847fcf0",
+              "visibility": "participants"
+            }
+          }
+        ],
+        "claim": "Implemented src/lib.rs: RegexRedactor (key-based redaction + SSN/card/phone/email/address regex scrubbing, calendar free/busy with Busy titles, transactions -> [REDACTED BY AEGIS POLICY #402]), SchemaGuard (unknown fields/args + injection phrases), LocalCleanRoom (can_afford, income_verified, credit_tier, balance_band, busy_slots, age_over_21+city/state, health bands, contact_count), LlmPurposeJudge (8s timeout, None on failure). cargo test --offline -q: 4/4 pass.",
+        "contract_id": "c-dc937786d3be4bf884ab15ff7437f8fe"
+      },
+      "id": "e-af2ac251d0e7405bacba2735c290413b",
+      "peer": "b",
+      "rendered": "2026-10-22T18:27:59Z | Peer b | artifacts preserved\nEvent e-af2ac251d0e7405bacba2735c290413b\n    {\n      \"artifacts\": [\n        {\n          \"path\": \"src/lib.rs\",\n          \"record\": {\n            \"artifact_id\": \"urn:hacp:artifact:4cb1063c-e24a-495b-85a4-a64d4a869e13\",\n            \"contract_id\": \"c-dc937786d3be4bf884ab15ff7437f8fe\",\n            \"contract_revision\": \"2abfc9707fddcb610505a920c346badb613a8804dc4468af2fae3338d5baa8cf\",\n            \"derived_from\": [],\n            \"digest\": \"09105577b391b97c0b8deaafa64742213541821a15f2aec992a01e777ef98432\",\n            \"location\": \".hacp/artifacts/4cb1063c-e24a-495b-85a4-a64d4a869e13.bin\",\n            \"media_type\": \"application/octet-stream\",\n            \"producer\": \"urn:hacp:agent:b\",\n            \"size\": 15033,\n            \"task_id\": \"t-029d9993c77f448e94b6c0656847fcf0\",\n            \"visibility\": \"participants\"\n          }\n        }\n      ],\n      \"claim\": \"Implemented src/lib.rs: RegexRedactor (key-based redaction + SSN/card/phone/email/address regex scrubbing, calendar free/busy with Busy titles, transactions -> [REDACTED BY AEGIS POLICY #402]), SchemaGuard (unknown fields/args + injection phrases), LocalCleanRoom (can_afford, income_verified, credit_tier, balance_band, busy_slots, age_over_21+city/state, health bands, contact_count), LlmPurposeJudge (8s timeout, None on failure). cargo test --offline -q: 4/4 pass.\",\n      \"contract_id\": \"c-dc937786d3be4bf884ab15ff7437f8fe\"\n    }\n",
+      "time": "2026-10-22T18:27:59Z"
+    },
+    {
+      "action": "verification started",
+      "detail": {
+        "attempt": "v-3e50a4bc4f4c447fb520dcb36c727ef0",
+        "commands": [
+          "grep -q 'fn ' tests/contract.rs"
+        ],
+        "contract_id": "c-1fa76ace96924b82953ff2eeca91143a",
+        "revision": "28e340597fb6891da5805173d53c1d4787e43b3b7f0273879ef7e65703026690"
+      },
+      "id": "e-e99371d36c7f41e8883c47fd073491f7",
+      "peer": "b",
+      "rendered": "2026-10-22T18:28:02Z | Peer b | verification started\nEvent e-e99371d36c7f41e8883c47fd073491f7\n    {\n      \"attempt\": \"v-3e50a4bc4f4c447fb520dcb36c727ef0\",\n      \"commands\": [\n        \"grep -q 'fn ' tests/contract.rs\"\n      ],\n      \"contract_id\": \"c-1fa76ace96924b82953ff2eeca91143a\",\n      \"revision\": \"28e340597fb6891da5805173d53c1d4787e43b3b7f0273879ef7e65703026690\"\n    }\n",
+      "time": "2026-10-22T18:28:02Z"
+    },
+    {
+      "action": "verification measured",
+      "detail": {
+        "commands": [
+          {
+            "command": "grep -q 'fn ' tests/contract.rs",
+            "duration_ms": 25,
+            "exit_code": 0,
+            "signal": null,
+            "stderr": "",
+            "stdout": "",
+            "timed_out": false
+          }
+        ],
+        "record": {
+          "against_revision": "28e340597fb6891da5805173d53c1d4787e43b3b7f0273879ef7e65703026690",
+          "artifacts": [
+            "urn:hacp:artifact:f9f5cd90-7144-4ba1-a259-053fbc9e7682"
+          ],
+          "attests": [],
+          "checks": [
+            {
+              "detail": "SHA-256 1b16d43a0daebbe60dec679579eb4fe80bc83a63163496d1a5429ebfd022f509 and 2801 bytes match working file and immutable copy",
+              "name": "before: tests/contract.rs",
+              "passed": true
+            },
+            {
+              "detail": "{\"command\":\"grep -q 'fn ' tests/contract.rs\",\"stdout\":\"\",\"stderr\":\"\",\"duration_ms\":25,\"exit_code\":0,\"signal\":null,\"timed_out\":false}",
+              "name": "grep -q 'fn ' tests/contract.rs",
+              "passed": true
+            },
+            {
+              "detail": "SHA-256 1b16d43a0daebbe60dec679579eb4fe80bc83a63163496d1a5429ebfd022f509 and 2801 bytes match working file and immutable copy",
+              "name": "after: tests/contract.rs",
+              "passed": true
+            }
+          ],
+          "contract_id": "c-1fa76ace96924b82953ff2eeca91143a",
+          "evidence": [],
+          "reasons": [],
+          "verdict": "accept",
+          "verification_id": "v-3e50a4bc4f4c447fb520dcb36c727ef0",
+          "verifier": "urn:hacp:agent:b"
+        }
+      },
+      "id": "e-f84a3d1276d04f5384dd022048897971",
+      "peer": "b",
+      "rendered": "2026-10-22T18:28:02Z | Peer b | verification measured\nEvent e-f84a3d1276d04f5384dd022048897971\n    {\n      \"commands\": [\n        {\n          \"command\": \"grep -q 'fn ' tests/contract.rs\",\n          \"duration_ms\": 25,\n          \"exit_code\": 0,\n          \"signal\": null,\n          \"stderr\": \"\",\n          \"stdout\": \"\",\n          \"timed_out\": false\n        }\n      ],\n      \"record\": {\n        \"against_revision\": \"28e340597fb6891da5805173d53c1d4787e43b3b7f0273879ef7e65703026690\",\n        \"artifacts\": [\n          \"urn:hacp:artifact:f9f5cd90-7144-4ba1-a259-053fbc9e7682\"\n        ],\n        \"attests\": [],\n        \"checks\": [\n          {\n            \"detail\": \"SHA-256 1b16d43a0daebbe60dec679579eb4fe80bc83a63163496d1a5429ebfd022f509 and 2801 bytes match working file and immutable copy\",\n            \"name\": \"before: tests/contract.rs\",\n            \"passed\": true\n          },\n          {\n            \"detail\": \"{\\\"command\\\":\\\"grep -q 'fn ' tests/contract.rs\\\",\\\"stdout\\\":\\\"\\\",\\\"stderr\\\":\\\"\\\",\\\"duration_ms\\\":25,\\\"exit_code\\\":0,\\\"signal\\\":null,\\\"timed_out\\\":false}\",\n            \"name\": \"grep -q 'fn ' tests/contract.rs\",\n            \"passed\": true\n          },\n          {\n            \"detail\": \"SHA-256 1b16d43a0daebbe60dec679579eb4fe80bc83a63163496d1a5429ebfd022f509 and 2801 bytes match working file and immutable copy\",\n            \"name\": \"after: tests/contract.rs\",\n            \"passed\": true\n          }\n        ],\n        \"contract_id\": \"c-1fa76ace96924b82953ff2eeca91143a\",\n        \"evidence\": [],\n        \"reasons\": [],\n        \"verdict\": \"accept\",\n        \"verification_id\": \"v-3e50a4bc4f4c447fb520dcb36c727ef0\",\n        \"verifier\": \"urn:hacp:agent:b\"\n      }\n    }\n",
+      "time": "2026-10-22T18:28:02Z"
+    },
+    {
+      "action": "verification.delivered",
+      "detail": {
+        "body": {
+          "contract_id": "c-1fa76ace96924b82953ff2eeca91143a",
+          "next": "remain available to verify peer",
+          "revision": "28e340597fb6891da5805173d53c1d4787e43b3b7f0273879ef7e65703026690",
+          "state": "settled",
+          "task": {
+            "owner": "urn:hacp:agent:a",
+            "summary": "aegis-cleanroom: orchestrator owns contract test; worker implements src/lib.rs per /SPEC.md",
+            "task_id": "t-58693d816d5a48d1825ab15a2c5a13a2"
+          },
+          "terms": {
+            "acceptance": [
+              "grep -q 'fn ' tests/contract.rs"
+            ],
+            "inputs": [
+              "Cargo.toml"
+            ],
+            "outputs": [
+              "tests/contract.rs"
+            ]
+          },
+          "terms_digest": "02c4e64b46f66852596d771f5797f2b9b3a159f371c5daa56e08d8557d9fee61"
+        },
+        "in_reply_to": null,
+        "message_id": "m-1017fbe78f8d445ca6637d7690d6faed",
+        "to": "urn:hacp:agent:a"
+      },
+      "id": "e-dbb2371f41374cdab7fd753b7afad265",
+      "peer": "b",
+      "rendered": "2026-10-22T18:28:02Z | Peer b | verification.delivered\nEvent e-dbb2371f41374cdab7fd753b7afad265\n    {\n      \"body\": {\n        \"contract_id\": \"c-1fa76ace96924b82953ff2eeca91143a\",\n        \"next\": \"remain available to verify peer\",\n        \"revision\": \"28e340597fb6891da5805173d53c1d4787e43b3b7f0273879ef7e65703026690\",\n        \"state\": \"settled\",\n        \"task\": {\n          \"owner\": \"urn:hacp:agent:a\",\n          \"summary\": \"aegis-cleanroom: orchestrator owns contract test; worker implements src/lib.rs per /SPEC.md\",\n          \"task_id\": \"t-58693d816d5a48d1825ab15a2c5a13a2\"\n        },\n        \"terms\": {\n          \"acceptance\": [\n            \"grep -q 'fn ' tests/contract.rs\"\n          ],\n          \"inputs\": [\n            \"Cargo.toml\"\n          ],\n          \"outputs\": [\n            \"tests/contract.rs\"\n          ]\n        },\n        \"terms_digest\": \"02c4e64b46f66852596d771f5797f2b9b3a159f371c5daa56e08d8557d9fee61\"\n      },\n      \"in_reply_to\": null,\n      \"message_id\": \"m-1017fbe78f8d445ca6637d7690d6faed\",\n      \"to\": \"urn:hacp:agent:a\"\n    }\n",
+      "time": "2026-10-22T18:28:02Z"
+    },
+    {
+      "action": "verification started",
+      "detail": {
+        "attempt": "v-03a4a9b31e8c432a8ee7e08dc69bd139",
+        "commands": [
+          "cargo test --offline -q"
+        ],
+        "contract_id": "c-dc937786d3be4bf884ab15ff7437f8fe",
+        "revision": "2abfc9707fddcb610505a920c346badb613a8804dc4468af2fae3338d5baa8cf"
+      },
+      "id": "e-68077b17467f4ce39060e5b90ec64bcf",
+      "peer": "a",
+      "rendered": "2026-10-22T18:30:30Z | Peer a | verification started\nEvent e-68077b17467f4ce39060e5b90ec64bcf\n    {\n      \"attempt\": \"v-03a4a9b31e8c432a8ee7e08dc69bd139\",\n      \"commands\": [\n        \"cargo test --offline -q\"\n      ],\n      \"contract_id\": \"c-dc937786d3be4bf884ab15ff7437f8fe\",\n      \"revision\": \"2abfc9707fddcb610505a920c346badb613a8804dc4468af2fae3338d5baa8cf\"\n    }\n",
+      "time": "2026-10-22T18:30:30Z"
+    },
+    {
+      "action": "verification measured",
+      "detail": {
+        "commands": [
+          {
+            "command": "cargo test --offline -q",
+            "duration_ms": 4125,
+            "exit_code": 0,
+            "signal": null,
+            "stderr": "",
+            "stdout": "\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 4 tests\n....\ntest result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n",
+            "timed_out": false
+          }
+        ],
+        "record": {
+          "against_revision": "2abfc9707fddcb610505a920c346badb613a8804dc4468af2fae3338d5baa8cf",
+          "artifacts": [
+            "urn:hacp:artifact:4cb1063c-e24a-495b-85a4-a64d4a869e13"
+          ],
+          "attests": [],
+          "checks": [
+            {
+              "detail": "SHA-256 09105577b391b97c0b8deaafa64742213541821a15f2aec992a01e777ef98432 and 15033 bytes match working file and immutable copy",
+              "name": "before: src/lib.rs",
+              "passed": true
+            },
+            {
+              "detail": "{\"command\":\"cargo test --offline -q\",\"stdout\":\"\\nrunning 0 tests\\n\\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\\n\\n\\nrunning 4 tests\\n....\\ntest result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s\\n\\n\\nrunning 0 tests\\n\\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\\n\\n\",\"stderr\":\"\",\"duration_ms\":4125,\"exit_code\":0,\"signal\":null,\"timed_out\":false}",
+              "name": "cargo test --offline -q",
+              "passed": true
+            },
+            {
+              "detail": "SHA-256 09105577b391b97c0b8deaafa64742213541821a15f2aec992a01e777ef98432 and 15033 bytes match working file and immutable copy",
+              "name": "after: src/lib.rs",
+              "passed": true
+            }
+          ],
+          "contract_id": "c-dc937786d3be4bf884ab15ff7437f8fe",
+          "evidence": [],
+          "reasons": [],
+          "verdict": "accept",
+          "verification_id": "v-03a4a9b31e8c432a8ee7e08dc69bd139",
+          "verifier": "urn:hacp:agent:a"
+        }
+      },
+      "id": "e-7c13d3da9afe4fab8cd92004b8f5d524",
+      "peer": "a",
+      "rendered": "2026-10-22T18:30:35Z | Peer a | verification measured\nEvent e-7c13d3da9afe4fab8cd92004b8f5d524\n    {\n      \"commands\": [\n        {\n          \"command\": \"cargo test --offline -q\",\n          \"duration_ms\": 4125,\n          \"exit_code\": 0,\n          \"signal\": null,\n          \"stderr\": \"\",\n          \"stdout\": \"\\nrunning 0 tests\\n\\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\\n\\n\\nrunning 4 tests\\n....\\ntest result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s\\n\\n\\nrunning 0 tests\\n\\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\\n\\n\",\n          \"timed_out\": false\n        }\n      ],\n      \"record\": {\n        \"against_revision\": \"2abfc9707fddcb610505a920c346badb613a8804dc4468af2fae3338d5baa8cf\",\n        \"artifacts\": [\n          \"urn:hacp:artifact:4cb1063c-e24a-495b-85a4-a64d4a869e13\"\n        ],\n        \"attests\": [],\n        \"checks\": [\n          {\n            \"detail\": \"SHA-256 09105577b391b97c0b8deaafa64742213541821a15f2aec992a01e777ef98432 and 15033 bytes match working file and immutable copy\",\n            \"name\": \"before: src/lib.rs\",\n            \"passed\": true\n          },\n          {\n            \"detail\": \"{\\\"command\\\":\\\"cargo test --offline -q\\\",\\\"stdout\\\":\\\"\\\\nrunning 0 tests\\\\n\\\\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\\\\n\\\\n\\\\nrunning 4 tests\\\\n....\\\\ntest result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s\\\\n\\\\n\\\\nrunning 0 tests\\\\n\\\\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\\\\n\\\\n\\\",\\\"stderr\\\":\\\"\\\",\\\"duration_ms\\\":4125,\\\"exit_code\\\":0,\\\"signal\\\":null,\\\"timed_out\\\":false}\",\n            \"name\": \"cargo test --offline -q\",\n            \"passed\": true\n          },\n          {\n            \"detail\": \"SHA-256 09105577b391b97c0b8deaafa64742213541821a15f2aec992a01e777ef98432 and 15033 bytes match working file and immutable copy\",\n            \"name\": \"after: src/lib.rs\",\n            \"passed\": true\n          }\n        ],\n        \"contract_id\": \"c-dc937786d3be4bf884ab15ff7437f8fe\",\n        \"evidence\": [],\n        \"reasons\": [],\n        \"verdict\": \"accept\",\n        \"verification_id\": \"v-03a4a9b31e8c432a8ee7e08dc69bd139\",\n        \"verifier\": \"urn:hacp:agent:a\"\n      }\n    }\n",
+      "time": "2026-10-22T18:30:35Z"
+    },
+    {
+      "action": "verification.delivered",
+      "detail": {
+        "body": {
+          "contract_id": "c-dc937786d3be4bf884ab15ff7437f8fe",
+          "next": "remain available to verify peer",
+          "revision": "2abfc9707fddcb610505a920c346badb613a8804dc4468af2fae3338d5baa8cf",
+          "state": "settled",
+          "task": {
+            "owner": "urn:hacp:agent:b",
+            "summary": "aegis-cleanroom: implement src/lib.rs",
+            "task_id": "t-029d9993c77f448e94b6c0656847fcf0"
+          },
+          "terms": {
+            "acceptance": [
+              "cargo test --offline -q"
+            ],
+            "inputs": [
+              "Cargo.toml",
+              "tests/contract.rs"
+            ],
+            "outputs": [
+              "src/lib.rs"
+            ]
+          },
+          "terms_digest": "490e28009203f8f425aecb87445ae5dd0cb32086ac7bd4c1e3bfd1c9f9d32bb9"
+        },
+        "in_reply_to": null,
+        "message_id": "m-307710a1b29b45bda9030bf50de8ad86",
+        "to": "urn:hacp:agent:b"
+      },
+      "id": "e-c06ecea64b1c48ffad7f1ef129bcb621",
+      "peer": "a",
+      "rendered": "2026-10-22T18:30:35Z | Peer a | verification.delivered\nEvent e-c06ecea64b1c48ffad7f1ef129bcb621\n    {\n      \"body\": {\n        \"contract_id\": \"c-dc937786d3be4bf884ab15ff7437f8fe\",\n        \"next\": \"remain available to verify peer\",\n        \"revision\": \"2abfc9707fddcb610505a920c346badb613a8804dc4468af2fae3338d5baa8cf\",\n        \"state\": \"settled\",\n        \"task\": {\n          \"owner\": \"urn:hacp:agent:b\",\n          \"summary\": \"aegis-cleanroom: implement src/lib.rs\",\n          \"task_id\": \"t-029d9993c77f448e94b6c0656847fcf0\"\n        },\n        \"terms\": {\n          \"acceptance\": [\n            \"cargo test --offline -q\"\n          ],\n          \"inputs\": [\n            \"Cargo.toml\",\n            \"tests/contract.rs\"\n          ],\n          \"outputs\": [\n            \"src/lib.rs\"\n          ]\n        },\n        \"terms_digest\": \"490e28009203f8f425aecb87445ae5dd0cb32086ac7bd4c1e3bfd1c9f9d32bb9\"\n      },\n      \"in_reply_to\": null,\n      \"message_id\": \"m-307710a1b29b45bda9030bf50de8ad86\",\n      \"to\": \"urn:hacp:agent:b\"\n    }\n",
+      "time": "2026-10-22T18:30:35Z"
+    },
+    {
+      "action": "session.close",
+      "detail": {
+        "body": {
+          "reason": "both contracts settled: orchestrator contract test + worker src/lib.rs verified (cargo test passes). Follow-ups tracked in REVIEW.md / phase-2 root session."
+        },
+        "in_reply_to": null,
+        "message_id": "m-23f4b96d801c4d7eb72715a504e43534",
+        "to": "urn:hacp:agent:b"
+      },
+      "id": "e-f81bfd7220d844cd8ecc00ffc307e163",
+      "peer": "a",
+      "rendered": "2026-10-22T18:31:11Z | Peer a | session.close\nEvent e-f81bfd7220d844cd8ecc00ffc307e163\n    {\n      \"body\": {\n        \"reason\": \"both contracts settled: orchestrator contract test + worker src/lib.rs verified (cargo test passes). Follow-ups tracked in REVIEW.md / phase-2 root session.\"\n      },\n      \"in_reply_to\": null,\n      \"message_id\": \"m-23f4b96d801c4d7eb72715a504e43534\",\n      \"to\": \"urn:hacp:agent:b\"\n    }\n",
+      "time": "2026-10-22T18:31:11Z"
+    },
+    {
+      "action": "close",
+      "detail": {
+        "reason": "both contracts settled: orchestrator contract test + worker src/lib.rs verified (cargo test passes). Follow-ups tracked in REVIEW.md / phase-2 root session."
+      },
+      "id": "e-bfc70dd3128642419ae4daa19edfff99",
+      "peer": "a",
+      "rendered": "2026-10-22T18:31:11Z | Peer a | close\nEvent e-bfc70dd3128642419ae4daa19edfff99\n    {\n      \"reason\": \"both contracts settled: orchestrator contract test + worker src/lib.rs verified (cargo test passes). Follow-ups tracked in REVIEW.md / phase-2 root session.\"\n    }\n",
+      "time": "2026-10-22T18:31:11Z"
+    }
+  ]
+}

@@ -1,2 +1,6 @@
 target/
 .hacp-terms/
+.review-stop
+.env
+.hacp-terms/
+aegis.db*

@@ -1,0 +1,12 @@
+{
+  "protocol": "HACP/2.0",
+  "message_id": "m-b625c33bd72745bebb5ba1d84f80fde1",
+  "session_id": "s-2467bd25334743c1bc9c04e1ffecddb9",
+  "from": "urn:hacp:agent:a",
+  "to": "urn:hacp:agent:b",
+  "kind": "hacp.skill.ask",
+  "timestamp": "2026-10-22T18:24:35Z",
+  "body": {
+    "text": "SPEC UPDATE (user request) — before coding re-read /Users/manubaba/Documents/aegis-mcp/SPEC.md sections 'Multi-tenancy', 'Credentials' and 'Exact public APIs', plus the updated tests/contract.rs. Changes: (1) every person logs in: POST /api/login sets aegis_session cookie, POST /api/logout, GET /api/me {subject,display_name,mcp_token}; person-scoped APIs return 401 without session, 403 for another person's subject/request/receipt. (2) /mcp: Authorization: Bearer <Vault::mcp_token()> selects the person via aegis_core::vault_for_token (bad token -> HTTP 401); else x-aegis-user unless GatewayDeps.require_mcp_token (new bool field). aegis-core gained Vault::verify_password, Vault::mcp_token, vault_for_token. Reply 'ack' and proceed."
+  }
+}

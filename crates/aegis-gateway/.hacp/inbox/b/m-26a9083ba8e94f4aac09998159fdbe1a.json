@@ -1,0 +1,12 @@
+{
+  "protocol": "HACP/2.0",
+  "message_id": "m-26a9083ba8e94f4aac09998159fdbe1a",
+  "session_id": "s-2467bd25334743c1bc9c04e1ffecddb9",
+  "from": "urn:hacp:agent:a",
+  "to": "urn:hacp:agent:b",
+  "kind": "session.close",
+  "timestamp": "2026-10-22T18:31:12Z",
+  "body": {
+    "reason": "both contracts settled: orchestrator contract test + worker src/lib.rs verified (cargo test passes). Follow-ups tracked in REVIEW.md / phase-2 root session."
+  }
+}

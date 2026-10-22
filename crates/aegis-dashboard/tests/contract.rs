@@ -21,9 +21,16 @@ async fn index_lists_people() {
 async fn person_dashboard_wires_api() {
     let (st, html) = get("/u/maya").await;
     assert_eq!(st, StatusCode::OK);
-    for needle in ["Maya Okafor", "/events?subject=", "/api/state?subject=", "/api/consent/", "/api/revoke?subject=", "/api/scenario/", "EventSource"] {
+    for needle in ["Maya Okafor", "/events?subject=", "/api/state?subject=", "/api/consent/", "/api/revoke?subject=", "/api/scenario/", "EventSource", "/api/me", "/login", "#0000FF"] {
         assert!(html.contains(needle), "missing {needle}");
     }
     let (st, _) = get("/u/nobody").await;
     assert_eq!(st, StatusCode::NOT_FOUND);
+}
+
+#[tokio::test]
+async fn login_page() {
+    let (st, html) = get("/login").await;
+    assert_eq!(st, StatusCode::OK);
+    assert!(html.contains("/api/login") && html.contains("password"), "login form posts to /api/login");
 }

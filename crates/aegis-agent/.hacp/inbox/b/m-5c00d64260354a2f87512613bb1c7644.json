@@ -1,0 +1,33 @@
+{
+  "protocol": "HACP/2.0",
+  "message_id": "m-5c00d64260354a2f87512613bb1c7644",
+  "session_id": "s-a0875b86bdab402aa298cf03e557c4a8",
+  "from": "urn:hacp:agent:a",
+  "to": "urn:hacp:agent:b",
+  "kind": "contract.frozen",
+  "timestamp": "2026-10-22T18:24:46Z",
+  "body": {
+    "contract_id": "c-d218bae94f6048da902f6d378c5f064c",
+    "next": "owner implements frozen outputs then submits",
+    "revision": "69c0e92570e83dc55245427d54c03bc63cb4ad24b7db2937f0d277d0f6e68d87",
+    "state": "executing",
+    "task": {
+      "owner": "urn:hacp:agent:b",
+      "summary": "aegis-agent: implement src/lib.rs",
+      "task_id": "t-6756fbdfa9a74435845fbcae8369e79c"
+    },
+    "terms": {
+      "acceptance": [
+        "cargo test --offline -q"
+      ],
+      "inputs": [
+        "Cargo.toml",
+        "tests/contract.rs"
+      ],
+      "outputs": [
+        "src/lib.rs"
+      ]
+    },
+    "terms_digest": "490e28009203f8f425aecb87445ae5dd0cb32086ac7bd4c1e3bfd1c9f9d32bb9"
+  }
+}

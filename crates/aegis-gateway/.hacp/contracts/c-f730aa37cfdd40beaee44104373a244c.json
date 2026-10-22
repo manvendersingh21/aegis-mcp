@@ -1,0 +1,138 @@
+{
+  "artifacts": [
+    {
+      "path": "src/lib.rs",
+      "record": {
+        "artifact_id": "urn:hacp:artifact:6c3c0605-a06c-43b1-b64f-d2c70d9e557c",
+        "contract_id": "c-f730aa37cfdd40beaee44104373a244c",
+        "contract_revision": "000dd9d28f231c7717ec80d5c71a4814c660da17b6036b2989b0bc67f66f0983",
+        "derived_from": [],
+        "digest": "44d47fa33796ae711ac083aa70a5d6ae9087c4c790be9027bd21cc4491297b91",
+        "location": ".hacp/artifacts/6c3c0605-a06c-43b1-b64f-d2c70d9e557c.bin",
+        "media_type": "application/octet-stream",
+        "producer": "urn:hacp:agent:b",
+        "size": 21537,
+        "task_id": "t-555eff4080c6414dae3502b1db0f7b7f",
+        "visibility": "participants"
+      }
+    }
+  ],
+  "attempts": [
+    {
+      "commands": [
+        {
+          "command": "cargo test --offline -q",
+          "duration_ms": 376,
+          "exit_code": 0,
+          "signal": null,
+          "stderr": "",
+          "stdout": "\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 7 tests\n.......\ntest result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n",
+          "timed_out": false
+        }
+      ],
+      "id": "v-b91a1088900447098e53f771824b2f98",
+      "peer": "a",
+      "status": "completed"
+    }
+  ],
+  "contract": {
+    "agreed_by": [],
+    "agreed_terms_digest": null,
+    "amendments": 0,
+    "contract_id": "c-f730aa37cfdd40beaee44104373a244c",
+    "escalation_path": [],
+    "limits": {
+      "max_amendments": 3,
+      "max_rounds": 3
+    },
+    "participants": [
+      "urn:hacp:agent:a",
+      "urn:hacp:agent:b"
+    ],
+    "pending_submission": null,
+    "pending_submitter": null,
+    "relationship": "collaboration",
+    "revisions": [
+      {
+        "content": {
+          "acceptance": [
+            "cargo test --offline -q"
+          ],
+          "inputs": [
+            "Cargo.toml",
+            "tests/contract.rs"
+          ],
+          "outputs": [
+            "src/lib.rs"
+          ]
+        },
+        "digest": "000dd9d28f231c7717ec80d5c71a4814c660da17b6036b2989b0bc67f66f0983",
+        "number": 1
+      }
+    ],
+    "rework_scope": null,
+    "rounds": 0,
+    "state": "settled",
+    "task": {
+      "owner": "urn:hacp:agent:b",
+      "summary": "aegis-gateway: implement src/lib.rs",
+      "task_id": "t-555eff4080c6414dae3502b1db0f7b7f"
+    }
+  },
+  "pending_digest": "490e28009203f8f425aecb87445ae5dd0cb32086ac7bd4c1e3bfd1c9f9d32bb9",
+  "pending_terms": {
+    "acceptance": [
+      "cargo test --offline -q"
+    ],
+    "inputs": [
+      "Cargo.toml",
+      "tests/contract.rs"
+    ],
+    "outputs": [
+      "src/lib.rs"
+    ]
+  },
+  "proposer": "b",
+  "submissions": [
+    {
+      "against_revision": "000dd9d28f231c7717ec80d5c71a4814c660da17b6036b2989b0bc67f66f0983",
+      "artifacts": [
+        "urn:hacp:artifact:6c3c0605-a06c-43b1-b64f-d2c70d9e557c"
+      ],
+      "claim": "implemented gateway routes, consent pipeline, SSE events, scoped sessions, and MCP bearer auth; offline tests pass",
+      "evidence": []
+    }
+  ],
+  "verifications": [
+    {
+      "against_revision": "000dd9d28f231c7717ec80d5c71a4814c660da17b6036b2989b0bc67f66f0983",
+      "artifacts": [
+        "urn:hacp:artifact:6c3c0605-a06c-43b1-b64f-d2c70d9e557c"
+      ],
+      "attests": [],
+      "checks": [
+        {
+          "detail": "SHA-256 44d47fa33796ae711ac083aa70a5d6ae9087c4c790be9027bd21cc4491297b91 and 21537 bytes match working file and immutable copy",
+          "name": "before: src/lib.rs",
+          "passed": true
+        },
+        {
+          "detail": "{\"command\":\"cargo test --offline -q\",\"stdout\":\"\\nrunning 0 tests\\n\\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\\n\\n\\nrunning 7 tests\\n.......\\ntest result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s\\n\\n\\nrunning 0 tests\\n\\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\\n\\n\",\"stderr\":\"\",\"duration_ms\":376,\"exit_code\":0,\"signal\":null,\"timed_out\":false}",
+          "name": "cargo test --offline -q",
+          "passed": true
+        },
+        {
+          "detail": "SHA-256 44d47fa33796ae711ac083aa70a5d6ae9087c4c790be9027bd21cc4491297b91 and 21537 bytes match working file and immutable copy",
+          "name": "after: src/lib.rs",
+          "passed": true
+        }
+      ],
+      "contract_id": "c-f730aa37cfdd40beaee44104373a244c",
+      "evidence": [],
+      "reasons": [],
+      "verdict": "accept",
+      "verification_id": "v-b91a1088900447098e53f771824b2f98",
+      "verifier": "urn:hacp:agent:a"
+    }
+  ]
+}

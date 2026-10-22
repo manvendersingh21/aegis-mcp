@@ -41,6 +41,7 @@ pub fn router(
         .unwrap_or_default();
     Router::new()
         .route("/.well-known/ai-plugin.json", get(manifest))
+        .route("/static/logo.png", get(serve_logo))
         .route("/openapi.json", get(openapi_spec))
         .route("/api/chatgpt/openapi.json", get(openapi_spec))
         .route("/api/chatgpt/affordability", post(check_affordability))
@@ -87,6 +88,11 @@ async fn manifest(State(_st): State<ChatGptState>, headers: HeaderMap) -> Respon
         "legal_info_url": format!("{}/legal", base_url)
     });
     Json(manifest).into_response()
+}
+
+async fn serve_logo() -> Response {
+    const LOGO_BYTES: &[u8] = include_bytes!("../../../aegis-logo.png");
+    ([(header::CONTENT_TYPE, "image/png")], LOGO_BYTES).into_response()
 }
 
 /// OpenAPI 3.1.0 Specification for ChatGPT Custom GPT Actions

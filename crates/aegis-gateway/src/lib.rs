@@ -105,7 +105,8 @@ pub fn router_with_wallet_and_sessions(
         .route("/api/receipts/{id}", get(receipt))
         .route("/api/scenario/{n}", post(scenario))
         .route("/api/agent-log", post(agent_log))
-        .route("/mcp", post(mcp));
+        .route("/mcp", get(mcp_sse).post(mcp))
+        .route("/sse", get(mcp_sse));
     let router = if password_login { router.route("/api/login", post(login)) } else { router };
     router
         .with_state(state)
@@ -297,6 +298,31 @@ async fn agent_log(State(state): State<Arc<AppState>>, Json(body): Json<AgentLog
 
 fn emit(state: &AppState, subject: &str, event: Event) {
     let _ = state.events.send(EventEnvelope { subject: subject.to_string(), event });
+}
+
+async fn mcp_sse(headers: HeaderMap) -> Response {
+    let session_id = uuid::Uuid::new_v4().simple().to_string();
+    let host = headers
+        .get("x-forwarded-host")
+        .or_else(|| headers.get(header::HOST))
+        .and_then(|h| h.to_str().ok())
+        .unwrap_or("127.0.0.1:8787");
+    let proto = headers
+        .get("x-forwarded-proto")
+        .and_then(|h| h.to_str().ok())
+        .unwrap_or(if host.contains("trycloudflare.com") { "https" } else { "http" });
+    let endpoint_uri = format!("{proto}://{host}/mcp?sessionId={session_id}");
+
+    let stream = tokio_stream::iter(vec![
+        Ok::<_, Infallible>(
+            SseEvent::default()
+                .event("endpoint")
+                .data(endpoint_uri)
+        )
+    ]);
+    Sse::new(stream)
+        .keep_alive(KeepAlive::new().interval(Duration::from_secs(15)))
+        .into_response()
 }
 
 async fn mcp(State(state): State<Arc<AppState>>, request: Request<Body>) -> Response {

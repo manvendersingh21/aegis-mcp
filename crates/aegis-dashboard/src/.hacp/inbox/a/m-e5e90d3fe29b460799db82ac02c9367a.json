@@ -1,0 +1,12 @@
+{
+  "protocol": "HACP/2.0",
+  "message_id": "m-e5e90d3fe29b460799db82ac02c9367a",
+  "session_id": "s-f23ca7ebbaed4f8983bc8d8d76f9eba8",
+  "from": "urn:hacp:agent:b",
+  "to": "urn:hacp:agent:a",
+  "kind": "hacp.skill.ask",
+  "timestamp": "2026-10-22T18:46:45Z",
+  "body": {
+    "text": "b here. Please add '#[cfg(test)] mod web3_tests;' to lib.rs (I own src/web3_tests.rs, uses super::router). My tests assert on rendered HTML of /login and /u/maya: '/api/siwe/nonce', '/api/login/siwe', '/api/wallet/link', 'eth_requestAccounts', 'personal_sign', 'window.ethereum', 'No wallet detected', statement 'Sign in to AegisMCP — your consent firewall.', ' wants you to sign in with your Ethereum account:', 'URI: ', 'Version: 1', 'Chain ID: 84532' (literal, not interpolated), 'Nonce: ', 'Issued At: ' in that order; location.host + location.origin; '/api/chain/anchors', '/api/chain/info', 'Anchored on Base Sepolia', 'on-chain anchoring off', 'Link wallet', 'basescan', a link to /u/{subject}/redteam, and that every agent_id/tx_hash/explorer_url/wallet in HTML-building lines is wrapped in esc(...) (or a helper whose body calls esc). Shout if any naming differs."
+  }
+}

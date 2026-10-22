@@ -1,0 +1,12 @@
+{
+  "protocol": "HACP/2.0",
+  "message_id": "m-47025dfd08554b739cd23398fc583fde",
+  "session_id": "s-f23ca7ebbaed4f8983bc8d8d76f9eba8",
+  "from": "urn:hacp:agent:a",
+  "to": "urn:hacp:agent:b",
+  "kind": "hacp.skill.ask",
+  "timestamp": "2026-10-22T18:48:32Z",
+  "body": {
+    "text": "web3_tests.rs:68 needle 'Issued At: ' (with trailing space) can't match: siwe_template() slices to end right after 'Issued At:' (no space). Use 'Issued At:' in the order list. Also still the :140 char-boundary panic. These are the only 3 remaining failures; lib.rs side is done."
+  }
+}

@@ -1,0 +1,132 @@
+{
+  "artifacts": [
+    {
+      "path": "web3_tests.rs",
+      "record": {
+        "artifact_id": "urn:hacp:artifact:4f39511c-677a-4d7d-bf34-b76deb7c6883",
+        "contract_id": "c-cc499082312645aa956f55509fdfc855",
+        "contract_revision": "8428131141268d2ec45863eb01dd959f7c28d4f474b5643ea93bc41dc3dc802d",
+        "derived_from": [],
+        "digest": "b972b70942655bdcc8f285c1b428d758bc2f61842fb058f48adaddab68d87438",
+        "location": ".hacp/artifacts/4f39511c-677a-4d7d-bf34-b76deb7c6883.bin",
+        "media_type": "application/octet-stream",
+        "producer": "urn:hacp:agent:b",
+        "size": 12614,
+        "task_id": "t-f348b28202514b96809e9eaa0e83fae2",
+        "visibility": "participants"
+      }
+    }
+  ],
+  "attempts": [
+    {
+      "commands": [
+        {
+          "command": "cargo test -p aegis-dashboard --offline -q",
+          "duration_ms": 518,
+          "exit_code": 0,
+          "signal": null,
+          "stderr": "",
+          "stdout": "\nrunning 7 tests\n.......\ntest result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 3 tests\n...\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 2 tests\n..\ntest result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n",
+          "timed_out": false
+        }
+      ],
+      "id": "v-1a892a76a844472e86268caebcc296e0",
+      "peer": "a",
+      "status": "completed"
+    }
+  ],
+  "contract": {
+    "agreed_by": [],
+    "agreed_terms_digest": null,
+    "amendments": 0,
+    "contract_id": "c-cc499082312645aa956f55509fdfc855",
+    "escalation_path": [],
+    "limits": {
+      "max_amendments": 3,
+      "max_rounds": 3
+    },
+    "participants": [
+      "urn:hacp:agent:a",
+      "urn:hacp:agent:b"
+    ],
+    "pending_submission": null,
+    "pending_submitter": null,
+    "relationship": "collaboration",
+    "revisions": [
+      {
+        "content": {
+          "acceptance": [
+            "cargo test -p aegis-dashboard --offline -q"
+          ],
+          "inputs": [],
+          "outputs": [
+            "web3_tests.rs"
+          ]
+        },
+        "digest": "8428131141268d2ec45863eb01dd959f7c28d4f474b5643ea93bc41dc3dc802d",
+        "number": 1
+      }
+    ],
+    "rework_scope": null,
+    "rounds": 0,
+    "state": "settled",
+    "task": {
+      "owner": "urn:hacp:agent:b",
+      "summary": "dashboard web3 tests",
+      "task_id": "t-f348b28202514b96809e9eaa0e83fae2"
+    }
+  },
+  "pending_digest": "86f4e476994948c52097d45448bd99440d206a151d625302345e37261a076765",
+  "pending_terms": {
+    "acceptance": [
+      "cargo test -p aegis-dashboard --offline -q"
+    ],
+    "inputs": [],
+    "outputs": [
+      "web3_tests.rs"
+    ]
+  },
+  "proposer": "b",
+  "submissions": [
+    {
+      "against_revision": "8428131141268d2ec45863eb01dd959f7c28d4f474b5643ea93bc41dc3dc802d",
+      "artifacts": [
+        "urn:hacp:artifact:4f39511c-677a-4d7d-bf34-b76deb7c6883"
+      ],
+      "claim": "web3_tests.rs: 7 tests via router(). They evaluate the SIWE message JS and require an exact EIP-4361 match; check the nonce/login/link/personal_sign wiring, the chain anchors/info usage, basescan links and the redteam link; and run a nesting-aware escape check on agent_id/tx_hash/explorer_url/wallet/etc. Guard tests make sure the checkers reject raw interpolation and CRLF. cargo test -p aegis-dashboard passes.",
+      "evidence": []
+    }
+  ],
+  "verifications": [
+    {
+      "against_revision": "8428131141268d2ec45863eb01dd959f7c28d4f474b5643ea93bc41dc3dc802d",
+      "artifacts": [
+        "urn:hacp:artifact:4f39511c-677a-4d7d-bf34-b76deb7c6883"
+      ],
+      "attests": [],
+      "checks": [
+        {
+          "detail": "SHA-256 b972b70942655bdcc8f285c1b428d758bc2f61842fb058f48adaddab68d87438 and 12614 bytes match working file and immutable copy",
+          "name": "before: web3_tests.rs",
+          "passed": true
+        },
+        {
+          "detail": "{\"command\":\"cargo test -p aegis-dashboard --offline -q\",\"stdout\":\"\\nrunning 7 tests\\n.......\\ntest result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\\n\\n\\nrunning 3 tests\\n...\\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\\n\\n\\nrunning 2 tests\\n..\\ntest result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s\\n\\n\\nrunning 0 tests\\n\\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\\n\\n\",\"stderr\":\"\",\"duration_ms\":518,\"exit_code\":0,\"signal\":null,\"timed_out\":false}",
+          "name": "cargo test -p aegis-dashboard --offline -q",
+          "passed": true
+        },
+        {
+          "detail": "SHA-256 b972b70942655bdcc8f285c1b428d758bc2f61842fb058f48adaddab68d87438 and 12614 bytes match working file and immutable copy",
+          "name": "after: web3_tests.rs",
+          "passed": true
+        }
+      ],
+      "contract_id": "c-cc499082312645aa956f55509fdfc855",
+      "evidence": [],
+      "reasons": [],
+      "verdict": "accept",
+      "verification_id": "v-1a892a76a844472e86268caebcc296e0",
+      "verifier": "urn:hacp:agent:a"
+    }
+  ]
+}

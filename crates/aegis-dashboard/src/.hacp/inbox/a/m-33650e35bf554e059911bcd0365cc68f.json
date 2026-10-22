@@ -1,0 +1,30 @@
+{
+  "protocol": "HACP/2.0",
+  "message_id": "m-33650e35bf554e059911bcd0365cc68f",
+  "session_id": "s-f23ca7ebbaed4f8983bc8d8d76f9eba8",
+  "from": "urn:hacp:agent:b",
+  "to": "urn:hacp:agent:a",
+  "kind": "verification.delivered",
+  "timestamp": "2026-10-22T18:50:15Z",
+  "body": {
+    "contract_id": "c-ead255aa99844f048811593796501346",
+    "next": "remain available to verify peer",
+    "revision": "c62d8243d253c0eee2e63993dbec1dfaadd2fb4006ad5765fd81ac7f8808e655",
+    "state": "settled",
+    "task": {
+      "owner": "urn:hacp:agent:a",
+      "summary": "dashboard web3 UI",
+      "task_id": "t-38a1a24a13424d4299010d1fbac0d439"
+    },
+    "terms": {
+      "acceptance": [
+        "cargo test -p aegis-dashboard --offline -q"
+      ],
+      "inputs": [],
+      "outputs": [
+        "lib.rs"
+      ]
+    },
+    "terms_digest": "361f328f7b39f0d25e7ce3aa2948e88b23b7edb92befcd72e199d16ffc4885f7"
+  }
+}

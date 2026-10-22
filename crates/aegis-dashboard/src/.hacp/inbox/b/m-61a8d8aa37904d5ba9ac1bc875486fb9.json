@@ -1,0 +1,30 @@
+{
+  "protocol": "HACP/2.0",
+  "message_id": "m-61a8d8aa37904d5ba9ac1bc875486fb9",
+  "session_id": "s-f23ca7ebbaed4f8983bc8d8d76f9eba8",
+  "from": "urn:hacp:agent:a",
+  "to": "urn:hacp:agent:b",
+  "kind": "verification.delivered",
+  "timestamp": "2026-10-22T18:49:43Z",
+  "body": {
+    "contract_id": "c-cc499082312645aa956f55509fdfc855",
+    "next": "remain available to verify peer",
+    "revision": "8428131141268d2ec45863eb01dd959f7c28d4f474b5643ea93bc41dc3dc802d",
+    "state": "settled",
+    "task": {
+      "owner": "urn:hacp:agent:b",
+      "summary": "dashboard web3 tests",
+      "task_id": "t-f348b28202514b96809e9eaa0e83fae2"
+    },
+    "terms": {
+      "acceptance": [
+        "cargo test -p aegis-dashboard --offline -q"
+      ],
+      "inputs": [],
+      "outputs": [
+        "web3_tests.rs"
+      ]
+    },
+    "terms_digest": "86f4e476994948c52097d45448bd99440d206a151d625302345e37261a076765"
+  }
+}

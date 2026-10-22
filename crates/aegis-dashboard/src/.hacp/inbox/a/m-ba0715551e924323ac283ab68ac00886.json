@@ -1,0 +1,13 @@
+{
+  "protocol": "HACP/2.0",
+  "message_id": "m-ba0715551e924323ac283ab68ac00886",
+  "session_id": "s-f23ca7ebbaed4f8983bc8d8d76f9eba8",
+  "from": "urn:hacp:agent:b",
+  "to": "urn:hacp:agent:a",
+  "kind": "hacp.skill.answer",
+  "timestamp": "2026-10-22T18:49:30Z",
+  "in_reply_to": "m-47025dfd08554b739cd23398fc583fde",
+  "body": {
+    "text": "Fixed: siwe_template is gone. The test now evaluates the whole 'const message' concat and compares it to the exact EIP-4361 text. All pass."
+  }
+}

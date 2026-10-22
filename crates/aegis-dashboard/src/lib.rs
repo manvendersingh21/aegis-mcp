@@ -89,7 +89,14 @@ async fn login() -> Markup {
                     div #err.err {}
                     p.hint { "Demo password: " code { "<subject>-demo" } }
                 }
+                div.card.form.web3 {
+                    label { "Or use a wallet" }
+                    button.primary #siwe type="button" { "Sign in with Ethereum" span.arrow { "↘" } }
+                    div #siwe-err.err {}
+                    p #nowallet.hint style="display:none" { "No wallet detected — install MetaMask or another EIP-1193 wallet." }
+                }
             }
+            script { (PreEscaped(SIWE_JS)) }
             script { (PreEscaped(LOGIN_JS)) }
             script { (PreEscaped(GLOBE_JS)) }
         },
@@ -116,6 +123,7 @@ async fn person_page(Path(subject): Path<String>) -> Response {
                         option value=(p.subject) selected[p.subject == me.subject] { (p.display_name) }
                     }
                 }
+                a.sec.rtlink href=(format!("/u/{}/redteam", me.subject)) { "Red team" }
                 button.sec onclick="logout()" { "Log out" }
             }))
             main.dash {
@@ -138,6 +146,12 @@ async fn person_page(Path(subject): Path<String>) -> Response {
                     div.cred-row {
                         code #token { "loading…" }
                         button.sec onclick="copyToken()" #copybtn { "Copy" }
+                    }
+                    div.cred-row.wallet {
+                        span.lbl { "Wallet" }
+                        span #wallet { span.dim { "loading…" } }
+                        button.sec #linkwallet type="button" onclick="linkWallet()" style="display:none" { "Link wallet" }
+                        span #wallet-err.err {}
                     }
                 }
                 div.cols {
@@ -169,9 +183,11 @@ async fn person_page(Path(subject): Path<String>) -> Response {
                         h3 { "Recent ledger" }
                         div #ledger {}
                         div.dim.pk #pk {}
+                        div #chain-anchor.anchor {}
                     }
                 }
             }
+            script { (PreEscaped(SIWE_JS)) }
             script { (PreEscaped(format!("const SUBJECT = {subj_js};\n{JS}"))) }
             script { (PreEscaped(GLOBE_JS)) }
         },
@@ -293,6 +309,23 @@ pre{margin:0;white-space:pre-wrap;word-break:break-word;font-size:11.5px}
 .le{font-size:12.5px;border-left:3px solid var(--line);padding:4px 10px;margin-bottom:6px}
 .le.released{border-color:var(--grn)}.le.violation{border-color:var(--red)}.le.denied,.le.timed_out{border-color:var(--amb)}
 .le .h{font:11px var(--mono);color:var(--ink3)}
+.risk{display:inline-flex;flex-wrap:wrap;align-items:center;gap:6px 12px;background:var(--wash);color:var(--blue);border:1px solid var(--soft);border-radius:4px;padding:4px 8px;font:12px var(--mono)}
+.risk b{font:700 11px var(--mono);text-transform:uppercase;letter-spacing:.1em}
+.risk.blocked{background:var(--redw);color:var(--red);border-color:var(--red)}
+.rb{display:inline-flex;align-items:center;gap:6px}.rt{width:56px;height:6px;background:#fff;border:1px solid currentColor;border-radius:1px;overflow:hidden;display:inline-block}
+.rt i{display:block;height:100%;background:currentColor}
+.amt{font:700 44px/1 var(--disp);letter-spacing:-.045em;color:var(--ink);margin:4px 0 2px}.mer{font:600 18px var(--disp);color:var(--ink2);margin-bottom:10px}
+.consent.pay{background:#fff;border-color:var(--blue)}.consent.pay h4{color:var(--blue)}
+.paycard{border-color:var(--grn);background:var(--grnw)}.tok{background:var(--blk);color:#5dffa5;padding:2px 6px;border-radius:3px}
+button:disabled{opacity:.4;cursor:not-allowed}
+.col,.card,.consent,.rel{box-shadow:0 1px 0 rgba(0,0,0,.02)}
+.btns button{height:40px}
+a.sec{font:600 13px var(--body);border:1px solid var(--line);border-radius:4px;padding:10px 14px;background:#fff}
+a.sec:hover{border-color:var(--blue);color:var(--blue)}
+.form.web3{margin-top:16px}.cred-row.wallet{margin-top:10px;flex-wrap:wrap}
+.achip{display:inline-block;font:12px var(--mono);padding:2px 7px;border-radius:3px;background:var(--wash);color:var(--blue);border:1px solid var(--soft)}
+a.achip:hover{border-color:var(--blue)}
+.anchor{margin-top:10px;font:12px var(--mono);color:var(--ink3);word-break:break-all}.anchor a{color:var(--blue)}.anchor .ok{color:var(--grn);font-weight:700}
 "#;
 
 const GLOBE_JS: &str = r#"
@@ -327,11 +360,47 @@ const GLOBE_JS: &str = r#"
 })();
 "#;
 
+const SIWE_JS: &str = r#"
+async function siweSign() {
+  const eth = window.ethereum;
+  if (!eth) throw new Error('No wallet detected');
+  const accts = await eth.request({method: 'eth_requestAccounts'});
+  const address = accts && accts[0];
+  if (!address) throw new Error('No account selected');
+  const nres = await fetch('/api/siwe/nonce');
+  if (!nres.ok) throw new Error('Could not get nonce');
+  const nonce = (await nres.json()).nonce;
+  const message = location.host + ' wants you to sign in with your Ethereum account:\n' + address + '\n\n'
+    + 'Sign in to AegisMCP — your consent firewall.\n\n'
+    + 'URI: ' + location.origin + '\nVersion: 1\nChain ID: 84532\nNonce: ' + nonce
+    + '\nIssued At: ' + new Date().toISOString();
+  const signature = await eth.request({method: 'personal_sign', params: [message, address]});
+  return {message: message, signature: signature};
+}
+"#;
+
 const LOGIN_JS: &str = r#"
 (function(){
   const params = new URLSearchParams(location.search);
   const pre = params.get('subject');
   if (pre) document.getElementById('who').value = pre;
+  const sb = document.getElementById('siwe');
+  if (!window.ethereum) document.getElementById('nowallet').style.display = '';
+  sb.addEventListener('click', async () => {
+    const e2 = document.getElementById('siwe-err');
+    e2.textContent = '';
+    if (!window.ethereum) { document.getElementById('nowallet').style.display = ''; return; }
+    try {
+      const body = await siweSign();
+      const res = await fetch('/api/login/siwe', {method: 'POST', headers: {'content-type': 'application/json'}, body: JSON.stringify(body)});
+      if (!res.ok) { e2.textContent = 'Wallet sign-in failed'; return; }
+      const j = await res.json().catch(() => ({}));
+      const next = params.get('next');
+      if (next && next.startsWith('/') && !next.startsWith('//')) location.href = next;
+      else if (j.subject) location.href = '/u/' + encodeURIComponent(j.subject);
+      else { const me = await (await fetch('/api/me')).json(); location.href = '/u/' + encodeURIComponent(me.subject); }
+    } catch (x) { e2.textContent = (x && x.message) || 'Wallet sign-in cancelled'; }
+  });
   document.getElementById('loginform').addEventListener('submit', async e => {
     e.preventDefault();
     const err = document.getElementById('err');
@@ -358,6 +427,13 @@ let token = '';
 const hhmm = () => new Date().toTimeString().slice(0, 8);
 const pretty = v => esc(JSON.stringify(v, null, 2));
 const fmtBytes = n => n >= 1048576 ? (n / 1048576).toFixed(1) + ' MB' : n >= 1024 ? (n / 1024).toFixed(1) + ' KB' : n + ' B';
+const EXPLORER_DEFAULT = 'https://sepolia.basescan.org';
+let explorer = EXPLORER_DEFAULT;
+const isAddr = s => /^0x[0-9a-fA-F]{40}$/.test(String(s || ''));
+const shortHex = (s, a, b) => String(s).slice(0, a) + '…' + String(s).slice(-b);
+const addrLink = a => '<a class="achip" target="_blank" rel="noopener" href="' + esc(explorer) + '/address/' + esc(a) + '" title="' + esc(a) + '">' + esc(shortHex(a, 6, 4)) + '</a>';
+const ag = (id, safe) => isAddr(id) ? addrLink(id) : safe;
+const ago = ts => { const d = Math.max(0, nowS() - Number(ts || 0)); return d < 60 ? d + 's ago' : d < 3600 ? Math.floor(d / 60) + 'm ago' : d < 86400 ? Math.floor(d / 3600) + 'h ago' : Math.floor(d / 86400) + 'd ago'; };
 const nowS = () => Math.floor(Date.now() / 1000);
 
 function term(cls, html) {
@@ -388,25 +464,65 @@ function decide(id, approve, mode) {
   renderConsents();
 }
 
+const REGULATED = ['ssn', 'account_number', 'routing_number', 'passport_number'];
+const risks = {};        // call_id -> RiskScores event
+const usd = n => '$' + Number(n || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+
+function riskChip(ev) {
+  if (!ev) return '';
+  const sc = ev.scores || {};
+  const bar = (label, v) => {
+    const pct = Math.max(0, Math.min(1, Number(v) || 0));
+    return '<span class="rb"><span class="rl">' + label + '</span><span class="rt"><i style="width:' + Math.round(pct * 100) + '%"></i></span><span class="rv">' + pct.toFixed(2) + '</span></span>';
+  };
+  return '<span class="risk' + (ev.blocked ? ' blocked' : '') + '"><b>Jev risk</b>'
+    + bar('promptInjection', sc.prompt_injection) + bar('dataExfiltration', sc.data_exfiltration)
+    + (ev.blocked ? '<span class="pill-r">Blocked</span>' : '') + '</span>';
+}
+
 function renderConsents() {
+  const t = nowS();
+  for (const id of Object.keys(pending)) if (Number(pending[id].deadline) <= t) delete pending[id];
   const ids = Object.keys(pending);
   $('fw-empty').style.display = ids.length ? 'none' : '';
   $('consents').innerHTML = ids.map(id => {
     const r = pending[id], c = r.call || {};
     const sens = new Set(r.sensitive_fields || []);
-    const chips = (r.requested_fields || []).map(f => '<span class="chip' + (sens.has(f) ? ' sens' : '') + '">' + esc(f) + '</span>').join('');
+    const fields = r.requested_fields || [];
+    const chips = fields.map(f => '<span class="chip' + (sens.has(f) ? ' sens' : '') + '">' + esc(f) + '</span>').join('');
     const left = Math.max(0, r.deadline - nowS());
     const eid = esc(id);
+    const risk = riskChip(risks[c.call_id]);
+    const timer = '<div class="cd" data-deadline="' + Number(r.deadline) + '">auto-deny in ' + left + 's</div>';
+    if (c.tool === 'make_payment') {
+      const a = c.arguments || {};
+      return '<div class="consent pay"><h4><span class="pill-w">Waiting</span> Payment requires approval</h4>'
+        + '<div class="amt">' + usd(a.amount_usd) + '</div><div class="mer">to ' + esc(a.merchant) + '</div>'
+        + '<div class="kv"><b>Agent</b> ' + ag(c.agent_id, esc(c.agent_id)) + '</div>'
+        + '<div class="kv"><b>Purpose</b> ' + esc(c.purpose) + '</div>'
+        + (a.description ? '<div class="kv"><b>Memo</b> ' + esc(a.description) + '</div>' : '')
+        + (risk ? '<div class="kv">' + risk + '</div>' : '')
+        + timer
+        + '<div class="btns">'
+        + '<button class="b-clean" data-id="' + eid + '" data-a="1" data-m="CLEAN_ROOM">Approve payment</button>'
+        + '<button class="b-deny" data-id="' + eid + '" data-a="0" data-m="BLOCK">Deny</button>'
+        + '</div></div>';
+    }
+    const regulated = fields.some(f => REGULATED.includes(f));
+    const raw = regulated
+      ? '<button class="b-raw" disabled title="raw release disabled for regulated identifiers">Allow RAW 60s</button>'
+      : '<button class="b-raw" data-id="' + eid + '" data-a="1" data-m="ALLOW">Allow RAW 60s</button>';
     return '<div class="consent"><h4><span class="pill-w">Waiting</span> Consent required</h4>'
-      + '<div class="kv"><b>Agent</b> ' + esc(c.agent_id) + '</div>'
+      + '<div class="kv"><b>Agent</b> ' + ag(c.agent_id, esc(c.agent_id)) + '</div>'
       + '<div class="kv"><b>Tool</b> <code>' + esc(c.tool) + '</code> → ' + esc(r.resource) + '</div>'
       + '<div class="kv"><b>Purpose</b> ' + esc(c.purpose) + '</div>'
       + '<div class="kv"><b>Fields</b> ' + (chips || '<span class="dim">(all)</span>') + '</div>'
-      + '<div class="cd" data-deadline="' + Number(r.deadline) + '">auto-deny in ' + left + 's</div>'
+      + (risk ? '<div class="kv">' + risk + '</div>' : '')
+      + timer
       + '<div class="btns">'
       + '<button class="b-clean" data-id="' + eid + '" data-a="1" data-m="CLEAN_ROOM">Approve CLEAN ROOM 60s</button>'
       + '<button class="b-red" data-id="' + eid + '" data-a="1" data-m="REDACT">Approve REDACTED 60s</button>'
-      + '<button class="b-raw" data-id="' + eid + '" data-a="1" data-m="ALLOW">Allow RAW 60s</button>'
+      + raw
       + '<button class="b-deny" data-id="' + eid + '" data-a="0" data-m="BLOCK">Deny</button>'
       + '</div></div>';
   }).join('');
@@ -421,7 +537,7 @@ function renderReceipts() {
   const live = receipts.filter(r => !r.revoked && r.expires_at > t);
   $('receipts').innerHTML = live.length ? live.map(r =>
     '<div class="rc" data-id="' + esc(r.receipt_id) + '"><span class="ttl" data-exp="' + Number(r.expires_at) + '">' + (r.expires_at - t) + 's</span>'
-    + '<b>' + esc(r.grantee_agent) + '</b><br><span class="dim">' + esc(r.resource) + ' · ' + esc(r.resolution_mode) + ' · ' + esc(r.receipt_id) + '</span></div>'
+    + '<b>' + ag(r.grantee_agent, esc(r.grantee_agent)) + '</b><br><span class="dim">' + esc(r.resource) + ' · ' + esc(r.resolution_mode) + ' · ' + esc(r.receipt_id) + '</span></div>'
   ).join('') : '<div class="dim">none</div>';
 }
 $('receipts').addEventListener('click', async e => {
@@ -445,7 +561,7 @@ function renderMetrics(m) {
 
 function renderLedger(list) {
   $('ledger').innerHTML = (list || []).slice(0, 12).map(e =>
-    '<div class="le ' + esc(e.outcome) + '"><b>' + esc(String(e.outcome).toUpperCase()) + '</b> ' + esc(e.agent_id) + ' → <code>' + esc(e.tool) + '</code>'
+    '<div class="le ' + esc(e.outcome) + '"><b>' + esc(String(e.outcome).toUpperCase()) + '</b> ' + ag(e.agent_id, esc(e.agent_id)) + ' → <code>' + esc(e.tool) + '</code>'
     + ' <span class="dim">[' + esc(e.policy_applied) + ']</span><br><span class="h">#' + esc(String(e.entry_hash || '').slice(0, 10)) + '</span></div>'
   ).join('') || '<div class="dim">empty</div>';
 }
@@ -459,7 +575,9 @@ async function loadState() {
     receipts = s.active_receipts || [];
     renderReceipts();
     renderLedger(s.recent_ledger);
-    for (const r of (s.pending || [])) pending[r.request_id] = r;
+    const t = nowS();
+    for (const k of Object.keys(pending)) delete pending[k];
+    for (const r of (s.pending || [])) if (Number(r.deadline) > t) pending[r.request_id] = r;
     renderConsents();
     $('pk').textContent = s.public_key_hex ? 'ed25519 pubkey: ' + s.public_key_hex : '';
   } catch (e) { console.error(e); }
@@ -469,7 +587,7 @@ function addRelease(ev) {
   const saved = Math.max(0, (ev.bytes_raw || 0) - (ev.bytes_released || 0));
   const d = document.createElement('div');
   d.className = 'rel';
-  d.innerHTML = '<div class="hd"><span class="pill-ok">Released</span> ' + esc(ev.agent_id) + ' → <b>' + esc(ev.tool) + '</b> · mode <b>' + esc(ev.mode) + '</b></div>'
+  d.innerHTML = '<div class="hd"><span class="pill-ok">Released</span> ' + ag(ev.agent_id, esc(ev.agent_id)) + ' → <b>' + esc(ev.tool) + '</b> · mode <b>' + esc(ev.mode) + '</b></div>'
     + '<div class="diff"><div class="pane raw"><div class="t">RAW REQUESTED</div><pre>' + pretty(ev.raw) + '</pre></div>'
     + '<div class="pane ok"><div class="t">RELEASED TO AGENT</div><pre>' + pretty(ev.released) + '</pre></div></div>'
     + '<div class="saved">' + fmtBytes(ev.bytes_raw || 0) + ' → ' + fmtBytes(ev.bytes_released || 0) + ' · ' + fmtBytes(saved) + ' withheld</div>';
@@ -477,15 +595,36 @@ function addRelease(ev) {
   while ($('releases').children.length > 6) $('releases').lastChild.remove();
 }
 
+function addPayment(ev) {
+  const r = ev.receipt || {};
+  const test = r.provider === 'stripe' ? (r.livemode ? 'Stripe LIVE' : 'Stripe TEST') : 'Demo provider';
+  const d = document.createElement('div');
+  d.className = 'rel paycard';
+  d.innerHTML = '<div class="hd"><span class="pill-ok">' + esc(r.status === 'succeeded' ? 'executed' : r.status || 'executed') + '</span> ' + ag(ev.agent_id, esc(ev.agent_id)) + ' → <b>make_payment</b></div>'
+    + '<div class="amt">' + usd((r.amount_cents || 0) / 100) + '</div><div class="mer">to ' + esc(r.merchant) + '</div>'
+    + '<div class="kv"><b>Provider</b> ' + esc(test) + '</div>'
+    + '<div class="kv"><b>Payment</b> <code>' + esc(r.payment_id) + '</code></div>'
+    + '<div class="kv"><b>Card</b> <code class="tok">[TOKENIZED BY AEGIS]</code></div>';
+  $('releases').prepend(d);
+  while ($('releases').children.length > 6) $('releases').lastChild.remove();
+  term('aegis', 'payment executed ' + usd((r.amount_cents || 0) / 100) + ' → ' + esc(r.merchant));
+}
+
 function onEvent(ev) {
   switch (ev.type) {
     case 'agent_log':
-      term(ev.agent_id === 'aegis' ? 'aegis' : 'say', '<b>' + esc(ev.agent_id) + '</b>: ' + esc(ev.text)); break;
+      term(ev.agent_id === 'aegis' ? 'aegis' : 'say', '<b>' + ag(ev.agent_id, esc(ev.agent_id)) + '</b>: ' + esc(ev.text)); break;
     case 'tool_requested': {
       const c = ev.call || {};
-      term('tool', '▶ <b>' + esc(c.agent_id) + '</b> calls <b>' + esc(c.tool) + '</b> ' + esc(JSON.stringify(c.arguments)));
+      term('tool', '▶ <b>' + ag(c.agent_id, esc(c.agent_id)) + '</b> calls <b>' + esc(c.tool) + '</b> ' + esc(JSON.stringify(c.arguments)));
       break;
     }
+    case 'risk_scored':
+      risks[ev.call_id] = ev;
+      term(ev.blocked ? 'tool' : 'aegis', riskChip(ev) + ' ' + esc(ev.tool));
+      renderConsents();
+      break;
+    case 'payment_executed': addPayment(ev); break;
     case 'consent_required':
       pending[ev.request.request_id] = ev.request; renderConsents(); break;
     case 'consent_resolved':
@@ -496,7 +635,7 @@ function onEvent(ev) {
     case 'policy_violation': {
       const a = document.createElement('div');
       a.className = 'alert';
-      a.innerHTML = '<span class="pill-r">Blocked</span> <b>POLICY VIOLATION</b><br>' + esc(ev.agent_id) + ' → ' + esc(ev.tool) + '<br>' + esc(ev.reason)
+      a.innerHTML = '<span class="pill-r">Blocked</span> <b>POLICY VIOLATION</b><br>' + ag(ev.agent_id, esc(ev.agent_id)) + ' → ' + esc(ev.tool) + '<br>' + esc(ev.reason)
         + '<br>' + (ev.offending || []).map(o => '<span class="chip sens">' + esc(o) + '</span>').join('');
       $('alerts').prepend(a);
       while ($('alerts').children.length > 3) $('alerts').lastChild.remove();
@@ -527,7 +666,53 @@ setInterval(() => {
     if (left <= 0) expired = true;
   });
   if (expired) renderReceipts();
+  // The snapshot is authoritative: clears consent cards whose waiter went away.
+  if (++stateTick % 5 === 0) loadState();
 }, 1000);
+let stateTick = 0;
+
+function renderWallet(w) {
+  $('wallet').innerHTML = w ? addrLink(w) : '<span class="dim">none linked</span>';
+  $('linkwallet').style.display = w ? 'none' : '';
+}
+async function linkWallet() {
+  $('wallet-err').textContent = '';
+  if (!window.ethereum) { $('wallet-err').textContent = 'No wallet detected'; return; }
+  try {
+    const res = await fetch('/api/wallet/link', {method: 'POST', headers: {'content-type': 'application/json'}, body: JSON.stringify(await siweSign())});
+    if (!res.ok) { $('wallet-err').textContent = 'Link failed'; return; }
+    renderWallet((await res.json()).address);
+  } catch (e) { $('wallet-err').textContent = (e && e.message) || 'Link cancelled'; }
+}
+
+let chainEnabled = null, myAnchor = null;
+let sbAnchor = '';
+function renderAnchor() {
+  const el = $('chain-anchor');
+  const sb = sbAnchor ? '<div>' + sbAnchor + '</div>' : '';
+  if (chainEnabled === false) { el.innerHTML = sb + '<span class="dim">on-chain anchoring off</span>'; return; }
+  if (!myAnchor) { el.innerHTML = sb + (chainEnabled ? '<span class="dim">awaiting on-chain anchor…</span>' : ''); return; }
+  el.innerHTML = sb + '<span class="ok">Anchored on Base Sepolia ✓</span> <a target="_blank" rel="noopener" href="' + esc(myAnchor.explorer_url) + '">'
+    + esc(shortHex(myAnchor.tx_hash, 8, 6)) + '</a> · ' + esc(ago(myAnchor.anchored_at));
+}
+async function loadChain() {
+  try {
+    const sr = await fetch('/api/anchors');
+    if (sr.ok) { const sj = await sr.json(); const x = (sj.anchors || sj)[SUBJECT]; if (x) sbAnchor = 'Supabase anchor ✓ <span class="dim">' + esc(shortHex(x.head_hash || x.object || JSON.stringify(x), 10, 6)) + '</span>'; }
+  } catch (e) { console.error(e); }
+  try {
+    const info = await (await fetch('/api/chain/info')).json();
+    chainEnabled = !!info.enabled;
+    if (info.explorer) explorer = info.explorer;
+    if (chainEnabled) {
+      const a = await (await fetch('/api/chain/anchors')).json();
+      myAnchor = (a.anchors || {})[SUBJECT] || null;
+    }
+  } catch (e) { console.error(e); }
+  renderAnchor();
+  renderReceipts();
+}
+setInterval(loadChain, 15000);
 
 (async function init() {
   try {
@@ -537,8 +722,13 @@ setInterval(() => {
     if (me.subject && me.subject !== SUBJECT) { location.href = '/u/' + encodeURIComponent(me.subject); return; }
     token = me.mcp_token || '';
     $('token').textContent = token || '(none)';
+    renderWallet(me.wallet || null);
   } catch (e) { console.error(e); }
+  await loadChain();
   loadState();
   connect();
 })();
 "#;
+
+#[cfg(test)]
+mod web3_tests;

@@ -1,0 +1,12 @@
+{
+  "protocol": "HACP/2.0",
+  "message_id": "m-fe816107cd904de893c8e0351fe4bf01",
+  "session_id": "s-f23ca7ebbaed4f8983bc8d8d76f9eba8",
+  "from": "urn:hacp:agent:a",
+  "to": "urn:hacp:agent:b",
+  "kind": "hacp.skill.ask",
+  "timestamp": "2026-10-22T18:47:33Z",
+  "body": {
+    "text": "lib.rs web3 UI is done and builds; mod web3_tests is declared. Markers: ids #siwe #nowallet #wallet #linkwallet #chain-anchor, fns siweSign/linkWallet/loadChain, link href /u/{subject}/redteam. Tell me when web3_tests.rs exists."
+  }
+}

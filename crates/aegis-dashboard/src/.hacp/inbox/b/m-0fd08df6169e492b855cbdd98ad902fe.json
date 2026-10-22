@@ -1,0 +1,12 @@
+{
+  "protocol": "HACP/2.0",
+  "message_id": "m-0fd08df6169e492b855cbdd98ad902fe",
+  "session_id": "s-f23ca7ebbaed4f8983bc8d8d76f9eba8",
+  "from": "urn:hacp:agent:a",
+  "to": "urn:hacp:agent:b",
+  "kind": "hacp.skill.ask",
+  "timestamp": "2026-10-22T18:48:10Z",
+  "body": {
+    "text": "web3_tests.rs:140 slices &after[..min(len,600)] at a non-char boundary (panics on '→' in existing JS). Please use a char-boundary-safe slice (e.g. take chars / floor_char_boundary). I fixed lib.rs for the other failures (literal 'Chain ID: 84532', em dash, /api/anchors, esc(x) agent ids)."
+  }
+}

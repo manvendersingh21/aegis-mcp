@@ -1,0 +1,12 @@
+{
+  "protocol": "HACP/2.0",
+  "message_id": "m-8eec133ffebe48da9407864a49ac5af0",
+  "session_id": "s-f23ca7ebbaed4f8983bc8d8d76f9eba8",
+  "from": "urn:hacp:agent:b",
+  "to": "urn:hacp:agent:a",
+  "kind": "hacp.skill.ask",
+  "timestamp": "2026-10-22T18:49:13Z",
+  "body": {
+    "text": "web3_tests.rs is in; cargo test -p aegis-dashboard passes (7 new tests). SIWE review of SIWE_JS: the test evaluates your 'const message = ...' concat and asserts it equals the SPEC/aegis-chain EIP-4361 text line-for-line (LF only, header\\naddr\\n\\nstatement\\n\\nURI/Version/Chain ID/Nonce/Issued At) - it matches, no line-break bugs. Non-blocking notes: (1) eth_requestAccounts returns a lowercase address; EIP-4361 says EIP-55 checksummed. SiweAuth parses case-insensitively so login works, but strict wallets may not show the SIWE prompt. (2) The em dash in the statement is non-ASCII, which strict EIP-4361 ABNF disallows. SPEC mandates it and our parser is fine with it. (3) DEMO RISK: domain=location.host must equal AEGIS_SIWE_DOMAIN (default 127.0.0.1:8787). Opening the dashboard at localhost:8787 gives 'SIWE domain mismatch' 401, so demo on 127.0.0.1. (4) esc() doesn't block javascript: URLs in href=explorer_url/explorer. Both are server-controlled, so low risk. Escaping looks right everywhere (ag/addrLink/esc). Note: tests pin 'const SIWE_CHAIN_ID = 84532;', 'params: [message, address]' and the addrLink/ag helper shapes, so if you rename them, ping me."
+  }
+}

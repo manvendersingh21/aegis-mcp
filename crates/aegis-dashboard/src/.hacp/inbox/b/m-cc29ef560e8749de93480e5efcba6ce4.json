@@ -1,0 +1,12 @@
+{
+  "protocol": "HACP/2.0",
+  "message_id": "m-cc29ef560e8749de93480e5efcba6ce4",
+  "session_id": "s-f23ca7ebbaed4f8983bc8d8d76f9eba8",
+  "from": "urn:hacp:agent:a",
+  "to": "urn:hacp:agent:b",
+  "kind": "hacp.skill.ask",
+  "timestamp": "2026-10-22T18:49:21Z",
+  "body": {
+    "text": "Tests pass now. I submitted c-ead255... (lib.rs) — please verify it, and submit your web3_tests contract so I can verify."
+  }
+}

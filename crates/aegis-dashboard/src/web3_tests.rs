@@ -1,0 +1,298 @@
+//! PHASE 4 (Web3) dashboard checks, rendered through `router()`: the SIWE
+//! sign-in / wallet-link flow (including the exact EIP-4361 message the page
+//! JS builds), the on-chain anchor line, basescan links, the red-team link and
+//! escaping of event strings in the inline scripts.
+
+use super::*;
+use axum::body::Body;
+use axum::http::Request;
+use http_body_util::BodyExt;
+use tower::ServiceExt;
+
+async fn get_page(path: &str) -> (StatusCode, String) {
+    let resp = router().oneshot(Request::get(path).body(Body::empty()).unwrap()).await.unwrap();
+    let status = resp.status();
+    let body = resp.into_body().collect().await.unwrap().to_bytes();
+    (status, String::from_utf8(body.to_vec()).unwrap())
+}
+
+/// Concatenated contents of every inline `<script>` on the page.
+fn scripts(html: &str) -> String {
+    let mut out = String::new();
+    let mut rest = html;
+    while let Some(i) = rest.find("<script") {
+        let after = &rest[i..];
+        let Some(open_end) = after.find('>') else { break };
+        let body = &after[open_end + 1..];
+        let Some(close) = body.find("</script>") else { break };
+        out.push_str(&body[..close]);
+        out.push('\n');
+        rest = &body[close..];
+    }
+    out
+}
+
+fn assert_has(hay: &str, needles: &[&str], ctx: &str) {
+    for n in needles {
+        assert!(hay.contains(n), "{ctx}: missing {n:?}");
+    }
+}
+
+/// Decode a single- or double-quoted JS string literal body.
+fn js_unescape(s: &str) -> String {
+    let mut out = String::new();
+    let mut it = s.chars();
+    while let Some(c) = it.next() {
+        if c != '\\' {
+            out.push(c);
+            continue;
+        }
+        match it.next() {
+            Some('n') => out.push('\n'),
+            Some('r') => out.push('\r'),
+            Some('t') => out.push('\t'),
+            Some('u') => {
+                let hex: String = it.by_ref().take(4).collect();
+                out.push(char::from_u32(u32::from_str_radix(&hex, 16).unwrap()).unwrap());
+            }
+            Some(o) => out.push(o),
+            None => {}
+        }
+    }
+    out
+}
+
+/// Evaluate the page's `const message = ...;` SIWE expression — a `+` chain
+/// of string literals and identifiers — substituting the given identifier
+/// values. Panics on any operand it does not know, so the template can't
+/// silently gain an untested part.
+fn eval_siwe_message(js: &str, vars: &[(&str, &str)]) -> String {
+    let start = js.find("const message = ").expect("SIWE `const message = ` expression") + "const message = ".len();
+    let src = &js[start..];
+    let mut out = String::new();
+    let mut operand = String::new();
+    let mut chars = src.char_indices().peekable();
+    let flush = |operand: &mut String, out: &mut String| {
+        let op = operand.trim();
+        if !op.is_empty() {
+            let v = vars.iter().find(|(k, _)| *k == op).unwrap_or_else(|| panic!("unknown SIWE operand {op:?}"));
+            out.push_str(v.1);
+        }
+        operand.clear();
+    };
+    while let Some((i, c)) = chars.next() {
+        match c {
+            '\'' | '"' => {
+                let mut end = i + 1;
+                let bytes = src.as_bytes();
+                while bytes[end] != c as u8 {
+                    end += if bytes[end] == b'\\' { 2 } else { 1 };
+                }
+                out.push_str(&js_unescape(&src[i + 1..end]));
+                while chars.peek().is_some_and(|(j, _)| *j <= end) {
+                    chars.next();
+                }
+            }
+            '`' => panic!("SIWE message must be built from plain string literals"),
+            '+' => flush(&mut operand, &mut out),
+            ';' => {
+                flush(&mut operand, &mut out);
+                return out;
+            }
+            _ => operand.push(c),
+        }
+    }
+    panic!("unterminated SIWE message expression");
+}
+
+const ADDR: &str = "0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed";
+
+/// The EIP-4361 text aegis-chain's `siwe_message` produces / `SiweAuth` parses.
+fn expected_siwe(domain: &str, uri: &str, nonce: &str, issued_at: &str) -> String {
+    format!(
+        "{domain} wants you to sign in with your Ethereum account:\n{ADDR}\n\n\
+         Sign in to AegisMCP — your consent firewall.\n\n\
+         URI: {uri}\nVersion: 1\nChain ID: 84532\nNonce: {nonce}\nIssued At: {issued_at}"
+    )
+}
+
+fn assert_siwe_flow(html: &str, ctx: &str) {
+    let js = scripts(html);
+    assert_has(&js, &["window.ethereum", "eth_requestAccounts", "/api/siwe/nonce", "personal_sign"], ctx);
+    // Chain id is pinned to Base Sepolia in the page.
+    let chain_id = if js.contains("const SIWE_CHAIN_ID = 84532;") { "84532" } else { "<unpinned>" };
+    let msg = eval_siwe_message(
+        &js,
+        &[
+            ("location.host", "127.0.0.1:8787"),
+            ("location.origin", "http://127.0.0.1:8787"),
+            ("address", ADDR),
+            ("nonce", "abc123XYZ"),
+            ("SIWE_CHAIN_ID", chain_id),
+            ("new Date().toISOString()", "2026-10-22T17:00:00.000Z"),
+        ],
+    );
+    assert_eq!(
+        msg,
+        expected_siwe("127.0.0.1:8787", "http://127.0.0.1:8787", "abc123XYZ", "2026-10-22T17:00:00.000Z"),
+        "{ctx}: SIWE message must match EIP-4361 line-for-line"
+    );
+    for label in ["Chain ID: 84532", "URI: ", "Version: 1", "Nonce: ", "Issued At: "] {
+        assert!(msg.lines().any(|l| l.starts_with(label)), "{ctx}: {label:?} line");
+    }
+    // The signed text is exactly what gets posted.
+    assert!(js.contains("params: [message, address]"), "{ctx}: personal_sign(message, address)");
+    assert!(js.contains("{message: message, signature: signature}") || js.contains("{message, signature}"), "{ctx}: posts {{message, signature}}");
+}
+
+#[tokio::test]
+async fn login_page_has_siwe_sign_in() {
+    let (status, html) = get_page("/login").await;
+    assert_eq!(status, StatusCode::OK);
+    assert_has(&html, &["Sign in with Ethereum", "No wallet detected"], "/login");
+    assert_siwe_flow(&html, "/login");
+    let js = scripts(&html);
+    assert_has(&js, &["fetch('/api/login/siwe'", "location.href = '/u/' + encodeURIComponent("], "/login");
+    // Password login remains.
+    assert!(html.contains("type=\"password\"") && js.contains("fetch('/api/login'"), "/login: password login must remain");
+}
+
+#[tokio::test]
+async fn person_page_links_wallet_with_siwe() {
+    let (status, html) = get_page("/u/maya").await;
+    assert_eq!(status, StatusCode::OK);
+    assert_has(&html, &["Link wallet"], "/u/maya");
+    assert_siwe_flow(&html, "/u/maya");
+    let js = scripts(&html);
+    assert_has(&js, &["fetch('/api/wallet/link'", "fetch('/api/me')", "me.wallet"], "/u/maya");
+}
+
+#[tokio::test]
+async fn person_page_shows_chain_anchors_and_basescan_links() {
+    let (_, html) = get_page("/u/maya").await;
+    let js = scripts(&html);
+    assert_has(&js, &["fetch('/api/chain/info')", "fetch('/api/chain/anchors')", "info.enabled", "explorer_url", "tx_hash"], "/u/maya");
+    assert_has(&js, &["Anchored on Base Sepolia", "on-chain anchoring off"], "/u/maya");
+    // Own subject only.
+    assert!(js.contains("[SUBJECT]"), "/u/maya: anchors looked up for own subject");
+    // Supabase anchor line is kept alongside the on-chain one.
+    assert_has(&js, &["/api/anchors"], "/u/maya");
+    assert_has(&js, &["https://sepolia.basescan.org", "'/address/'"], "/u/maya");
+    // 0x agent ids become address chips; anything else stays escaped text.
+    assert!(js.contains("/^0x[0-9a-fA-F]{40}$/"), "/u/maya: 0x address detection");
+}
+
+#[tokio::test]
+async fn person_page_links_redteam() {
+    let (_, html) = get_page("/u/maya").await;
+    assert!(html.contains("href=\"/u/maya/redteam\""), "/u/maya: link to the red-team page");
+    let (_, html) = get_page("/u/leo").await;
+    if !html.contains("unknown person") {
+        assert!(html.contains("href=\"/u/leo/redteam\""), "/u/leo: per-subject red-team link");
+    }
+}
+
+/// Helpers that escape everything they render: `esc` and `addrLink`.
+const ESCAPING: &[&str] = &["esc", "addrLink"];
+
+/// `ag(id, safe)` chips `id` only when it is a regex-validated 0x address and
+/// otherwise renders `safe` verbatim — so only its first argument is safe.
+fn is_ident_call(callee: &str, name: &str) -> bool {
+    callee.ends_with(name) && !callee[..callee.len() - name.len()].ends_with(|c: char| c.is_alphanumeric() || c == '_')
+}
+
+/// Every `obj.field` read on an HTML-building line must sit inside an
+/// escaping helper call (at any nesting depth) or be a comparison.
+fn unescaped_uses(js: &str, field: &str) -> Vec<String> {
+    let mut bad = vec![];
+    let pat = format!(".{field}");
+    for line in js.lines() {
+        let builds_html = line.contains("innerHTML") || line.contains("'<") || line.contains("\"<") || line.contains("`<");
+        if !builds_html {
+            continue;
+        }
+        let mut from = 0;
+        while let Some(rel) = line[from..].find(&pat) {
+            let i = from + rel;
+            from = i + pat.len();
+            if line[from..].chars().next().is_some_and(|c| c.is_alphanumeric() || c == '_') {
+                continue;
+            }
+            let tail = line[from..].trim_start();
+            if ["===", "!==", "==", "!=", "?", "&&", "||"].iter().any(|op| tail.starts_with(op)) {
+                continue;
+            }
+            // Walk back over unclosed '(' and check each callee name.
+            let head = line[..i].as_bytes();
+            let mut depth = 0i32;
+            let mut escaped = false;
+            let mut comma_at_level = false;
+            for j in (0..head.len()).rev() {
+                match head[j] {
+                    b')' => depth += 1,
+                    b'(' if depth > 0 => depth -= 1,
+                    b',' if depth == 0 => comma_at_level = true,
+                    b'(' => {
+                        let callee = line[..j].trim_end();
+                        let first_arg_of_ag = is_ident_call(callee, "ag") && !comma_at_level;
+                        if first_arg_of_ag || ESCAPING.iter().any(|h| is_ident_call(callee, h)) {
+                            escaped = true;
+                            break;
+                        }
+                        comma_at_level = false;
+                    }
+                    _ => {}
+                }
+            }
+            if !escaped {
+                bad.push(line.trim().to_string());
+            }
+        }
+    }
+    bad
+}
+
+#[tokio::test]
+async fn event_strings_are_escaped_in_inline_scripts() {
+    let (_, html) = get_page("/u/maya").await;
+    let js = scripts(&html);
+    assert!(js.contains("const esc = s => String(s == null ? '' : s).replace(/[&<>\"']/g"), "esc helper present");
+    // The chip helpers are only trusted while they escape / validate.
+    let def = |name: &str| js.lines().find(|l| l.starts_with(&format!("const {name} = "))).unwrap_or_else(|| panic!("{name} helper")).to_string();
+    let addr_link = def("addrLink");
+    assert!(addr_link.contains("esc(a)") && !addr_link.contains("+ a +"), "addrLink escapes: {addr_link}");
+    let ag = def("ag");
+    assert!(ag.contains("isAddr(id) ? addrLink(id) :"), "ag only chips validated addresses: {ag}");
+    assert!(js.contains("const isAddr = s => /^0x[0-9a-fA-F]{40}$/.test("), "isAddr is anchored");
+    // Spot-check: agent_id is rendered escaped in consent cards, ledger and feed.
+    for obj in ["c", "e", "ev"] {
+        assert!(js.contains(&format!("esc({obj}.agent_id)")), "esc({obj}.agent_id)");
+    }
+    for field in ["agent_id", "grantee_agent", "tx_hash", "explorer_url", "wallet", "address", "reason", "text", "merchant", "tool"] {
+        let bad = unescaped_uses(&js, field);
+        assert!(bad.is_empty(), "unescaped .{field} in HTML-building JS:\n{}", bad.join("\n"));
+    }
+}
+
+#[test]
+fn escape_checker_catches_raw_interpolation() {
+    // Guard the guard: flag raw concat / template interpolation, accept esc().
+    assert_eq!(unescaped_uses("d.innerHTML = '<b>' + ev.agent_id + '</b>';", "agent_id").len(), 1);
+    assert_eq!(unescaped_uses("d.innerHTML = `<b>${ev.agent_id}</b>`;", "agent_id").len(), 1);
+    assert_eq!(unescaped_uses("x.innerHTML = '<a>' + shortHex(a.tx_hash, 8, 6);", "tx_hash").len(), 1);
+    assert_eq!(unescaped_uses("x.innerHTML = '<a>' + nesc(a.tx_hash);", "tx_hash").len(), 1);
+    assert_eq!(unescaped_uses("d.innerHTML = '<b>' + ag(ev.agent_id, ev.agent_id);", "agent_id").len(), 1);
+    assert!(unescaped_uses("d.innerHTML = '<b>' + ag(ev.agent_id, esc(ev.agent_id));", "agent_id").is_empty());
+    assert!(unescaped_uses("d.innerHTML = '<b>' + esc(ev.agent_id) + (ev.agent_id === 'aegis' ? '<i>' : '');", "agent_id").is_empty());
+    assert!(unescaped_uses("x.innerHTML = '<a>' + esc(shortHex(a.tx_hash, 8, 6));", "tx_hash").is_empty());
+}
+
+#[test]
+fn siwe_evaluator_is_exact() {
+    // Guard the guard: a missing blank line or CRLF must not pass.
+    let good = "const message = h + ' wants you to sign in with your Ethereum account:\\n' + a;";
+    assert_eq!(eval_siwe_message(good, &[("h", "d"), ("a", "0x1")]), "d wants you to sign in with your Ethereum account:\n0x1");
+    let crlf = "const message = 'URI: ' + u + '\\r\\nVersion: 1';";
+    assert_ne!(eval_siwe_message(crlf, &[("u", "x")]), "URI: x\nVersion: 1");
+    assert_eq!(js_unescape("AegisMCP \\u2014 x"), "AegisMCP — x");
+}

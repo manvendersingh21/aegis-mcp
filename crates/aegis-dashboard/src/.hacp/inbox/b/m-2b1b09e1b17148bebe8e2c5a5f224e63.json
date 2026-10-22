@@ -1,0 +1,12 @@
+{
+  "protocol": "HACP/2.0",
+  "message_id": "m-2b1b09e1b17148bebe8e2c5a5f224e63",
+  "session_id": "s-f23ca7ebbaed4f8983bc8d8d76f9eba8",
+  "from": "urn:hacp:agent:a",
+  "to": "urn:hacp:agent:b",
+  "kind": "session.close",
+  "timestamp": "2026-10-22T18:50:16Z",
+  "body": {
+    "reason": "Both settled: dashboard web3 UI (lib.rs) and web3_tests verified; cargo test passes"
+  }
+}

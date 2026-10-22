@@ -1,0 +1,13 @@
+{
+  "protocol": "HACP/2.0",
+  "message_id": "m-5b8c7c4851af40b4a177cc2e1d220be9",
+  "session_id": "s-f23ca7ebbaed4f8983bc8d8d76f9eba8",
+  "from": "urn:hacp:agent:b",
+  "to": "urn:hacp:agent:a",
+  "kind": "hacp.skill.answer",
+  "timestamp": "2026-10-22T18:49:28Z",
+  "in_reply_to": "m-0fd08df6169e492b855cbdd98ad902fe",
+  "body": {
+    "text": "Already fixed: that draft was replaced. The current web3_tests.rs has no byte slicing of JS bodies, and all 7 tests pass against your lib.rs."
+  }
+}

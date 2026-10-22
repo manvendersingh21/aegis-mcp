@@ -1,0 +1,132 @@
+{
+  "artifacts": [
+    {
+      "path": "lib.rs",
+      "record": {
+        "artifact_id": "urn:hacp:artifact:e0c61b46-41e7-45fb-8b96-7aa70c6abe36",
+        "contract_id": "c-ead255aa99844f048811593796501346",
+        "contract_revision": "c62d8243d253c0eee2e63993dbec1dfaadd2fb4006ad5765fd81ac7f8808e655",
+        "derived_from": [],
+        "digest": "13dea18e23acd9a12b900f3847df7c2b2b9ac3e12037cd4570db82df81415902",
+        "location": ".hacp/artifacts/e0c61b46-41e7-45fb-8b96-7aa70c6abe36.bin",
+        "media_type": "application/octet-stream",
+        "producer": "urn:hacp:agent:a",
+        "size": 40321,
+        "task_id": "t-38a1a24a13424d4299010d1fbac0d439",
+        "visibility": "participants"
+      }
+    }
+  ],
+  "attempts": [
+    {
+      "commands": [
+        {
+          "command": "cargo test -p aegis-dashboard --offline -q",
+          "duration_ms": 295,
+          "exit_code": 0,
+          "signal": null,
+          "stderr": "",
+          "stdout": "\nrunning 7 tests\n.......\ntest result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s\n\n\nrunning 3 tests\n...\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 2 tests\n..\ntest result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n",
+          "timed_out": false
+        }
+      ],
+      "id": "v-146db5dda9414267aa9c5f4e1c7af3d2",
+      "peer": "b",
+      "status": "completed"
+    }
+  ],
+  "contract": {
+    "agreed_by": [],
+    "agreed_terms_digest": null,
+    "amendments": 0,
+    "contract_id": "c-ead255aa99844f048811593796501346",
+    "escalation_path": [],
+    "limits": {
+      "max_amendments": 3,
+      "max_rounds": 3
+    },
+    "participants": [
+      "urn:hacp:agent:a",
+      "urn:hacp:agent:b"
+    ],
+    "pending_submission": null,
+    "pending_submitter": null,
+    "relationship": "collaboration",
+    "revisions": [
+      {
+        "content": {
+          "acceptance": [
+            "cargo test -p aegis-dashboard --offline -q"
+          ],
+          "inputs": [],
+          "outputs": [
+            "lib.rs"
+          ]
+        },
+        "digest": "c62d8243d253c0eee2e63993dbec1dfaadd2fb4006ad5765fd81ac7f8808e655",
+        "number": 1
+      }
+    ],
+    "rework_scope": null,
+    "rounds": 0,
+    "state": "settled",
+    "task": {
+      "owner": "urn:hacp:agent:a",
+      "summary": "dashboard web3 UI",
+      "task_id": "t-38a1a24a13424d4299010d1fbac0d439"
+    }
+  },
+  "pending_digest": "361f328f7b39f0d25e7ce3aa2948e88b23b7edb92befcd72e199d16ffc4885f7",
+  "pending_terms": {
+    "acceptance": [
+      "cargo test -p aegis-dashboard --offline -q"
+    ],
+    "inputs": [],
+    "outputs": [
+      "lib.rs"
+    ]
+  },
+  "proposer": "a",
+  "submissions": [
+    {
+      "against_revision": "c62d8243d253c0eee2e63993dbec1dfaadd2fb4006ad5765fd81ac7f8808e655",
+      "artifacts": [
+        "urn:hacp:artifact:e0c61b46-41e7-45fb-8b96-7aa70c6abe36"
+      ],
+      "claim": "Dashboard web3 UI: SIWE login button + no-wallet hint, wallet link card, on-chain anchor line (+Supabase /api/anchors), 0x agent chips with basescan links, Red team header link; mod web3_tests declared",
+      "evidence": []
+    }
+  ],
+  "verifications": [
+    {
+      "against_revision": "c62d8243d253c0eee2e63993dbec1dfaadd2fb4006ad5765fd81ac7f8808e655",
+      "artifacts": [
+        "urn:hacp:artifact:e0c61b46-41e7-45fb-8b96-7aa70c6abe36"
+      ],
+      "attests": [],
+      "checks": [
+        {
+          "detail": "SHA-256 13dea18e23acd9a12b900f3847df7c2b2b9ac3e12037cd4570db82df81415902 and 40321 bytes match working file and immutable copy",
+          "name": "before: lib.rs",
+          "passed": true
+        },
+        {
+          "detail": "{\"command\":\"cargo test -p aegis-dashboard --offline -q\",\"stdout\":\"\\nrunning 7 tests\\n.......\\ntest result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s\\n\\n\\nrunning 3 tests\\n...\\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\\n\\n\\nrunning 2 tests\\n..\\ntest result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\\n\\n\\nrunning 0 tests\\n\\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\\n\\n\",\"stderr\":\"\",\"duration_ms\":295,\"exit_code\":0,\"signal\":null,\"timed_out\":false}",
+          "name": "cargo test -p aegis-dashboard --offline -q",
+          "passed": true
+        },
+        {
+          "detail": "SHA-256 13dea18e23acd9a12b900f3847df7c2b2b9ac3e12037cd4570db82df81415902 and 40321 bytes match working file and immutable copy",
+          "name": "after: lib.rs",
+          "passed": true
+        }
+      ],
+      "contract_id": "c-ead255aa99844f048811593796501346",
+      "evidence": [],
+      "reasons": [],
+      "verdict": "accept",
+      "verification_id": "v-146db5dda9414267aa9c5f4e1c7af3d2",
+      "verifier": "urn:hacp:agent:b"
+    }
+  ]
+}

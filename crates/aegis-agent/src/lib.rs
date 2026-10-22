@@ -1,5 +1,6 @@
 //! Aegis Agent — scenarios and MCP client implementation.
 
+use std::collections::HashMap;
 use std::sync::Arc;
 use std::time::Duration;
 use aegis_core::{BoxFuture, LlmClient, ScenarioRunner};
@@ -118,6 +119,9 @@ pub struct McpClient {
     subject: String,
     agent_id: String,
     purpose: String,
+    /// Optional bearer credential (the person's vault token, or an agent
+    /// credential) — required when the gateway runs token enforcement.
+    bearer: Option<String>,
     client: reqwest::Client,
     initialized: Arc<Mutex<bool>>,
 }
@@ -140,9 +144,29 @@ impl McpClient {
             subject: subject.into(),
             agent_id: agent_id.into(),
             purpose: purpose.into(),
+            bearer: None,
             client,
             initialized: Arc::new(Mutex::new(false)),
         }
+    }
+
+    /// Attach a bearer credential (sent as `Authorization: Bearer …` on every
+    /// request, alongside the Aegis headers).
+    pub fn with_bearer(mut self, token: impl Into<String>) -> Self {
+        self.bearer = Some(token.into());
+        self
+    }
+
+    fn apply_headers(&self, request: reqwest::RequestBuilder) -> reqwest::RequestBuilder {
+        let mut request = request
+            .header("content-type", "application/json")
+            .header("x-aegis-user", &self.subject)
+            .header("x-aegis-agent", &self.agent_id)
+            .header("x-aegis-purpose", &self.purpose);
+        if let Some(token) = &self.bearer {
+            request = request.bearer_auth(token);
+        }
+        request
     }
 
     async fn ensure_initialized(&self) -> anyhow::Result<()> {
@@ -168,12 +192,7 @@ impl McpClient {
         });
 
         let resp = self
-            .client
-            .post(format!("{}/mcp", self.base_url))
-            .header("content-type", "application/json")
-            .header("x-aegis-user", &self.subject)
-            .header("x-aegis-agent", &self.agent_id)
-            .header("x-aegis-purpose", &self.purpose)
+            .apply_headers(self.client.post(format!("{}/mcp", self.base_url)))
             .json(&init_req)
             .send()
             .await?;
@@ -194,12 +213,7 @@ impl McpClient {
         });
 
         let _ = self
-            .client
-            .post(format!("{}/mcp", self.base_url))
-            .header("content-type", "application/json")
-            .header("x-aegis-user", &self.subject)
-            .header("x-aegis-agent", &self.agent_id)
-            .header("x-aegis-purpose", &self.purpose)
+            .apply_headers(self.client.post(format!("{}/mcp", self.base_url)))
             .json(&notif_req)
             .send()
             .await;
@@ -219,12 +233,7 @@ impl McpClient {
         });
 
         let resp = self
-            .client
-            .post(format!("{}/mcp", self.base_url))
-            .header("content-type", "application/json")
-            .header("x-aegis-user", &self.subject)
-            .header("x-aegis-agent", &self.agent_id)
-            .header("x-aegis-purpose", &self.purpose)
+            .apply_headers(self.client.post(format!("{}/mcp", self.base_url)))
             .json(&body)
             .send()
             .await?;
@@ -255,12 +264,7 @@ impl McpClient {
         });
 
         let resp = self
-            .client
-            .post(format!("{}/mcp", self.base_url))
-            .header("content-type", "application/json")
-            .header("x-aegis-user", &self.subject)
-            .header("x-aegis-agent", &self.agent_id)
-            .header("x-aegis-purpose", &self.purpose)
+            .apply_headers(self.client.post(format!("{}/mcp", self.base_url)))
             .json(&body)
             .send()
             .await?;
@@ -283,6 +287,9 @@ impl McpClient {
 pub struct Scenarios {
     llm: Option<LlmClient>,
     http: reqwest::Client,
+    /// Per-person bearer tokens (subject → credential) so scenarios keep
+    /// working when the gateway enforces MCP credentials.
+    tokens: HashMap<String, String>,
 }
 
 impl Scenarios {
@@ -292,7 +299,13 @@ impl Scenarios {
             .timeout(Duration::from_secs(10))
             .build()
             .unwrap_or_else(|_| reqwest::Client::new());
-        Self { llm, http }
+        Self { llm, http, tokens: HashMap::new() }
+    }
+
+    /// Attach per-person bearer tokens (e.g. each vault's `mcp_token()`).
+    pub fn with_tokens(mut self, tokens: HashMap<String, String>) -> Self {
+        self.tokens = tokens;
+        self
     }
 
     async fn execute(&self, scenario: u8, subject: String, base_url: String) {
@@ -359,7 +372,10 @@ impl Scenarios {
                 .await;
 
             // Step 2: Tool call via McpClient
-            let mcp = McpClient::new(&base_url, &subject, &call.agent_id, &call.purpose);
+            let mut mcp = McpClient::new(&base_url, &subject, &call.agent_id, &call.purpose);
+            if let Some(token) = self.tokens.get(&subject) {
+                mcp = mcp.with_bearer(token.clone());
+            }
             let result = mcp.call_tool(&call.tool, call.arguments.clone()).await;
 
             // Step 3: Summarize result and post second agent-log

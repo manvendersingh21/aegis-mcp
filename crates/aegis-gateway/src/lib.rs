@@ -33,6 +33,12 @@ pub struct GatewayDeps {
     pub base_url: String,
     pub consent_timeout_secs: u64,
     pub require_mcp_token: bool,
+    /// The person's advocate: advises on pending consent requests (Phase 6).
+    pub advocate: Option<Arc<dyn Advocate>>,
+    /// Standing rules checked before any consent prompt (Phase 6).
+    pub policy: Option<Arc<dyn PolicyEngine>>,
+    /// Resolves `aegis_fk_mcp_…` agent credentials to a verified identity.
+    pub verifier: Option<Arc<dyn AgentVerifier>>,
 }
 
 struct AppState {
@@ -42,7 +48,7 @@ struct AppState {
     /// Receipt ids are associated with the tool that caused them. ReceiptClaims
     /// identify resources, so the gateway keeps the additional tool scope here.
     lease_tools: Mutex<HashMap<String, String>>,
-    sessions: Mutex<HashMap<String, String>>,
+    sessions: Arc<Mutex<HashMap<String, String>>>,
     wallet: Option<Arc<dyn WalletAuth>>,
 }
 
@@ -63,13 +69,22 @@ pub fn router(deps: GatewayDeps) -> Router {
 /// Like [`router`], plus Sign-In-With-Ethereum routes when `wallet` is set:
 /// `GET /api/siwe/nonce`, `POST /api/login/siwe`, `POST /api/wallet/link`.
 pub fn router_with_wallet(deps: GatewayDeps, wallet: Option<Arc<dyn WalletAuth>>) -> Router {
+    router_with_wallet_and_sessions(deps, wallet, Arc::new(Mutex::new(HashMap::new())))
+}
+
+/// Like [`router_with_wallet`], but uses a shared session map (e.g. for passkeys).
+pub fn router_with_wallet_and_sessions(
+    deps: GatewayDeps,
+    wallet: Option<Arc<dyn WalletAuth>>,
+    sessions: Arc<Mutex<HashMap<String, String>>>,
+) -> Router {
     let (event_tx, _) = broadcast::channel(512);
     let state = Arc::new(AppState {
         deps,
         events: event_tx,
         pending: Mutex::new(HashMap::new()),
         lease_tools: Mutex::new(HashMap::new()),
-        sessions: Mutex::new(HashMap::new()),
+        sessions,
         wallet,
     });
     // Wallet-only when SIWE is configured: the password route only exists on
@@ -287,7 +302,21 @@ fn emit(state: &AppState, subject: &str, event: Event) {
 async fn mcp(State(state): State<Arc<AppState>>, request: Request<Body>) -> Response {
     let headers = request.headers();
     let bearer = headers.get(header::AUTHORIZATION).and_then(|h| h.to_str().ok()).and_then(|h| h.strip_prefix("Bearer "));
-    let subject = if let Some(token) = bearer {
+    // An agent credential (`aegis_fk_mcp_…`) verifies BOTH the person and the
+    // agent id; the self-asserted `x-aegis-agent` header is ignored then.
+    let mut verified_agent: Option<String> = None;
+    let subject = if let Some(credential) = bearer.filter(|b| b.starts_with("aegis_fk_")) {
+        let Some(verifier) = state.deps.verifier.clone() else {
+            return StatusCode::UNAUTHORIZED.into_response();
+        };
+        match verifier.verify(credential).await {
+            Some(identity) if state.deps.vaults.iter().any(|v| v.subject() == identity.subject) => {
+                verified_agent = Some(identity.agent_id);
+                identity.subject
+            }
+            _ => return StatusCode::UNAUTHORIZED.into_response(),
+        }
+    } else if let Some(token) = bearer {
         let Some(vault) = vault_for_token(&state.deps.vaults, token) else { return StatusCode::UNAUTHORIZED.into_response() };
         vault.subject()
     } else {
@@ -302,7 +331,9 @@ async fn mcp(State(state): State<Arc<AppState>>, request: Request<Body>) -> Resp
     if !state.deps.vaults.iter().any(|v| v.subject() == subject) {
         return json_response(StatusCode::OK, rpc_error(Value::Null, -32602, "unknown subject"));
     }
-    let agent = headers.get("x-aegis-agent").and_then(|h| h.to_str().ok()).unwrap_or("anonymous_agent").to_string();
+    let agent = verified_agent
+        .or_else(|| headers.get("x-aegis-agent").and_then(|h| h.to_str().ok()).map(str::to_string))
+        .unwrap_or_else(|| "anonymous_agent".to_string());
     let purpose = headers.get("x-aegis-purpose").and_then(|h| h.to_str().ok()).unwrap_or("unspecified").to_string();
     let bytes = match axum::body::to_bytes(request.into_body(), 1_048_576).await {
         Ok(bytes) => bytes,
@@ -408,8 +439,25 @@ async fn call_tool(state: &Arc<AppState>, subject: &str, agent: &str, purpose: &
     }
 
     let requested_fields = requested_fields(&call, &spec);
+
+    // Standing rules take precedence over leases and prompts (Phase 6).
+    let rule = state.deps.policy.as_ref().and_then(|engine| engine.decide(&call, &spec, &requested_fields, payment_amount_cents));
+    if let Some((rule, _)) = &rule {
+        if matches!(rule.decision, RuleDecision::Deny) {
+            let label = rule.label.clone();
+            emit(state, subject, Event::RuleApplied { call_id:call.call_id.clone(), agent_id:agent.into(), tool:name.into(), rule_id:rule.rule_id.clone(), decision:rule.decision.clone() });
+            emit(state, subject, Event::CallDenied { call_id:call.call_id.clone(), agent_id:agent.into(), tool:name.into(), reason:format!("denied by your rule: {label}") });
+            let entry = ledger_entry(&call, spec.resource, Mode::Block, Outcome::Denied, Value::Null, 0, 0, None);
+            let _ = state.deps.ledger.append(entry);
+            emit(state, subject, Event::Metrics { metrics:state.deps.ledger.metrics(Some(subject), now_unix()) });
+            return Ok(tool_error(format!("AEGIS 403: denied by your rule: {label}")));
+        }
+    }
+    let forced_ask = matches!(rule, Some((_, RuleDecision::Ask)));
+    let rule_allow = rule.filter(|(_, decision)| matches!(decision, RuleDecision::Allow { .. }))
+        .map(|(rule, decision)| (rule, match decision { RuleDecision::Allow { mode } => mode, _ => Mode::CleanRoom }));
     let mut receipt_id = None;
-    let active_receipt = if !is_payment {
+    let active_receipt = if !is_payment && !forced_ask && rule_allow.is_none() {
         let now = now_unix();
         let tool_ids = state.lease_tools.lock().await;
         state.deps.ledger.active_receipts(Some(subject), now).into_iter().find(|receipt| {
@@ -421,10 +469,28 @@ async fn call_tool(state: &Arc<AppState>, subject: &str, agent: &str, purpose: &
                 && state.deps.signer.verify(receipt)
         })
     } else { None };
-    let mode = if let Some(receipt) = active_receipt {
+    let mode = if let Some((rule, rule_mode)) = rule_allow {
+        // The person already decided this: resolve at the rule's mode with a
+        // signed receipt (purpose = "rule:<id>") and no prompt.
+        emit(state, subject, Event::RuleApplied { call_id:call.call_id.clone(), agent_id:agent.into(), tool:name.into(), rule_id:rule.rule_id.clone(), decision:RuleDecision::Allow { mode:rule_mode } });
+        if !is_payment {
+            let now = now_unix();
+            let claims = ReceiptClaims {
+                receipt_id:new_id("rcpt"), subject:subject.into(), grantee_agent:agent.into(), purpose:format!("rule:{}", rule.rule_id),
+                resource:spec.resource, resolution_mode:rule_mode,
+                allowed_fields:requested_fields.clone(),
+                issued_at:now, expires_at:now.saturating_add(60),
+            };
+            let receipt = state.deps.signer.issue(claims);
+            let _ = state.deps.ledger.store_receipt(&receipt);
+            state.lease_tools.lock().await.insert(receipt.claims.receipt_id.clone(), name.to_string());
+            receipt_id = Some(receipt.claims.receipt_id.clone());
+        }
+        rule_mode
+    } else if let Some(receipt) = active_receipt {
         receipt_id = Some(receipt.claims.receipt_id);
         receipt.claims.resolution_mode
-    } else if !is_payment && !risk_requires_consent && spec.default_mode == Mode::Redact {
+    } else if !is_payment && !risk_requires_consent && !forced_ask && spec.default_mode == Mode::Redact {
         Mode::Redact
     } else {
         let request_id = new_id("consent");
@@ -439,7 +505,20 @@ async fn call_tool(state: &Arc<AppState>, subject: &str, agent: &str, purpose: &
         let (tx, rx) = oneshot::channel();
         state.pending.lock().await.insert(request_id.clone(), (request.clone(), tx));
         let _pending_guard = PendingDropGuard { state: state.clone(), request_id:request_id.clone() };
-        emit(state, subject, Event::ConsentRequired { request });
+        emit(state, subject, Event::ConsentRequired { request:request.clone() });
+        // The person's advocate weighs in off the critical path (Phase 6):
+        // the wait itself never depends on the model answering in time.
+        if let Some(advocate) = state.deps.advocate.clone() {
+            let request = request.clone();
+            let spec = spec.clone();
+            let subject = subject.to_string();
+            let events = state.events.clone();
+            tokio::spawn(async move {
+                if let Ok(advice) = tokio::time::timeout(Duration::from_secs(12), advocate.advise(&request, &spec)).await {
+                    let _ = events.send(EventEnvelope { subject, event: Event::ConsentAdvice { request_id:request.request_id.clone(), advice } });
+                }
+            });
+        }
         let decision = tokio::time::timeout(Duration::from_secs(state.deps.consent_timeout_secs), rx).await;
         state.pending.lock().await.remove(&request_id);
         let decision = match decision {
@@ -453,6 +532,15 @@ async fn call_tool(state: &Arc<AppState>, subject: &str, agent: &str, purpose: &
                 return Ok(tool_error("AEGIS 403: consent timed out".into()));
             }
         };
+        // "Remember this decision" → a standing rule for next time (Phase 6).
+        if let Some(scope) = decision.remember.clone() {
+            if let Some(engine) = &state.deps.policy {
+                let rule = rule_from_remember(&call, &spec, &requested_fields, decision.approve, decision.mode, &scope, payment_amount_cents);
+                if let Err(error) = engine.add(rule) {
+                    emit(state, subject, Event::AgentLog { agent_id:"aegis".into(), text:format!("Could not save remembered rule: {error}") });
+                }
+            }
+        }
         if !decision.approve {
             emit(state, subject, Event::ConsentResolved { request_id:request_id.clone(), approved:false, receipt:None });
             emit(state, subject, Event::CallDenied { call_id:call.call_id.clone(), agent_id:agent.into(), tool:name.into(), reason:"consent denied".into() });

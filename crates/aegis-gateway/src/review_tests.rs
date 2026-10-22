@@ -153,6 +153,9 @@ fn build_router(ledger: Arc<TestLedger>, payments: Option<Arc<dyn PaymentProvide
         base_url: "http://127.0.0.1:8787".into(),
         consent_timeout_secs: 2,
         require_mcp_token: false,
+        advocate: None,
+        policy: None,
+        verifier: None,
     })
 }
 
@@ -174,11 +177,14 @@ fn build_state(ledger: Arc<TestLedger>) -> Arc<AppState> {
             base_url: "http://127.0.0.1:8787".into(),
             consent_timeout_secs: 2,
             require_mcp_token: false,
+            advocate: None,
+            policy: None,
+            verifier: None,
         },
         events,
         pending: Mutex::new(HashMap::new()),
         lease_tools: Mutex::new(HashMap::new()),
-        sessions: Mutex::new(HashMap::new()),
+        sessions: Arc::new(Mutex::new(HashMap::new())),
         wallet: None,
     })
 }

@@ -128,6 +128,7 @@ async fn person_page(Path(subject): Path<String>) -> Response {
                     }
                 }
                 (p5::keys_card(&me.subject))
+                (p6::cards(&me.subject))
                 div.cols {
                     section.col {
                         div.eyebrow { "Agent" }
@@ -164,6 +165,7 @@ async fn person_page(Path(subject): Path<String>) -> Response {
             script { (PreEscaped(SIWE_JS)) }
             script { (PreEscaped(format!("const SUBJECT = {subj_js};\n{JS}"))) }
             script { (PreEscaped(p5::KEYS_JS)) }
+            script { (PreEscaped(p6::P6_JS)) }
             script { (PreEscaped(GLOBE_JS)) }
         },
     );
@@ -400,13 +402,17 @@ function copyToken() {
 }
 
 function decide(id, approve, mode) {
-  post('/api/consent/' + encodeURIComponent(id), {approve: approve, mode: mode || 'CLEAN_ROOM', ttl_secs: 60});
+  // Capture the scope before the card is re-rendered away.
+  const remember = (window.rememberChoice && window.rememberChoice(id)) || null;
+  post('/api/consent/' + encodeURIComponent(id), {approve: approve, mode: mode || 'CLEAN_ROOM', ttl_secs: 60, remember: remember});
   delete pending[id];
+  delete advices[id];
   renderConsents();
 }
 
 const REGULATED = ['ssn', 'account_number', 'routing_number', 'passport_number'];
 const risks = {};        // call_id -> RiskScores event
+const advices = {};      // request_id -> Advice event (re-applied on re-render)
 const usd = n => '$' + Number(n || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
 
 function riskChip(ev) {
@@ -435,6 +441,9 @@ function renderConsents() {
     const eid = esc(id);
     const risk = riskChip(risks[c.call_id]);
     const timer = '<div class="cd" data-deadline="' + Number(r.deadline) + '">auto-deny in ' + left + 's</div>';
+    const advice = '<div id="advice-' + eid + '" class="advice"></div>';
+    const remember = '<div class="kv"><b>Remember this decision</b> <select id="remember-' + eid + '" aria-label="Remember this decision">'
+      + '<option value="">Don\'t remember</option><option value="this_agent">For this agent</option><option value="any_agent">For any agent</option></select></div>';
     if (c.tool === 'make_payment') {
       const a = c.arguments || {};
       return '<div class="consent pay"><h4><span class="pill-w">Waiting</span> Payment requires approval</h4>'
@@ -443,7 +452,7 @@ function renderConsents() {
         + '<div class="kv"><b>Purpose</b> ' + esc(c.purpose) + '</div>'
         + (a.description ? '<div class="kv"><b>Memo</b> ' + esc(a.description) + '</div>' : '')
         + (risk ? '<div class="kv">' + risk + '</div>' : '')
-        + timer
+        + timer + advice + remember
         + '<div class="btns">'
         + '<button class="b-clean" data-id="' + eid + '" data-a="1" data-m="CLEAN_ROOM">Approve payment</button>'
         + '<button class="b-deny" data-id="' + eid + '" data-a="0" data-m="BLOCK">Deny</button>'
@@ -459,7 +468,7 @@ function renderConsents() {
       + '<div class="kv"><b>Purpose</b> ' + esc(c.purpose) + '</div>'
       + '<div class="kv"><b>Fields</b> ' + (chips || '<span class="dim">(all)</span>') + '</div>'
       + (risk ? '<div class="kv">' + risk + '</div>' : '')
-      + timer
+      + timer + advice + remember
       + '<div class="btns">'
       + '<button class="b-clean" data-id="' + eid + '" data-a="1" data-m="CLEAN_ROOM">Approve CLEAN ROOM 60s</button>'
       + '<button class="b-red" data-id="' + eid + '" data-a="1" data-m="REDACT">Approve REDACTED 60s</button>'
@@ -467,6 +476,8 @@ function renderConsents() {
       + '<button class="b-deny" data-id="' + eid + '" data-a="0" data-m="BLOCK">Deny</button>'
       + '</div></div>';
   }).join('');
+  // loadState() re-renders the cards; bring back any advice already received.
+  if (window.renderAdvice) for (const id of ids) if (advices[id]) window.renderAdvice(id, advices[id]);
 }
 $('consents').addEventListener('click', e => {
   const b = e.target.closest('button[data-id]');
@@ -569,7 +580,15 @@ function onEvent(ev) {
     case 'consent_required':
       pending[ev.request.request_id] = ev.request; renderConsents(); break;
     case 'consent_resolved':
-      delete pending[ev.request_id]; renderConsents(); loadState(); break;
+      delete pending[ev.request_id]; delete advices[ev.request_id]; renderConsents(); loadState(); break;
+    case 'consent_advice':
+      // The person's own advocate weighed in: {recommend, summary, red_flags, source}.
+      advices[ev.request_id] = ev.advice;
+      if (window.renderAdvice) window.renderAdvice(ev.request_id, ev.advice);
+      break;
+    case 'rule_applied':
+      // A standing rule resolved the call without prompting.
+      if (window.ruleApplied) window.ruleApplied(ev); break;
     case 'payload_released': addRelease(ev); break;
     case 'call_denied':
       term('tool', '✖ denied ' + esc(ev.tool) + ': ' + esc(ev.reason)); break;
@@ -673,3 +692,6 @@ setInterval(loadChain, 15000);
 
 #[cfg(test)]
 mod web3_tests;
+
+#[cfg(test)]
+mod p6_tests;

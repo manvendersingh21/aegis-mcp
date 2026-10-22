@@ -64,6 +64,15 @@ impl BrokerClient {
         self.admin(reqwest::Method::POST, "/admin/fake-keys/revoke", Some(body)).await.map(|(_, v)| v)
     }
 
+    /// Resolve an agent credential (`aegis_fk_mcp_…`) through the broker.
+    pub async fn resolve_agent(&self, credential: &str) -> Result<Option<aegis_core::AgentIdentity>, String> {
+        match self.admin(reqwest::Method::POST, "/admin/agent-credentials/resolve", Some(json!({"credential": credential}))).await {
+            Ok((StatusCode::OK, value)) => Ok(serde_json::from_value(value).ok()),
+            Ok(_) => Ok(None),
+            Err(e) => Err(e),
+        }
+    }
+
     /// Decrypted vaults (personal data is sealed at rest in Supabase).
     pub async fn vault(&self, subject: &str) -> Result<Value, String> {
         match self.admin(reqwest::Method::GET, &format!("/admin/vault/{subject}"), None).await? {
@@ -128,4 +137,25 @@ async fn revoke(State(st): State<KeysState>, headers: HeaderMap, Json(body): Jso
     let Some(subject) = st.auth.subject(&headers).await else { return StatusCode::UNAUTHORIZED.into_response() };
     let forwarded = json!({"subject": subject, "prefix": body.get("prefix").cloned().unwrap_or(Value::Null)});
     reply(st.broker.admin(reqwest::Method::POST, "/admin/fake-keys/revoke", Some(forwarded)).await)
+}
+
+/// Verifies `aegis_fk_mcp_…` agent credentials through the broker: the
+/// gateway then keys both the person and the agent id on the resolved
+/// identity instead of a self-asserted header.
+pub struct BrokerAgentVerifier {
+    broker: BrokerClient,
+}
+
+impl BrokerAgentVerifier {
+    pub fn new(broker: BrokerClient) -> Self {
+        Self { broker }
+    }
+}
+
+impl aegis_core::AgentVerifier for BrokerAgentVerifier {
+    fn verify<'a>(&'a self, bearer: &'a str) -> aegis_core::BoxFuture<'a, Option<aegis_core::AgentIdentity>> {
+        Box::pin(async move {
+            self.broker.resolve_agent(bearer).await.ok().flatten()
+        })
+    }
 }

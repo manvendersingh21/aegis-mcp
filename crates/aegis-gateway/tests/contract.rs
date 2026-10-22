@@ -62,6 +62,7 @@ fn deps() -> GatewayDeps {
         risk: None, risk_threshold: 0.8, payments: None,
         signer: Arc::new(S), ledger: Arc::new(L::default()), scenarios: None,
         base_url: "http://127.0.0.1:8787".into(), consent_timeout_secs: 5, require_mcp_token: false,
+        advocate: None, policy: None, verifier: None,
     }
 }
 

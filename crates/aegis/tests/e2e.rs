@@ -363,3 +363,309 @@ async fn full_app_e2e_privacy_multi_tenancy_payments() {
     .await
     .expect("e2e completed within 55s");
 }
+
+#[tokio::test]
+async fn phase6_rules_and_passkey_flows() {
+    tokio::time::timeout(Duration::from_secs(30), async {
+        let listener = tokio::net::TcpListener::bind(("127.0.0.1", 0)).await.unwrap();
+        let port = listener.local_addr().unwrap().port();
+        let base = format!("http://127.0.0.1:{port}");
+        let app = build_app(&Options::offline(port)).expect("build_app");
+        let server = tokio::spawn(async move {
+            let _ = axum::serve(listener, app).await;
+        });
+
+        let client = reqwest::Client::new();
+
+        // 1. Unauthenticated requests to /api/passkey/register/begin must return 401
+        let unauth_reg = client
+            .post(format!("{base}/api/passkey/register/begin"))
+            .header("content-type", "application/json")
+            .body("{}")
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(unauth_reg.status(), StatusCode::UNAUTHORIZED);
+
+        // 2. Public /api/passkey/login/begin returns options
+        let login_opts = client
+            .get(format!("{base}/api/passkey/login/begin"))
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(login_opts.status(), StatusCode::OK);
+        let login_json: Value = login_opts.json().await.unwrap();
+        assert!(login_json["challenge"].as_str().is_some());
+
+        // 3. Login as maya via demo wallet
+        let maya = login(&client, &base, "maya").await;
+
+        // 4. Authenticated /api/passkey/register/begin returns options
+        let reg_opts = client
+            .post(format!("{base}/api/passkey/register/begin"))
+            .header(COOKIE, cookie_header(&maya))
+            .header("content-type", "application/json")
+            .body("{}")
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(reg_opts.status(), StatusCode::OK);
+        let reg_json: Value = reg_opts.json().await.unwrap();
+        assert_eq!(reg_json["user"]["name"], "maya");
+        assert!(reg_json["challenge"].as_str().is_some());
+
+        // 5. Standing rules CRUD
+        let rules_list = client
+            .get(format!("{base}/api/rules?subject=maya"))
+            .header(COOKIE, cookie_header(&maya))
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(rules_list.status(), StatusCode::OK);
+        let rules_json: Value = rules_list.json().await.unwrap();
+        assert_eq!(rules_json["rules"].as_array().unwrap().len(), 0);
+
+        // Add standing rule: deny health data
+        let add_rule = client
+            .post(format!("{base}/api/rules?subject=maya"))
+            .header(COOKIE, cookie_header(&maya))
+            .header("content-type", "application/json")
+            .body(
+                json!({
+                    "tool": "get_health_metrics",
+                    "resource": "health",
+                    "decision": {"action": "deny"},
+                    "label": "Never share health data"
+                })
+                .to_string(),
+            )
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(add_rule.status(), StatusCode::OK);
+        let add_json: Value = add_rule.json().await.unwrap();
+        assert_eq!(add_json["ok"], true);
+        let rule_id = add_json["rule"]["rule_id"].as_str().unwrap().to_string();
+
+        // 6. MCP call to get_health_metrics should now be rejected by rule immediately
+        let probe = mcp(
+            &client,
+            &base,
+            None,
+            Some("maya"),
+            "health_bot",
+            "check insurance wellness score",
+            30,
+            "tools/call",
+            json!({"name": "get_health_metrics", "arguments": {}}),
+        )
+        .await;
+        assert_eq!(probe["result"]["isError"], true);
+        let probe_text = probe["result"]["content"][0]["text"].as_str().unwrap_or_default();
+        assert!(
+            probe_text.contains("denied by your rule: Never share health data"),
+            "expected rule denial text, got: {probe_text}"
+        );
+
+        // 7. Delete standing rule
+        let del_rule = client
+            .delete(format!("{base}/api/rules/{rule_id}?subject=maya"))
+            .header(COOKIE, cookie_header(&maya))
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(del_rule.status(), StatusCode::OK);
+
+        let rules_after_del: Value = client
+            .get(format!("{base}/api/rules?subject=maya"))
+            .header(COOKIE, cookie_header(&maya))
+            .send()
+            .await
+            .unwrap()
+            .json()
+            .await
+            .unwrap();
+        assert_eq!(rules_after_del["rules"].as_array().unwrap().len(), 0);
+
+        server.abort();
+    })
+    .await
+    .expect("phase6 e2e completed within 30s");
+}
+
+#[tokio::test]
+async fn chatgpt_plugin_and_actions() {
+    tokio::time::timeout(Duration::from_secs(30), async {
+        let listener = tokio::net::TcpListener::bind(("127.0.0.1", 0)).await.unwrap();
+        let port = listener.local_addr().unwrap().port();
+        let base = format!("http://127.0.0.1:{port}");
+        let app = build_app(&Options::offline(port)).expect("build_app");
+        let server = tokio::spawn(async move {
+            let _ = axum::serve(listener, app).await;
+        });
+
+        let client = reqwest::Client::new();
+
+        // 1. ChatGPT plugin manifest
+        let manifest_res = client.get(format!("{base}/.well-known/ai-plugin.json")).send().await.unwrap();
+        assert_eq!(manifest_res.status(), StatusCode::OK);
+        let manifest: Value = manifest_res.json().await.unwrap();
+        assert_eq!(manifest["name_for_model"], "aegis_firewall");
+        assert_eq!(manifest["schema_version"], "v1");
+
+        // 2. OpenAPI 3.1.0 spec for Custom GPT Actions
+        let openapi_res = client.get(format!("{base}/openapi.json")).send().await.unwrap();
+        assert_eq!(openapi_res.status(), StatusCode::OK);
+        let openapi: Value = openapi_res.json().await.unwrap();
+        assert_eq!(openapi["openapi"], "3.1.0");
+        assert!(openapi["paths"]["/api/chatgpt/pay"]["post"].is_object());
+        assert!(openapi["paths"]["/api/chatgpt/affordability"]["post"].is_object());
+
+        // 3. Login as maya and add a standing rule for clean-room financials
+        let maya = login(&client, &base, "maya").await;
+        let add_res = client
+            .post(format!("{base}/api/rules?subject=maya"))
+            .header(COOKIE, cookie_header(&maya))
+            .header("content-type", "application/json")
+            .body(
+                json!({
+                    "tool": "query_financials",
+                    "resource": "financials",
+                    "decision": {"action": "allow", "mode": "CLEAN_ROOM"},
+                    "label": "Auto-verify affordability via clean room"
+                })
+                .to_string(),
+            )
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(add_res.status(), StatusCode::OK);
+
+        // 4. ChatGPT check affordability action (now auto-resolved via clean room rule)
+        let afford_res = client
+            .post(format!("{base}/api/chatgpt/affordability"))
+            .header("content-type", "application/json")
+            .header("Authorization", "Bearer aegis_sk_maya_4f9c2e7a1b8d")
+            .body(json!({"amount_usd": 120.0}).to_string())
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(afford_res.status(), StatusCode::OK);
+        let afford_json: Value = afford_res.json().await.unwrap();
+        assert_eq!(afford_json["can_afford"], true);
+
+        // 5. ChatGPT check schedule action (redacted titles)
+        let sched_res = client
+            .post(format!("{base}/api/chatgpt/schedule"))
+            .header("content-type", "application/json")
+            .header("Authorization", "Bearer aegis_sk_maya_4f9c2e7a1b8d")
+            .body(json!({}).to_string())
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(sched_res.status(), StatusCode::OK);
+        let sched_json: Value = sched_res.json().await.unwrap();
+        let text = sched_json.to_string();
+        assert!(!text.contains("Sequoia") && !text.contains("Oncology"));
+
+        // 6. Test Vault Settings (delivery address & daily spending limit)
+        let settings_res = client
+            .get(format!("{base}/api/vault/settings?subject=maya"))
+            .header(COOKIE, cookie_header(&maya))
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(settings_res.status(), StatusCode::OK);
+        let settings_json: Value = settings_res.json().await.unwrap();
+        assert_eq!(settings_json["home_address"], "5521 Shafter Ave, Oakland, CA 94618");
+        assert_eq!(settings_json["daily_limit_cents"], 300000);
+
+        // Update daily limit to $100.00 and delivery address
+        let update_res = client
+            .post(format!("{base}/api/vault/settings?subject=maya"))
+            .header(COOKIE, cookie_header(&maya))
+            .header("content-type", "application/json")
+            .body(
+                json!({
+                    "home_address": "742 Evergreen Terrace, Springfield, OR 97477",
+                    "daily_limit_cents": 10000
+                })
+                .to_string(),
+            )
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(update_res.status(), StatusCode::OK);
+        let update_json: Value = update_res.json().await.unwrap();
+        assert_eq!(update_json["home_address"], "742 Evergreen Terrace, Springfield, OR 97477");
+        assert_eq!(update_json["daily_limit_usd"], 100.0);
+
+        // 7. Order that exceeds daily limit ($150 > $100) -> blocked with 403
+        let over_limit = client
+            .post(format!("{base}/api/chatgpt/order"))
+            .header("content-type", "application/json")
+            .header("Authorization", "Bearer aegis_sk_maya_4f9c2e7a1b8d")
+            .body(
+                json!({
+                    "item": "Dyson Airwrap",
+                    "amount_usd": 150.0,
+                    "merchant": "BestBuy"
+                })
+                .to_string(),
+            )
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(over_limit.status(), StatusCode::FORBIDDEN);
+        let over_json: Value = over_limit.json().await.unwrap();
+        assert_eq!(over_json["status"], "blocked");
+        assert!(over_json["error"].as_str().unwrap().contains("Daily spending limit of $100.00 exceeded"));
+
+        // 8. Order within limit with a standing rule for auto-approving small purchases
+        let _ = client
+            .post(format!("{base}/api/rules?subject=maya"))
+            .header(COOKIE, cookie_header(&maya))
+            .header("content-type", "application/json")
+            .body(
+                json!({
+                    "tool": "make_payment",
+                    "resource": "financials",
+                    "max_amount_cents": 5000,
+                    "decision": {"action": "allow", "mode": "CLEAN_ROOM"},
+                    "label": "Auto-approve purchases under $50"
+                })
+                .to_string(),
+            )
+            .send()
+            .await
+            .unwrap();
+
+        let ok_order = client
+            .post(format!("{base}/api/chatgpt/order"))
+            .header("content-type", "application/json")
+            .header("Authorization", "Bearer aegis_sk_maya_4f9c2e7a1b8d")
+            .body(
+                json!({
+                    "item": "Desk Fan",
+                    "amount_usd": 35.0,
+                    "merchant": "Acme Hardware"
+                })
+                .to_string(),
+            )
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(ok_order.status(), StatusCode::OK);
+        let order_json: Value = ok_order.json().await.unwrap();
+        assert_eq!(order_json["status"], "approved");
+        assert_eq!(order_json["item"], "Desk Fan");
+        // Verify street address was shielded from ChatGPT!
+        assert!(!order_json.to_string().contains("742 Evergreen Terrace"));
+        assert!(order_json["delivery"]["destination_region"].as_str().unwrap().contains("Springfield"));
+        assert!(order_json["delivery"]["shipping_token"].as_str().unwrap().starts_with("aegis_ship_"));
+
+        server.abort();
+    })
+    .await
+    .expect("chatgpt action test completed within 30s");
+}

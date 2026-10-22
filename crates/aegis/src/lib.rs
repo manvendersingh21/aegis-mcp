@@ -3,7 +3,7 @@
 use aegis_agent::Scenarios;
 use aegis_cleanroom::{LlmPurposeJudge, LocalCleanRoom, RegexRedactor, SchemaGuard};
 use aegis_core::{demo_vaults, LlmClient, PaymentProvider, PurposeJudge, RiskScorer, ScenarioRunner};
-use aegis_gateway::{router_with_wallet, GatewayDeps};
+use aegis_gateway::{router_with_wallet_and_sessions, GatewayDeps};
 use aegis_integrations::{DemoPayments, JevScorer, StripePayments};
 use aegis_receipts::{Ed25519Signer, SqliteLedger};
 use std::sync::Arc;
@@ -11,9 +11,13 @@ use std::sync::Arc;
 pub mod anchor;
 pub mod auth;
 pub mod broker_client;
+pub mod chatgpt;
 pub mod demo_wallet;
 pub mod onchain;
+pub mod passkey_api;
 pub mod redteam;
+pub mod rules_api;
+pub mod vault_settings;
 pub use aegis_integrations::load_dotenv;
 
 /// Everything that varies between the live demo and an offline test run.
@@ -90,6 +94,7 @@ fn parse_seed(hex_seed: &str) -> Option<[u8; 32]> {
 /// Human-readable lines describing which layers are live.
 pub fn describe(opts: &Options) -> Vec<String> {
     let on = |b: bool| if b { "ON" } else { "off" };
+    let verifier = broker_client::BrokerClient::from_env().is_some() && !opts_offline();
     vec![
         format!("layer 1 deterministic redaction + schema guard: ON"),
         format!("layer 2 clean room: ON   local 9B judge/narration: {}", on(opts.use_llm)),
@@ -103,6 +108,10 @@ pub fn describe(opts: &Options) -> Vec<String> {
         }),
         format!("ledger anchoring to Supabase Storage: {}", on(opts.use_supabase)),
         format!("ledger anchoring on Base Sepolia: {}   SIWE wallet login: ON", on(opts.use_chain)),
+        format!("advocate agent on consent cards: ON   standing rules: ON"),
+        format!("passkeys (WebAuthn / TouchID): ON   agent identities: {}", on(verifier)),
+        format!("/mcp credential enforcement: {}", on(opts.require_mcp_token)),
+        format!("ChatGPT Actions & Plugin API: ON (/openapi.json)"),
     ]
 }
 
@@ -270,6 +279,32 @@ fn assemble(opts: &Options, providers: Providers) -> anyhow::Result<axum::Router
 
     let llm_for_redteam = llm.clone();
 
+    // Phase 6: the person's advocate (rules-based, optionally sharpened by the
+    // local 9B), standing rules, and verified agent identities.
+    let advocate: Arc<dyn aegis_core::Advocate> = match llm.clone() {
+        Some(client) => Arc::new(aegis_advocate::LlmAdvocate::new(client)),
+        None => Arc::new(aegis_advocate::RulesAdvocate::new()),
+    };
+    let policy = Arc::new(aegis_policy::StoredPolicy::new(
+        if opts_offline() { None } else { aegis_store::SupabaseStore::from_env() },
+    ));
+    {
+        let policy = policy.clone();
+        tokio::spawn(async move {
+            if let Err(error) = policy.load().await {
+                tracing::warn!("loading standing rules: {error}");
+            }
+        });
+    }
+    let policy = policy as Arc<dyn aegis_core::PolicyEngine>;
+    let verifier = broker
+        .clone()
+        .map(|b| Arc::new(broker_client::BrokerAgentVerifier::new(b)) as Arc<dyn aegis_core::AgentVerifier>);
+    // Per-person vault tokens keep scenarios and red-team probes working when
+    // /mcp enforces credentials.
+    let tokens: std::collections::HashMap<String, String> =
+        vaults.iter().map(|v| (v.subject(), v.mcp_token())).collect();
+
     let deps = GatewayDeps {
         vaults,
         redactor: Arc::new(RegexRedactor::new()),
@@ -281,12 +316,15 @@ fn assemble(opts: &Options, providers: Providers) -> anyhow::Result<axum::Router
         payments: Some(payments),
         signer: Arc::new(signer),
         ledger: ledger.clone(),
-        scenarios: Some(Arc::new(Scenarios::new(llm)) as Arc<dyn ScenarioRunner>),
+        scenarios: Some(Arc::new(Scenarios::new(llm).with_tokens(tokens.clone())) as Arc<dyn ScenarioRunner>),
         base_url: format!("http://127.0.0.1:{}", opts.port),
         consent_timeout_secs: opts.consent_timeout_secs,
         require_mcp_token: opts.require_mcp_token,
+        advocate: Some(advocate),
+        policy: Some(policy.clone()),
+        verifier,
     };
-    let mut redteam = redteam::RedTeam::new(llm_for_redteam, format!("http://127.0.0.1:{}", opts.port));
+    let mut redteam = redteam::RedTeam::new(llm_for_redteam, format!("http://127.0.0.1:{}", opts.port)).with_tokens(tokens);
     if let Some(raw) = raw_llm {
         redteam = redteam.with_raw_llm(raw);
     }
@@ -314,10 +352,28 @@ fn assemble(opts: &Options, providers: Providers) -> anyhow::Result<axum::Router
     let demo = demo_wallet::enabled().then(|| demo_wallet::router(&siwe, &subjects, siwe_domain_for_demo.clone()));
     let wallet = siwe.clone() as Arc<dyn aegis_core::WalletAuth>;
     let base_url = format!("http://127.0.0.1:{}", opts.port);
-    let mut app = router_with_wallet(deps, Some(wallet))
+    let sessions = Arc::new(tokio::sync::Mutex::new(std::collections::HashMap::new()));
+    let rp_id = std::env::var("AEGIS_RP_ID").unwrap_or_else(|_| "localhost".into());
+    let origin = std::env::var("AEGIS_ORIGIN").unwrap_or_else(|_| format!("http://localhost:{}", opts.port));
+    let passkey_store = if opts_offline() { None } else { aegis_store::SupabaseStore::from_env() };
+    let passkey = Arc::new(aegis_passkey::PasskeyService::new(rp_id, origin, passkey_store));
+    {
+        let passkey = passkey.clone();
+        tokio::spawn(async move {
+            passkey.load_all().await;
+        });
+    }
+    let session_auth = auth::SessionAuth::new(format!("http://127.0.0.1:{}", opts.port));
+    let settings_state = vault_settings::VaultSettingsState::new(ledger.clone(), session_auth.clone());
+    let settings_map = settings_state.settings.clone();
+    let mut app = router_with_wallet_and_sessions(deps, Some(wallet), sessions.clone())
         .merge(aegis_dashboard::router())
         .merge(demo.unwrap_or_default())
         .merge(redteam.router())
+        .merge(rules_api::router(policy, session_auth.clone()))
+        .merge(passkey_api::router(passkey, session_auth, sessions))
+        .merge(vault_settings::router(settings_state))
+        .merge(chatgpt::router(format!("http://127.0.0.1:{}", opts.port), Some(settings_map), Some(ledger.clone())))
         .merge(chain.router());
     if let Some(broker) = broker {
         app = app.merge(broker.router(base_url));

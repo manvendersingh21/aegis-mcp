@@ -22,12 +22,19 @@ impl SupabaseBrokerStore {
         Some(SupabaseBrokerStore {
             url: get("SUPABASE_URL")?.trim_end_matches('/').to_string(),
             key: get("SUPABASE_SECRET_KEY")?,
-            http: reqwest::Client::builder().timeout(Duration::from_secs(10)).build().ok()?,
+            http: reqwest::Client::builder()
+                .timeout(Duration::from_secs(10))
+                .build()
+                .ok()?,
         })
     }
 
     fn req(&self, method: reqwest::Method, table: &str, query: &str) -> reqwest::RequestBuilder {
-        let q = if query.is_empty() { String::new() } else { format!("?{query}") };
+        let q = if query.is_empty() {
+            String::new()
+        } else {
+            format!("?{query}")
+        };
         self.http
             .request(method, format!("{}/rest/v1/{table}{q}", self.url))
             .header("apikey", &self.key)
@@ -36,7 +43,11 @@ impl SupabaseBrokerStore {
 
     async fn upsert(&self, table: &str, on_conflict: &str, row: Value) -> Result<(), AegisError> {
         let resp = self
-            .req(reqwest::Method::POST, table, &format!("on_conflict={on_conflict}"))
+            .req(
+                reqwest::Method::POST,
+                table,
+                &format!("on_conflict={on_conflict}"),
+            )
             .header("Prefer", "resolution=merge-duplicates,return=minimal")
             .json(&row)
             .send()
@@ -45,14 +56,26 @@ impl SupabaseBrokerStore {
         if resp.status().is_success() {
             Ok(())
         } else {
-            Err(err(format!("{table} upsert: {} {}", resp.status(), resp.text().await.unwrap_or_default())))
+            Err(err(format!(
+                "{table} upsert: {} {}",
+                resp.status(),
+                resp.text().await.unwrap_or_default()
+            )))
         }
     }
 
     async fn select(&self, table: &str, query: &str) -> Result<Vec<Value>, AegisError> {
-        let resp = self.req(reqwest::Method::GET, table, query).send().await.map_err(err)?;
+        let resp = self
+            .req(reqwest::Method::GET, table, query)
+            .send()
+            .await
+            .map_err(err)?;
         if !resp.status().is_success() {
-            return Err(err(format!("{table} select: {} {}", resp.status(), resp.text().await.unwrap_or_default())));
+            return Err(err(format!(
+                "{table} select: {} {}",
+                resp.status(),
+                resp.text().await.unwrap_or_default()
+            )));
         }
         resp.json().await.map_err(err)
     }
@@ -89,48 +112,83 @@ fn fake_from(row: Value) -> Option<StoredFakeKey> {
 
 /// PostgREST filter values must be URL-safe; subjects/ids are [a-z0-9_] here.
 fn q(v: &str) -> String {
-    v.chars().filter(|c| c.is_ascii_alphanumeric() || *c == '_' || *c == '-').collect()
+    v.chars()
+        .filter(|c| c.is_ascii_alphanumeric() || *c == '_' || *c == '-')
+        .collect()
 }
 
 impl BrokerStore for SupabaseBrokerStore {
     fn put_secret(&self, secret: StoredSecret) -> BoxFuture<'_, Result<(), AegisError>> {
-        Box::pin(async move { self.upsert("aegis_secrets", "secret_id", secret_row(&secret)).await })
+        Box::pin(async move {
+            self.upsert("aegis_secrets", "secret_id", secret_row(&secret))
+                .await
+        })
     }
 
-    fn secrets<'a>(&'a self, subject: Option<&'a str>) -> BoxFuture<'a, Result<Vec<StoredSecret>, AegisError>> {
+    fn secrets<'a>(
+        &'a self,
+        subject: Option<&'a str>,
+    ) -> BoxFuture<'a, Result<Vec<StoredSecret>, AegisError>> {
         Box::pin(async move {
             let filter = match subject {
                 Some(s) => format!("subject=eq.{}", q(s)),
                 None => "subject=is.null".to_string(),
             };
-            Ok(self.select("aegis_secrets", &filter).await?.into_iter().filter_map(secret_from).collect())
+            Ok(self
+                .select("aegis_secrets", &filter)
+                .await?
+                .into_iter()
+                .filter_map(secret_from)
+                .collect())
         })
     }
 
-    fn secret<'a>(&'a self, id: &'a str) -> BoxFuture<'a, Result<Option<StoredSecret>, AegisError>> {
+    fn secret<'a>(
+        &'a self,
+        id: &'a str,
+    ) -> BoxFuture<'a, Result<Option<StoredSecret>, AegisError>> {
         Box::pin(async move {
-            Ok(self.select("aegis_secrets", &format!("secret_id=eq.{}", q(id))).await?.into_iter().find_map(secret_from))
+            Ok(self
+                .select("aegis_secrets", &format!("secret_id=eq.{}", q(id)))
+                .await?
+                .into_iter()
+                .find_map(secret_from))
         })
     }
 
     fn put_fake_key(&self, key: StoredFakeKey) -> BoxFuture<'_, Result<(), AegisError>> {
-        Box::pin(async move { self.upsert("aegis_fake_keys", "fake_key_sha256", fake_row(&key)).await })
+        Box::pin(async move {
+            self.upsert("aegis_fake_keys", "fake_key_sha256", fake_row(&key))
+                .await
+        })
     }
 
-    fn fake_key_by_hash<'a>(&'a self, sha256_hex: &'a str) -> BoxFuture<'a, Result<Option<StoredFakeKey>, AegisError>> {
+    fn fake_key_by_hash<'a>(
+        &'a self,
+        sha256_hex: &'a str,
+    ) -> BoxFuture<'a, Result<Option<StoredFakeKey>, AegisError>> {
         Box::pin(async move {
             Ok(self
-                .select("aegis_fake_keys", &format!("fake_key_sha256=eq.{}", q(sha256_hex)))
+                .select(
+                    "aegis_fake_keys",
+                    &format!("fake_key_sha256=eq.{}", q(sha256_hex)),
+                )
                 .await?
                 .into_iter()
                 .find_map(fake_from))
         })
     }
 
-    fn fake_keys<'a>(&'a self, subject: &'a str) -> BoxFuture<'a, Result<Vec<StoredFakeKey>, AegisError>> {
+    fn fake_keys<'a>(
+        &'a self,
+        subject: &'a str,
+    ) -> BoxFuture<'a, Result<Vec<StoredFakeKey>, AegisError>> {
         Box::pin(async move {
             Ok(self
-                .select("aegis_fake_keys", &format!("subject=eq.{}&order=expires_at.desc", q(subject)))
+                .select(
+                    "aegis_fake_keys",
+                    &format!("subject=eq.{}&order=expires_at.desc", q(subject)),
+                )
                 .await?
                 .into_iter()
                 .filter_map(fake_from)
@@ -139,7 +197,10 @@ impl BrokerStore for SupabaseBrokerStore {
     }
 
     fn update_fake_key(&self, key: StoredFakeKey) -> BoxFuture<'_, Result<(), AegisError>> {
-        Box::pin(async move { self.upsert("aegis_fake_keys", "fake_key_sha256", fake_row(&key)).await })
+        Box::pin(async move {
+            self.upsert("aegis_fake_keys", "fake_key_sha256", fake_row(&key))
+                .await
+        })
     }
 
     fn log_usage(&self, row: UsageRow) -> BoxFuture<'_, Result<(), AegisError>> {
@@ -155,7 +216,11 @@ impl BrokerStore for SupabaseBrokerStore {
                 .send()
                 .await
                 .map_err(err)?;
-            if resp.status().is_success() { Ok(()) } else { Err(err(format!("usage insert: {}", resp.status()))) }
+            if resp.status().is_success() {
+                Ok(())
+            } else {
+                Err(err(format!("usage insert: {}", resp.status())))
+            }
         })
     }
 }

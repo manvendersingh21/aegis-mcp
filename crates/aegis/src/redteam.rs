@@ -52,6 +52,8 @@ pub struct RedTeam {
     raw_llm: Result<LlmClient, String>,
     /// Issues the fake key planted in the model's context for the key probe.
     broker: Option<crate::broker_client::BrokerClient>,
+    /// Per-person vault tokens so probes pass MCP credential enforcement.
+    tokens: std::collections::HashMap<String, String>,
     base_url: String,
     http: reqwest::Client,
 }
@@ -59,11 +61,18 @@ pub struct RedTeam {
 impl RedTeam {
     pub fn new(llm: Option<LlmClient>, base_url: String) -> Self {
         let http = reqwest::Client::builder().timeout(Duration::from_secs(10)).build().unwrap_or_default();
-        RedTeam { llm, raw_llm: loopback_llm(), broker: None, base_url, http }
+        RedTeam { llm, raw_llm: loopback_llm(), broker: None, tokens: Default::default(), base_url, http }
     }
 
     pub fn with_broker(mut self, broker: crate::broker_client::BrokerClient) -> Self {
         self.broker = Some(broker);
+        self
+    }
+
+    /// Per-person vault tokens (`subject → mcp_token`), used when the gateway
+    /// enforces MCP credentials.
+    pub fn with_tokens(mut self, tokens: std::collections::HashMap<String, String>) -> Self {
+        self.tokens = tokens;
         self
     }
 
@@ -191,7 +200,7 @@ async fn unguarded(llm: &LlmClient, vault: &Vault, probe: &Probe) -> Value {
     }
 }
 
-async fn guarded(llm: &LlmClient, base_url: &str, subject: &str, probe: &Probe) -> Value {
+async fn guarded(llm: &LlmClient, base_url: &str, subject: &str, probe: &Probe, tokens: &std::collections::HashMap<String, String>) -> Value {
     let tools: Vec<Value> = aegis_core::tool_specs()
         .into_iter()
         .map(|t| json!({"name": t.name, "description": t.description, "inputSchema": t.input_schema}))
@@ -213,7 +222,10 @@ async fn guarded(llm: &LlmClient, base_url: &str, subject: &str, probe: &Probe) 
     };
     let tool = choice["tool"].as_str().unwrap_or_default().to_string();
     let args = choice.get("arguments").cloned().unwrap_or_else(|| json!({}));
-    let client = McpClient::new(base_url, subject, probe.agent_id, probe.request);
+    let mut client = McpClient::new(base_url, subject, probe.agent_id, probe.request);
+    if let Some(token) = tokens.get(subject) {
+        client = client.with_bearer(token.clone());
+    }
     let (outcome, released) = match tokio::time::timeout(CONSENT_HOLD, client.call_tool(&tool, args.clone())).await {
         Err(_) => ("held".to_string(), json!("HELD for the person's consent — nothing released")),
         Ok(Err(e)) => ("error".to_string(), json!(e.to_string())),
@@ -258,7 +270,7 @@ async fn run_probe(State(rt): State<RedTeam>, Path((subject, index)): Path<(Stri
         Ok(client) => client,
         Err(e) => return (StatusCode::SERVICE_UNAVAILABLE, e.clone()).into_response(),
     };
-    let (mut raw, mut safe) = tokio::join!(unguarded(raw_llm, &vault, probe), guarded(llm, &rt.base_url, &subject, probe));
+    let (mut raw, mut safe) = tokio::join!(unguarded(raw_llm, &vault, probe), guarded(llm, &rt.base_url, &subject, probe, &rt.tokens));
     let raw_leaks = find_leaks(raw["reply"].as_str().unwrap_or_default(), &secrets);
     let safe_leaks = find_leaks(&safe["released"].to_string(), &secrets);
     raw["leaks"] = json!(raw_leaks);

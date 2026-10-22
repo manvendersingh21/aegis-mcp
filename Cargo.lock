@@ -16,6 +16,7 @@ dependencies = [
 name = "aegis"
 version = "0.1.0"
 dependencies = [
+ "aegis-advocate",
  "aegis-agent",
  "aegis-chain",
  "aegis-cleanroom",
@@ -23,6 +24,8 @@ dependencies = [
  "aegis-dashboard",
  "aegis-gateway",
  "aegis-integrations",
+ "aegis-passkey",
+ "aegis-policy",
  "aegis-receipts",
  "aegis-store",
  "anyhow",
@@ -34,6 +37,7 @@ dependencies = [
  "tokio",
  "tracing",
  "tracing-subscriber",
+ "uuid",
 ]
 
 [[package]]

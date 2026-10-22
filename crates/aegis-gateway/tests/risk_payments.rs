@@ -70,6 +70,7 @@ fn app(risk: Option<Arc<dyn RiskScorer>>, payments: Option<Arc<dyn PaymentProvid
         vaults:demo_vaults(), redactor:Arc::new(TestRedactor), guard:Arc::new(Guard), clean_room:Arc::new(Clean), judge:None,
         risk, risk_threshold:0.8, payments, signer:Arc::new(Signer), ledger, scenarios:None,
         base_url:"http://127.0.0.1:8787".into(), consent_timeout_secs:5, require_mcp_token:false,
+        advocate:None, policy:None, verifier:None,
     })
 }
 async fn body_json(response: axum::response::Response) -> Value {

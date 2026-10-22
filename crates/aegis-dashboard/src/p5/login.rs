@@ -13,7 +13,8 @@ pub fn login_page() -> Markup {
             (pill_header(html! {}))
             main.wrap.narrow {
                 div.eyebrow { "Secure access" }
-                h1.mid { "Sign in with your " span.acc { "wallet" } }
+                h1.mid { "Sign in with your " span.acc { "passkey" } " or " span.acc { "wallet" } }
+                (crate::p6::passkey_login_button())
                 div.card.form.web3 {
                     label { "Ethereum wallet" }
                     button.primary #siwe type="button" { "Sign in with Ethereum" span.arrow { "↘" } }
@@ -34,6 +35,7 @@ pub fn login_page() -> Markup {
             }
             script { (PreEscaped(SIWE_JS)) }
             script { (PreEscaped(LOGIN_JS)) }
+            script { (PreEscaped(crate::p6::PASSKEY_LOGIN_JS)) }
             script { (PreEscaped(GLOBE_JS)) }
         },
     )

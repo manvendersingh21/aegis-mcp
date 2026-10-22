@@ -718,6 +718,44 @@ pub trait PolicyEngine: Send + Sync {
     fn remove(&self, subject: &str, rule_id: &str) -> bool;
 }
 
+/// Builds the standing rule for a "Remember this decision" choice (mirrors
+/// aegis-policy's helper so the gateway can construct it without depending
+/// on that crate). `scope` is "this_agent" or "any_agent".
+pub fn rule_from_remember(
+    call: &ToolCall,
+    spec: &ToolSpec,
+    requested_fields: &[String],
+    approve: bool,
+    mode: Mode,
+    scope: &str,
+    amount_cents: Option<i64>,
+) -> PolicyRule {
+    let this_agent = scope != "any_agent";
+    let decision = if approve { RuleDecision::Allow { mode } } else { RuleDecision::Deny };
+    let who = if this_agent { call.agent_id.as_str() } else { "any agent" };
+    let what = match &decision {
+        RuleDecision::Allow { mode } => match mode {
+            Mode::Allow => "ALLOW".into(),
+            Mode::Redact => "REDACT".into(),
+            Mode::CleanRoom => "CLEAN ROOM".into(),
+            Mode::Block => "BLOCK".into(),
+        },
+        _ => "DENY".to_string(),
+    };
+    PolicyRule {
+        rule_id: new_id("rule"),
+        subject: call.subject.clone(),
+        tool: Some(spec.name.to_string()),
+        resource: Some(spec.resource),
+        agent_id: this_agent.then(|| call.agent_id.clone()),
+        fields_within: Some(requested_fields.to_vec()),
+        max_amount_cents: if spec.name == "make_payment" { amount_cents } else { None },
+        decision,
+        label: format!("{who} · {} · {what} (remembered)", spec.name),
+        created_at: now_unix(),
+    }
+}
+
 // ---------------------------------------------------- agent credentials ----
 
 /// A verified agent identity, resolved from its credential (never from a

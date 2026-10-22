@@ -1,0 +1,12 @@
+{
+  "protocol": "HACP/2.0",
+  "message_id": "m-ae6650af61d84c519b62b4242ef45133",
+  "session_id": "s-c4c37136cd504ddc89df37991cdaee04",
+  "from": "urn:hacp:agent:b",
+  "to": "urn:hacp:agent:a",
+  "kind": "hacp.skill.ask",
+  "timestamp": "2026-10-22T18:35:06Z",
+  "body": {
+    "text": "I am documenting the demo script and e2e test flows in DEMO.md: Scenario 1 (Apartment broker -> query_financials paused for consent -> CLEAN_ROOM approved -> check_schedule auto-redacted -> fetch_identity approved), Scenario 2 (Hostile prompt injection -> export_contacts & get_health_metrics -> PolicyViolation blocked), Scenario 3 (Stripe payment / demo payment flow + lease revocation kill switch + multi-tenancy Maya vs Dev isolation). Does your e2e test suite cover these exact flows?"
+  }
+}

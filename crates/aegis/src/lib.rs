@@ -9,6 +9,7 @@ use aegis_receipts::{Ed25519Signer, SqliteLedger};
 use std::sync::Arc;
 
 pub mod anchor;
+pub mod redteam;
 pub use aegis_integrations::load_dotenv;
 
 /// Everything that varies between the live demo and an offline test run.
@@ -104,6 +105,7 @@ pub fn build_app(opts: &Options) -> anyhow::Result<axum::Router> {
     };
 
     let llm = if opts.use_llm { LlmClient::from_env() } else { None };
+    let llm_for_redteam = llm.clone();
     let risk: Option<Arc<dyn RiskScorer>> =
         if opts.use_jev { JevScorer::from_env().map(|j| Arc::new(j) as Arc<dyn RiskScorer>) } else { None };
     let payments: Arc<dyn PaymentProvider> = match opts.use_stripe.then(StripePayments::from_env).flatten() {
@@ -131,7 +133,8 @@ pub fn build_app(opts: &Options) -> anyhow::Result<axum::Router> {
         consent_timeout_secs: opts.consent_timeout_secs,
         require_mcp_token: opts.require_mcp_token,
     };
-    let mut app = router(deps).merge(aegis_dashboard::router());
+    let redteam = redteam::RedTeam::new(llm_for_redteam, format!("http://127.0.0.1:{}", opts.port));
+    let mut app = router(deps).merge(aegis_dashboard::router()).merge(redteam.router());
     if let Some(anchorer) = opts.use_supabase.then(anchor::Anchorer::from_env).flatten() {
         app = app.merge(anchorer.router());
         let subjects = demo_vaults().iter().map(|v| v.subject()).collect();

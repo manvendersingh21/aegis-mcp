@@ -27,7 +27,12 @@
     }
   },
   "processed": [
-    "m-2301679b047d45648beac889e773a0b0"
+    "m-1eae2a5cbb974070a04213f2e334248a",
+    "m-2301679b047d45648beac889e773a0b0",
+    "m-48754e11e6a5436394a4b75eff033b02",
+    "m-6caf93c7fb1a4f538904e61be82a1d3c",
+    "m-ae6650af61d84c519b62b4242ef45133",
+    "m-fa08f0a3a3994e38a432150464980813"
   ],
   "messages": [
     {
@@ -64,20 +69,173 @@
         },
         "terms_digest": "30dc9e7fc063da845c54312f90539016954b9b6df63be4f705d4dd9faf0dc2b1"
       }
+    },
+    {
+      "protocol": "HACP/2.0",
+      "message_id": "m-fa08f0a3a3994e38a432150464980813",
+      "session_id": "s-c4c37136cd504ddc89df37991cdaee04",
+      "from": "urn:hacp:agent:a",
+      "to": "urn:hacp:agent:b",
+      "kind": "contract.proposed",
+      "timestamp": "2026-10-22T18:34:33Z",
+      "body": {
+        "contract_id": "c-594e5a518bc64154ae8ca3570c9665c0",
+        "next": "review terms and accept digest or counter",
+        "revision": null,
+        "state": "proposed",
+        "task": {
+          "owner": "urn:hacp:agent:a",
+          "summary": "e2e privacy test of the full app",
+          "task_id": "t-d4f6c3f27cd74dfbb08bcdcd382311ef"
+        },
+        "terms": {
+          "acceptance": [
+            "cargo test -p aegis --test e2e --offline -q"
+          ],
+          "inputs": [
+            "src/lib.rs"
+          ],
+          "outputs": [
+            "tests/e2e.rs"
+          ]
+        },
+        "terms_digest": "ed8c2035d308e727e5fc20047dd054ec87cd2d40828fc7dc62d63be6349405c6"
+      }
+    },
+    {
+      "protocol": "HACP/2.0",
+      "message_id": "m-6caf93c7fb1a4f538904e61be82a1d3c",
+      "session_id": "s-c4c37136cd504ddc89df37991cdaee04",
+      "from": "urn:hacp:agent:a",
+      "to": "urn:hacp:agent:b",
+      "kind": "contract.frozen",
+      "timestamp": "2026-10-22T18:34:41Z",
+      "body": {
+        "contract_id": "c-5a57ec5d32784b9fb7ba6bfb447e957c",
+        "next": "owner implements frozen outputs then submits",
+        "revision": "06c015f5767b5550c3a6b978101b01f3711e7d5ce0fc2e785df9beebc48820ac",
+        "state": "executing",
+        "task": {
+          "owner": "urn:hacp:agent:b",
+          "summary": "demo script + runbook",
+          "task_id": "t-2c6f6a7f83da498285929063157bea11"
+        },
+        "terms": {
+          "acceptance": [
+            "sh -n demo.sh",
+            "grep -q \"claude mcp add\" DEMO.md",
+            "grep -q \"/u/maya\" DEMO.md"
+          ],
+          "inputs": [
+            "src/lib.rs"
+          ],
+          "outputs": [
+            "DEMO.md",
+            "demo.sh"
+          ]
+        },
+        "terms_digest": "30dc9e7fc063da845c54312f90539016954b9b6df63be4f705d4dd9faf0dc2b1"
+      }
+    },
+    {
+      "protocol": "HACP/2.0",
+      "message_id": "m-1eae2a5cbb974070a04213f2e334248a",
+      "session_id": "s-c4c37136cd504ddc89df37991cdaee04",
+      "from": "urn:hacp:agent:b",
+      "to": "urn:hacp:agent:a",
+      "kind": "contract.frozen",
+      "timestamp": "2026-10-22T18:34:55Z",
+      "body": {
+        "contract_id": "c-594e5a518bc64154ae8ca3570c9665c0",
+        "next": "owner implements frozen outputs then submits",
+        "revision": "f46fceeb4d54c28e9efd34ad6f6adefd3d51e79e6727eec08d9d85cb319a64a6",
+        "state": "executing",
+        "task": {
+          "owner": "urn:hacp:agent:a",
+          "summary": "e2e privacy test of the full app",
+          "task_id": "t-d4f6c3f27cd74dfbb08bcdcd382311ef"
+        },
+        "terms": {
+          "acceptance": [
+            "cargo test -p aegis --test e2e --offline -q"
+          ],
+          "inputs": [
+            "src/lib.rs"
+          ],
+          "outputs": [
+            "tests/e2e.rs"
+          ]
+        },
+        "terms_digest": "ed8c2035d308e727e5fc20047dd054ec87cd2d40828fc7dc62d63be6349405c6"
+      }
+    },
+    {
+      "protocol": "HACP/2.0",
+      "message_id": "m-ae6650af61d84c519b62b4242ef45133",
+      "session_id": "s-c4c37136cd504ddc89df37991cdaee04",
+      "from": "urn:hacp:agent:b",
+      "to": "urn:hacp:agent:a",
+      "kind": "hacp.skill.ask",
+      "timestamp": "2026-10-22T18:35:06Z",
+      "body": {
+        "text": "I am documenting the demo script and e2e test flows in DEMO.md: Scenario 1 (Apartment broker -> query_financials paused for consent -> CLEAN_ROOM approved -> check_schedule auto-redacted -> fetch_identity approved), Scenario 2 (Hostile prompt injection -> export_contacts & get_health_metrics -> PolicyViolation blocked), Scenario 3 (Stripe payment / demo payment flow + lease revocation kill switch + multi-tenancy Maya vs Dev isolation). Does your e2e test suite cover these exact flows?"
+      }
+    },
+    {
+      "protocol": "HACP/2.0",
+      "message_id": "m-48754e11e6a5436394a4b75eff033b02",
+      "session_id": "s-c4c37136cd504ddc89df37991cdaee04",
+      "from": "urn:hacp:agent:b",
+      "to": "urn:hacp:agent:a",
+      "kind": "submission.delivered",
+      "timestamp": "2026-10-22T18:37:12Z",
+      "body": {
+        "contract_id": "c-5a57ec5d32784b9fb7ba6bfb447e957c",
+        "next": "counterparty verifies",
+        "revision": "06c015f5767b5550c3a6b978101b01f3711e7d5ce0fc2e785df9beebc48820ac",
+        "state": "verifying",
+        "task": {
+          "owner": "urn:hacp:agent:b",
+          "summary": "demo script + runbook",
+          "task_id": "t-2c6f6a7f83da498285929063157bea11"
+        },
+        "terms": {
+          "acceptance": [
+            "sh -n demo.sh",
+            "grep -q \"claude mcp add\" DEMO.md",
+            "grep -q \"/u/maya\" DEMO.md"
+          ],
+          "inputs": [
+            "src/lib.rs"
+          ],
+          "outputs": [
+            "DEMO.md",
+            "demo.sh"
+          ]
+        },
+        "terms_digest": "30dc9e7fc063da845c54312f90539016954b9b6df63be4f705d4dd9faf0dc2b1"
+      }
     }
   ],
-  "fetched": {},
+  "fetched": {
+    "a": [
+      "m-1eae2a5cbb974070a04213f2e334248a",
+      "m-2301679b047d45648beac889e773a0b0"
+    ],
+    "b": [
+      "m-6caf93c7fb1a4f538904e61be82a1d3c",
+      "m-fa08f0a3a3994e38a432150464980813"
+    ]
+  },
   "contracts": {
-    "c-5a57ec5d32784b9fb7ba6bfb447e957c": {
+    "c-594e5a518bc64154ae8ca3570c9665c0": {
       "artifacts": [],
       "attempts": [],
       "contract": {
-        "agreed_by": [
-          "urn:hacp:agent:b"
-        ],
-        "agreed_terms_digest": "30dc9e7fc063da845c54312f90539016954b9b6df63be4f705d4dd9faf0dc2b1",
+        "agreed_by": [],
+        "agreed_terms_digest": null,
         "amendments": 0,
-        "contract_id": "c-5a57ec5d32784b9fb7ba6bfb447e957c",
+        "contract_id": "c-594e5a518bc64154ae8ca3570c9665c0",
         "escalation_path": [],
         "limits": {
           "max_amendments": 3,
@@ -90,10 +248,132 @@
         "pending_submission": null,
         "pending_submitter": null,
         "relationship": "collaboration",
-        "revisions": [],
+        "revisions": [
+          {
+            "content": {
+              "acceptance": [
+                "cargo test -p aegis --test e2e --offline -q"
+              ],
+              "inputs": [
+                "src/lib.rs"
+              ],
+              "outputs": [
+                "tests/e2e.rs"
+              ]
+            },
+            "digest": "f46fceeb4d54c28e9efd34ad6f6adefd3d51e79e6727eec08d9d85cb319a64a6",
+            "number": 1
+          }
+        ],
         "rework_scope": null,
         "rounds": 0,
-        "state": "proposed",
+        "state": "executing",
+        "task": {
+          "owner": "urn:hacp:agent:a",
+          "summary": "e2e privacy test of the full app",
+          "task_id": "t-d4f6c3f27cd74dfbb08bcdcd382311ef"
+        }
+      },
+      "pending_digest": "ed8c2035d308e727e5fc20047dd054ec87cd2d40828fc7dc62d63be6349405c6",
+      "pending_terms": {
+        "acceptance": [
+          "cargo test -p aegis --test e2e --offline -q"
+        ],
+        "inputs": [
+          "src/lib.rs"
+        ],
+        "outputs": [
+          "tests/e2e.rs"
+        ]
+      },
+      "proposer": "a",
+      "submissions": [],
+      "verifications": []
+    },
+    "c-5a57ec5d32784b9fb7ba6bfb447e957c": {
+      "artifacts": [
+        {
+          "path": "DEMO.md",
+          "record": {
+            "artifact_id": "urn:hacp:artifact:76789b93-8149-41bb-b743-1dd45f900f57",
+            "contract_id": "c-5a57ec5d32784b9fb7ba6bfb447e957c",
+            "contract_revision": "06c015f5767b5550c3a6b978101b01f3711e7d5ce0fc2e785df9beebc48820ac",
+            "derived_from": [],
+            "digest": "f4ab1e49dd7993de38550ee841fa1c22f95bb33ec9e2222228d341d41abf2b18",
+            "location": ".hacp/artifacts/76789b93-8149-41bb-b743-1dd45f900f57.bin",
+            "media_type": "application/octet-stream",
+            "producer": "urn:hacp:agent:b",
+            "size": 17898,
+            "task_id": "t-2c6f6a7f83da498285929063157bea11",
+            "visibility": "participants"
+          }
+        },
+        {
+          "path": "demo.sh",
+          "record": {
+            "artifact_id": "urn:hacp:artifact:6c7cbfc2-9d60-4f10-b7cc-ccd2a63617ef",
+            "contract_id": "c-5a57ec5d32784b9fb7ba6bfb447e957c",
+            "contract_revision": "06c015f5767b5550c3a6b978101b01f3711e7d5ce0fc2e785df9beebc48820ac",
+            "derived_from": [],
+            "digest": "29f238dc7a90696b74a739f28e9c9d6f3f9fad4fe1bd0255c0bbe01ef19a5413",
+            "location": ".hacp/artifacts/6c7cbfc2-9d60-4f10-b7cc-ccd2a63617ef.bin",
+            "media_type": "application/octet-stream",
+            "producer": "urn:hacp:agent:b",
+            "size": 2060,
+            "task_id": "t-2c6f6a7f83da498285929063157bea11",
+            "visibility": "participants"
+          }
+        }
+      ],
+      "attempts": [],
+      "contract": {
+        "agreed_by": [],
+        "agreed_terms_digest": null,
+        "amendments": 0,
+        "contract_id": "c-5a57ec5d32784b9fb7ba6bfb447e957c",
+        "escalation_path": [],
+        "limits": {
+          "max_amendments": 3,
+          "max_rounds": 3
+        },
+        "participants": [
+          "urn:hacp:agent:a",
+          "urn:hacp:agent:b"
+        ],
+        "pending_submission": {
+          "against_revision": "06c015f5767b5550c3a6b978101b01f3711e7d5ce0fc2e785df9beebc48820ac",
+          "artifacts": [
+            "urn:hacp:artifact:76789b93-8149-41bb-b743-1dd45f900f57",
+            "urn:hacp:artifact:6c7cbfc2-9d60-4f10-b7cc-ccd2a63617ef"
+          ],
+          "claim": "Implemented POSIX demo.sh with release build, background server, /healthz polling, credential printing, browser opening, and exit trap, plus DEMO.md with 20s pitch, ASCII architecture diagram, 3-minute demo script, MCP client attachment guides, and env var reference",
+          "evidence": []
+        },
+        "pending_submitter": "urn:hacp:agent:b",
+        "relationship": "collaboration",
+        "revisions": [
+          {
+            "content": {
+              "acceptance": [
+                "sh -n demo.sh",
+                "grep -q \"claude mcp add\" DEMO.md",
+                "grep -q \"/u/maya\" DEMO.md"
+              ],
+              "inputs": [
+                "src/lib.rs"
+              ],
+              "outputs": [
+                "DEMO.md",
+                "demo.sh"
+              ]
+            },
+            "digest": "06c015f5767b5550c3a6b978101b01f3711e7d5ce0fc2e785df9beebc48820ac",
+            "number": 1
+          }
+        ],
+        "rework_scope": null,
+        "rounds": 0,
+        "state": "verifying",
         "task": {
           "owner": "urn:hacp:agent:b",
           "summary": "demo script + runbook",
@@ -116,7 +396,17 @@
         ]
       },
       "proposer": "b",
-      "submissions": [],
+      "submissions": [
+        {
+          "against_revision": "06c015f5767b5550c3a6b978101b01f3711e7d5ce0fc2e785df9beebc48820ac",
+          "artifacts": [
+            "urn:hacp:artifact:76789b93-8149-41bb-b743-1dd45f900f57",
+            "urn:hacp:artifact:6c7cbfc2-9d60-4f10-b7cc-ccd2a63617ef"
+          ],
+          "claim": "Implemented POSIX demo.sh with release build, background server, /healthz polling, credential printing, browser opening, and exit trap, plus DEMO.md with 20s pitch, ASCII architecture diagram, 3-minute demo script, MCP client attachment guides, and env var reference",
+          "evidence": []
+        }
+      ],
       "verifications": []
     }
   },
@@ -187,6 +477,212 @@
       "peer": "b",
       "rendered": "2026-10-22T18:33:24Z | Peer b | contract.proposed\nEvent e-b2de98d34e5649959dfe15e80e8078aa\n    {\n      \"body\": {\n        \"contract_id\": \"c-5a57ec5d32784b9fb7ba6bfb447e957c\",\n        \"next\": \"review terms and accept digest or counter\",\n        \"revision\": null,\n        \"state\": \"proposed\",\n        \"task\": {\n          \"owner\": \"urn:hacp:agent:b\",\n          \"summary\": \"demo script + runbook\",\n          \"task_id\": \"t-2c6f6a7f83da498285929063157bea11\"\n        },\n        \"terms\": {\n          \"acceptance\": [\n            \"sh -n demo.sh\",\n            \"grep -q \\\"claude mcp add\\\" DEMO.md\",\n            \"grep -q \\\"/u/maya\\\" DEMO.md\"\n          ],\n          \"inputs\": [\n            \"src/lib.rs\"\n          ],\n          \"outputs\": [\n            \"DEMO.md\",\n            \"demo.sh\"\n          ]\n        },\n        \"terms_digest\": \"30dc9e7fc063da845c54312f90539016954b9b6df63be4f705d4dd9faf0dc2b1\"\n      },\n      \"in_reply_to\": null,\n      \"message_id\": \"m-2301679b047d45648beac889e773a0b0\",\n      \"to\": \"urn:hacp:agent:a\"\n    }\n",
       "time": "2026-10-22T18:33:24Z"
+    },
+    {
+      "action": "contract.proposed",
+      "detail": {
+        "body": {
+          "contract_id": "c-594e5a518bc64154ae8ca3570c9665c0",
+          "next": "review terms and accept digest or counter",
+          "revision": null,
+          "state": "proposed",
+          "task": {
+            "owner": "urn:hacp:agent:a",
+            "summary": "e2e privacy test of the full app",
+            "task_id": "t-d4f6c3f27cd74dfbb08bcdcd382311ef"
+          },
+          "terms": {
+            "acceptance": [
+              "cargo test -p aegis --test e2e --offline -q"
+            ],
+            "inputs": [
+              "src/lib.rs"
+            ],
+            "outputs": [
+              "tests/e2e.rs"
+            ]
+          },
+          "terms_digest": "ed8c2035d308e727e5fc20047dd054ec87cd2d40828fc7dc62d63be6349405c6"
+        },
+        "in_reply_to": null,
+        "message_id": "m-fa08f0a3a3994e38a432150464980813",
+        "to": "urn:hacp:agent:b"
+      },
+      "id": "e-8e7fc8aa7b0f40928f2bf11921ea515b",
+      "peer": "a",
+      "rendered": "2026-10-22T18:34:33Z | Peer a | contract.proposed\nEvent e-8e7fc8aa7b0f40928f2bf11921ea515b\n    {\n      \"body\": {\n        \"contract_id\": \"c-594e5a518bc64154ae8ca3570c9665c0\",\n        \"next\": \"review terms and accept digest or counter\",\n        \"revision\": null,\n        \"state\": \"proposed\",\n        \"task\": {\n          \"owner\": \"urn:hacp:agent:a\",\n          \"summary\": \"e2e privacy test of the full app\",\n          \"task_id\": \"t-d4f6c3f27cd74dfbb08bcdcd382311ef\"\n        },\n        \"terms\": {\n          \"acceptance\": [\n            \"cargo test -p aegis --test e2e --offline -q\"\n          ],\n          \"inputs\": [\n            \"src/lib.rs\"\n          ],\n          \"outputs\": [\n            \"tests/e2e.rs\"\n          ]\n        },\n        \"terms_digest\": \"ed8c2035d308e727e5fc20047dd054ec87cd2d40828fc7dc62d63be6349405c6\"\n      },\n      \"in_reply_to\": null,\n      \"message_id\": \"m-fa08f0a3a3994e38a432150464980813\",\n      \"to\": \"urn:hacp:agent:b\"\n    }\n",
+      "time": "2026-10-22T18:34:33Z"
+    },
+    {
+      "action": "contract.frozen",
+      "detail": {
+        "body": {
+          "contract_id": "c-5a57ec5d32784b9fb7ba6bfb447e957c",
+          "next": "owner implements frozen outputs then submits",
+          "revision": "06c015f5767b5550c3a6b978101b01f3711e7d5ce0fc2e785df9beebc48820ac",
+          "state": "executing",
+          "task": {
+            "owner": "urn:hacp:agent:b",
+            "summary": "demo script + runbook",
+            "task_id": "t-2c6f6a7f83da498285929063157bea11"
+          },
+          "terms": {
+            "acceptance": [
+              "sh -n demo.sh",
+              "grep -q \"claude mcp add\" DEMO.md",
+              "grep -q \"/u/maya\" DEMO.md"
+            ],
+            "inputs": [
+              "src/lib.rs"
+            ],
+            "outputs": [
+              "DEMO.md",
+              "demo.sh"
+            ]
+          },
+          "terms_digest": "30dc9e7fc063da845c54312f90539016954b9b6df63be4f705d4dd9faf0dc2b1"
+        },
+        "in_reply_to": null,
+        "message_id": "m-6caf93c7fb1a4f538904e61be82a1d3c",
+        "to": "urn:hacp:agent:b"
+      },
+      "id": "e-1d3a2c1f18024caa9dd291d20401a66c",
+      "peer": "a",
+      "rendered": "2026-10-22T18:34:41Z | Peer a | contract.frozen\nEvent e-1d3a2c1f18024caa9dd291d20401a66c\n    {\n      \"body\": {\n        \"contract_id\": \"c-5a57ec5d32784b9fb7ba6bfb447e957c\",\n        \"next\": \"owner implements frozen outputs then submits\",\n        \"revision\": \"06c015f5767b5550c3a6b978101b01f3711e7d5ce0fc2e785df9beebc48820ac\",\n        \"state\": \"executing\",\n        \"task\": {\n          \"owner\": \"urn:hacp:agent:b\",\n          \"summary\": \"demo script + runbook\",\n          \"task_id\": \"t-2c6f6a7f83da498285929063157bea11\"\n        },\n        \"terms\": {\n          \"acceptance\": [\n            \"sh -n demo.sh\",\n            \"grep -q \\\"claude mcp add\\\" DEMO.md\",\n            \"grep -q \\\"/u/maya\\\" DEMO.md\"\n          ],\n          \"inputs\": [\n            \"src/lib.rs\"\n          ],\n          \"outputs\": [\n            \"DEMO.md\",\n            \"demo.sh\"\n          ]\n        },\n        \"terms_digest\": \"30dc9e7fc063da845c54312f90539016954b9b6df63be4f705d4dd9faf0dc2b1\"\n      },\n      \"in_reply_to\": null,\n      \"message_id\": \"m-6caf93c7fb1a4f538904e61be82a1d3c\",\n      \"to\": \"urn:hacp:agent:b\"\n    }\n",
+      "time": "2026-10-22T18:34:41Z"
+    },
+    {
+      "action": "contract.frozen",
+      "detail": {
+        "body": {
+          "contract_id": "c-594e5a518bc64154ae8ca3570c9665c0",
+          "next": "owner implements frozen outputs then submits",
+          "revision": "f46fceeb4d54c28e9efd34ad6f6adefd3d51e79e6727eec08d9d85cb319a64a6",
+          "state": "executing",
+          "task": {
+            "owner": "urn:hacp:agent:a",
+            "summary": "e2e privacy test of the full app",
+            "task_id": "t-d4f6c3f27cd74dfbb08bcdcd382311ef"
+          },
+          "terms": {
+            "acceptance": [
+              "cargo test -p aegis --test e2e --offline -q"
+            ],
+            "inputs": [
+              "src/lib.rs"
+            ],
+            "outputs": [
+              "tests/e2e.rs"
+            ]
+          },
+          "terms_digest": "ed8c2035d308e727e5fc20047dd054ec87cd2d40828fc7dc62d63be6349405c6"
+        },
+        "in_reply_to": null,
+        "message_id": "m-1eae2a5cbb974070a04213f2e334248a",
+        "to": "urn:hacp:agent:a"
+      },
+      "id": "e-ac110869d495428cacccf397f536ec44",
+      "peer": "b",
+      "rendered": "2026-10-22T18:34:55Z | Peer b | contract.frozen\nEvent e-ac110869d495428cacccf397f536ec44\n    {\n      \"body\": {\n        \"contract_id\": \"c-594e5a518bc64154ae8ca3570c9665c0\",\n        \"next\": \"owner implements frozen outputs then submits\",\n        \"revision\": \"f46fceeb4d54c28e9efd34ad6f6adefd3d51e79e6727eec08d9d85cb319a64a6\",\n        \"state\": \"executing\",\n        \"task\": {\n          \"owner\": \"urn:hacp:agent:a\",\n          \"summary\": \"e2e privacy test of the full app\",\n          \"task_id\": \"t-d4f6c3f27cd74dfbb08bcdcd382311ef\"\n        },\n        \"terms\": {\n          \"acceptance\": [\n            \"cargo test -p aegis --test e2e --offline -q\"\n          ],\n          \"inputs\": [\n            \"src/lib.rs\"\n          ],\n          \"outputs\": [\n            \"tests/e2e.rs\"\n          ]\n        },\n        \"terms_digest\": \"ed8c2035d308e727e5fc20047dd054ec87cd2d40828fc7dc62d63be6349405c6\"\n      },\n      \"in_reply_to\": null,\n      \"message_id\": \"m-1eae2a5cbb974070a04213f2e334248a\",\n      \"to\": \"urn:hacp:agent:a\"\n    }\n",
+      "time": "2026-10-22T18:34:55Z"
+    },
+    {
+      "action": "hacp.skill.ask",
+      "detail": {
+        "body": {
+          "text": "I am documenting the demo script and e2e test flows in DEMO.md: Scenario 1 (Apartment broker -> query_financials paused for consent -> CLEAN_ROOM approved -> check_schedule auto-redacted -> fetch_identity approved), Scenario 2 (Hostile prompt injection -> export_contacts & get_health_metrics -> PolicyViolation blocked), Scenario 3 (Stripe payment / demo payment flow + lease revocation kill switch + multi-tenancy Maya vs Dev isolation). Does your e2e test suite cover these exact flows?"
+        },
+        "in_reply_to": null,
+        "message_id": "m-ae6650af61d84c519b62b4242ef45133",
+        "to": "urn:hacp:agent:a"
+      },
+      "id": "e-7d74df32dfe54922bc0025e2a7a69e11",
+      "peer": "b",
+      "rendered": "2026-10-22T18:35:06Z | Peer b | hacp.skill.ask\nEvent e-7d74df32dfe54922bc0025e2a7a69e11\n    {\n      \"body\": {\n        \"text\": \"I am documenting the demo script and e2e test flows in DEMO.md: Scenario 1 (Apartment broker -> query_financials paused for consent -> CLEAN_ROOM approved -> check_schedule auto-redacted -> fetch_identity approved), Scenario 2 (Hostile prompt injection -> export_contacts & get_health_metrics -> PolicyViolation blocked), Scenario 3 (Stripe payment / demo payment flow + lease revocation kill switch + multi-tenancy Maya vs Dev isolation). Does your e2e test suite cover these exact flows?\"\n      },\n      \"in_reply_to\": null,\n      \"message_id\": \"m-ae6650af61d84c519b62b4242ef45133\",\n      \"to\": \"urn:hacp:agent:a\"\n    }\n",
+      "time": "2026-10-22T18:35:06Z"
+    },
+    {
+      "action": "submission.delivered",
+      "detail": {
+        "body": {
+          "contract_id": "c-5a57ec5d32784b9fb7ba6bfb447e957c",
+          "next": "counterparty verifies",
+          "revision": "06c015f5767b5550c3a6b978101b01f3711e7d5ce0fc2e785df9beebc48820ac",
+          "state": "verifying",
+          "task": {
+            "owner": "urn:hacp:agent:b",
+            "summary": "demo script + runbook",
+            "task_id": "t-2c6f6a7f83da498285929063157bea11"
+          },
+          "terms": {
+            "acceptance": [
+              "sh -n demo.sh",
+              "grep -q \"claude mcp add\" DEMO.md",
+              "grep -q \"/u/maya\" DEMO.md"
+            ],
+            "inputs": [
+              "src/lib.rs"
+            ],
+            "outputs": [
+              "DEMO.md",
+              "demo.sh"
+            ]
+          },
+          "terms_digest": "30dc9e7fc063da845c54312f90539016954b9b6df63be4f705d4dd9faf0dc2b1"
+        },
+        "in_reply_to": null,
+        "message_id": "m-48754e11e6a5436394a4b75eff033b02",
+        "to": "urn:hacp:agent:a"
+      },
+      "id": "e-08ae1e7a248d4da7a1abe614f2945e2d",
+      "peer": "b",
+      "rendered": "2026-10-22T18:37:12Z | Peer b | submission.delivered\nEvent e-08ae1e7a248d4da7a1abe614f2945e2d\n    {\n      \"body\": {\n        \"contract_id\": \"c-5a57ec5d32784b9fb7ba6bfb447e957c\",\n        \"next\": \"counterparty verifies\",\n        \"revision\": \"06c015f5767b5550c3a6b978101b01f3711e7d5ce0fc2e785df9beebc48820ac\",\n        \"state\": \"verifying\",\n        \"task\": {\n          \"owner\": \"urn:hacp:agent:b\",\n          \"summary\": \"demo script + runbook\",\n          \"task_id\": \"t-2c6f6a7f83da498285929063157bea11\"\n        },\n        \"terms\": {\n          \"acceptance\": [\n            \"sh -n demo.sh\",\n            \"grep -q \\\"claude mcp add\\\" DEMO.md\",\n            \"grep -q \\\"/u/maya\\\" DEMO.md\"\n          ],\n          \"inputs\": [\n            \"src/lib.rs\"\n          ],\n          \"outputs\": [\n            \"DEMO.md\",\n            \"demo.sh\"\n          ]\n        },\n        \"terms_digest\": \"30dc9e7fc063da845c54312f90539016954b9b6df63be4f705d4dd9faf0dc2b1\"\n      },\n      \"in_reply_to\": null,\n      \"message_id\": \"m-48754e11e6a5436394a4b75eff033b02\",\n      \"to\": \"urn:hacp:agent:a\"\n    }\n",
+      "time": "2026-10-22T18:37:12Z"
+    },
+    {
+      "action": "artifacts preserved",
+      "detail": {
+        "artifacts": [
+          {
+            "path": "DEMO.md",
+            "record": {
+              "artifact_id": "urn:hacp:artifact:76789b93-8149-41bb-b743-1dd45f900f57",
+              "contract_id": "c-5a57ec5d32784b9fb7ba6bfb447e957c",
+              "contract_revision": "06c015f5767b5550c3a6b978101b01f3711e7d5ce0fc2e785df9beebc48820ac",
+              "derived_from": [],
+              "digest": "f4ab1e49dd7993de38550ee841fa1c22f95bb33ec9e2222228d341d41abf2b18",
+              "location": ".hacp/artifacts/76789b93-8149-41bb-b743-1dd45f900f57.bin",
+              "media_type": "application/octet-stream",
+              "producer": "urn:hacp:agent:b",
+              "size": 17898,
+              "task_id": "t-2c6f6a7f83da498285929063157bea11",
+              "visibility": "participants"
+            }
+          },
+          {
+            "path": "demo.sh",
+            "record": {
+              "artifact_id": "urn:hacp:artifact:6c7cbfc2-9d60-4f10-b7cc-ccd2a63617ef",
+              "contract_id": "c-5a57ec5d32784b9fb7ba6bfb447e957c",
+              "contract_revision": "06c015f5767b5550c3a6b978101b01f3711e7d5ce0fc2e785df9beebc48820ac",
+              "derived_from": [],
+              "digest": "29f238dc7a90696b74a739f28e9c9d6f3f9fad4fe1bd0255c0bbe01ef19a5413",
+              "location": ".hacp/artifacts/6c7cbfc2-9d60-4f10-b7cc-ccd2a63617ef.bin",
+              "media_type": "application/octet-stream",
+              "producer": "urn:hacp:agent:b",
+              "size": 2060,
+              "task_id": "t-2c6f6a7f83da498285929063157bea11",
+              "visibility": "participants"
+            }
+          }
+        ],
+        "claim": "Implemented POSIX demo.sh with release build, background server, /healthz polling, credential printing, browser opening, and exit trap, plus DEMO.md with 20s pitch, ASCII architecture diagram, 3-minute demo script, MCP client attachment guides, and env var reference",
+        "contract_id": "c-5a57ec5d32784b9fb7ba6bfb447e957c"
+      },
+      "id": "e-5f6f10f585d7476bbb5d53e84626dd36",
+      "peer": "b",
+      "rendered": "2026-10-22T18:37:12Z | Peer b | artifacts preserved\nEvent e-5f6f10f585d7476bbb5d53e84626dd36\n    {\n      \"artifacts\": [\n        {\n          \"path\": \"DEMO.md\",\n          \"record\": {\n            \"artifact_id\": \"urn:hacp:artifact:76789b93-8149-41bb-b743-1dd45f900f57\",\n            \"contract_id\": \"c-5a57ec5d32784b9fb7ba6bfb447e957c\",\n            \"contract_revision\": \"06c015f5767b5550c3a6b978101b01f3711e7d5ce0fc2e785df9beebc48820ac\",\n            \"derived_from\": [],\n            \"digest\": \"f4ab1e49dd7993de38550ee841fa1c22f95bb33ec9e2222228d341d41abf2b18\",\n            \"location\": \".hacp/artifacts/76789b93-8149-41bb-b743-1dd45f900f57.bin\",\n            \"media_type\": \"application/octet-stream\",\n            \"producer\": \"urn:hacp:agent:b\",\n            \"size\": 17898,\n            \"task_id\": \"t-2c6f6a7f83da498285929063157bea11\",\n            \"visibility\": \"participants\"\n          }\n        },\n        {\n          \"path\": \"demo.sh\",\n          \"record\": {\n            \"artifact_id\": \"urn:hacp:artifact:6c7cbfc2-9d60-4f10-b7cc-ccd2a63617ef\",\n            \"contract_id\": \"c-5a57ec5d32784b9fb7ba6bfb447e957c\",\n            \"contract_revision\": \"06c015f5767b5550c3a6b978101b01f3711e7d5ce0fc2e785df9beebc48820ac\",\n            \"derived_from\": [],\n            \"digest\": \"29f238dc7a90696b74a739f28e9c9d6f3f9fad4fe1bd0255c0bbe01ef19a5413\",\n            \"location\": \".hacp/artifacts/6c7cbfc2-9d60-4f10-b7cc-ccd2a63617ef.bin\",\n            \"media_type\": \"application/octet-stream\",\n            \"producer\": \"urn:hacp:agent:b\",\n            \"size\": 2060,\n            \"task_id\": \"t-2c6f6a7f83da498285929063157bea11\",\n            \"visibility\": \"participants\"\n          }\n        }\n      ],\n      \"claim\": \"Implemented POSIX demo.sh with release build, background server, /healthz polling, credential printing, browser opening, and exit trap, plus DEMO.md with 20s pitch, ASCII architecture diagram, 3-minute demo script, MCP client attachment guides, and env var reference\",\n      \"contract_id\": \"c-5a57ec5d32784b9fb7ba6bfb447e957c\"\n    }\n",
+      "time": "2026-10-22T18:37:12Z"
     }
   ]
 }

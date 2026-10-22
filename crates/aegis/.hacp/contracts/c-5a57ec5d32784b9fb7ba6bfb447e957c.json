@@ -1,11 +1,42 @@
 {
-  "artifacts": [],
+  "artifacts": [
+    {
+      "path": "DEMO.md",
+      "record": {
+        "artifact_id": "urn:hacp:artifact:76789b93-8149-41bb-b743-1dd45f900f57",
+        "contract_id": "c-5a57ec5d32784b9fb7ba6bfb447e957c",
+        "contract_revision": "06c015f5767b5550c3a6b978101b01f3711e7d5ce0fc2e785df9beebc48820ac",
+        "derived_from": [],
+        "digest": "f4ab1e49dd7993de38550ee841fa1c22f95bb33ec9e2222228d341d41abf2b18",
+        "location": ".hacp/artifacts/76789b93-8149-41bb-b743-1dd45f900f57.bin",
+        "media_type": "application/octet-stream",
+        "producer": "urn:hacp:agent:b",
+        "size": 17898,
+        "task_id": "t-2c6f6a7f83da498285929063157bea11",
+        "visibility": "participants"
+      }
+    },
+    {
+      "path": "demo.sh",
+      "record": {
+        "artifact_id": "urn:hacp:artifact:6c7cbfc2-9d60-4f10-b7cc-ccd2a63617ef",
+        "contract_id": "c-5a57ec5d32784b9fb7ba6bfb447e957c",
+        "contract_revision": "06c015f5767b5550c3a6b978101b01f3711e7d5ce0fc2e785df9beebc48820ac",
+        "derived_from": [],
+        "digest": "29f238dc7a90696b74a739f28e9c9d6f3f9fad4fe1bd0255c0bbe01ef19a5413",
+        "location": ".hacp/artifacts/6c7cbfc2-9d60-4f10-b7cc-ccd2a63617ef.bin",
+        "media_type": "application/octet-stream",
+        "producer": "urn:hacp:agent:b",
+        "size": 2060,
+        "task_id": "t-2c6f6a7f83da498285929063157bea11",
+        "visibility": "participants"
+      }
+    }
+  ],
   "attempts": [],
   "contract": {
-    "agreed_by": [
-      "urn:hacp:agent:b"
-    ],
-    "agreed_terms_digest": "30dc9e7fc063da845c54312f90539016954b9b6df63be4f705d4dd9faf0dc2b1",
+    "agreed_by": [],
+    "agreed_terms_digest": null,
     "amendments": 0,
     "contract_id": "c-5a57ec5d32784b9fb7ba6bfb447e957c",
     "escalation_path": [],
@@ -17,13 +48,40 @@
       "urn:hacp:agent:a",
       "urn:hacp:agent:b"
     ],
-    "pending_submission": null,
-    "pending_submitter": null,
+    "pending_submission": {
+      "against_revision": "06c015f5767b5550c3a6b978101b01f3711e7d5ce0fc2e785df9beebc48820ac",
+      "artifacts": [
+        "urn:hacp:artifact:76789b93-8149-41bb-b743-1dd45f900f57",
+        "urn:hacp:artifact:6c7cbfc2-9d60-4f10-b7cc-ccd2a63617ef"
+      ],
+      "claim": "Implemented POSIX demo.sh with release build, background server, /healthz polling, credential printing, browser opening, and exit trap, plus DEMO.md with 20s pitch, ASCII architecture diagram, 3-minute demo script, MCP client attachment guides, and env var reference",
+      "evidence": []
+    },
+    "pending_submitter": "urn:hacp:agent:b",
     "relationship": "collaboration",
-    "revisions": [],
+    "revisions": [
+      {
+        "content": {
+          "acceptance": [
+            "sh -n demo.sh",
+            "grep -q \"claude mcp add\" DEMO.md",
+            "grep -q \"/u/maya\" DEMO.md"
+          ],
+          "inputs": [
+            "src/lib.rs"
+          ],
+          "outputs": [
+            "DEMO.md",
+            "demo.sh"
+          ]
+        },
+        "digest": "06c015f5767b5550c3a6b978101b01f3711e7d5ce0fc2e785df9beebc48820ac",
+        "number": 1
+      }
+    ],
     "rework_scope": null,
     "rounds": 0,
-    "state": "proposed",
+    "state": "verifying",
     "task": {
       "owner": "urn:hacp:agent:b",
       "summary": "demo script + runbook",
@@ -46,6 +104,16 @@
     ]
   },
   "proposer": "b",
-  "submissions": [],
+  "submissions": [
+    {
+      "against_revision": "06c015f5767b5550c3a6b978101b01f3711e7d5ce0fc2e785df9beebc48820ac",
+      "artifacts": [
+        "urn:hacp:artifact:76789b93-8149-41bb-b743-1dd45f900f57",
+        "urn:hacp:artifact:6c7cbfc2-9d60-4f10-b7cc-ccd2a63617ef"
+      ],
+      "claim": "Implemented POSIX demo.sh with release build, background server, /healthz polling, credential printing, browser opening, and exit trap, plus DEMO.md with 20s pitch, ASCII architecture diagram, 3-minute demo script, MCP client attachment guides, and env var reference",
+      "evidence": []
+    }
+  ],
   "verifications": []
 }

@@ -1,0 +1,35 @@
+{
+  "protocol": "HACP/2.0",
+  "message_id": "m-6caf93c7fb1a4f538904e61be82a1d3c",
+  "session_id": "s-c4c37136cd504ddc89df37991cdaee04",
+  "from": "urn:hacp:agent:a",
+  "to": "urn:hacp:agent:b",
+  "kind": "contract.frozen",
+  "timestamp": "2026-10-22T18:34:41Z",
+  "body": {
+    "contract_id": "c-5a57ec5d32784b9fb7ba6bfb447e957c",
+    "next": "owner implements frozen outputs then submits",
+    "revision": "06c015f5767b5550c3a6b978101b01f3711e7d5ce0fc2e785df9beebc48820ac",
+    "state": "executing",
+    "task": {
+      "owner": "urn:hacp:agent:b",
+      "summary": "demo script + runbook",
+      "task_id": "t-2c6f6a7f83da498285929063157bea11"
+    },
+    "terms": {
+      "acceptance": [
+        "sh -n demo.sh",
+        "grep -q \"claude mcp add\" DEMO.md",
+        "grep -q \"/u/maya\" DEMO.md"
+      ],
+      "inputs": [
+        "src/lib.rs"
+      ],
+      "outputs": [
+        "DEMO.md",
+        "demo.sh"
+      ]
+    },
+    "terms_digest": "30dc9e7fc063da845c54312f90539016954b9b6df63be4f705d4dd9faf0dc2b1"
+  }
+}

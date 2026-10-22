@@ -8,6 +8,7 @@ use aegis_integrations::{DemoPayments, JevScorer, StripePayments};
 use aegis_receipts::{Ed25519Signer, SqliteLedger};
 use std::sync::Arc;
 
+pub mod anchor;
 pub use aegis_integrations::load_dotenv;
 
 /// Everything that varies between the live demo and an offline test run.
@@ -27,6 +28,8 @@ pub struct Options {
     pub risk_threshold: f64,
     pub consent_timeout_secs: u64,
     pub require_mcp_token: bool,
+    /// Anchor ledger head hashes to Supabase Storage (needs SUPABASE_URL + SUPABASE_SECRET_KEY).
+    pub use_supabase: bool,
 }
 
 impl Options {
@@ -42,6 +45,7 @@ impl Options {
             risk_threshold: 0.8,
             consent_timeout_secs: 90,
             require_mcp_token: false,
+            use_supabase: false,
         }
     }
 
@@ -60,6 +64,7 @@ impl Options {
             risk_threshold: get("AEGIS_RISK_THRESHOLD").and_then(|t| t.parse().ok()).unwrap_or(0.8),
             consent_timeout_secs: get("AEGIS_CONSENT_TIMEOUT").and_then(|t| t.parse().ok()).unwrap_or(90),
             require_mcp_token: get("AEGIS_REQUIRE_MCP_TOKEN").as_deref() == Some("1"),
+            use_supabase: !offline && get("SUPABASE_URL").is_some() && get("SUPABASE_SECRET_KEY").is_some(),
         }
     }
 }
@@ -81,6 +86,7 @@ pub fn describe(opts: &Options) -> Vec<String> {
         format!("layer 3 Ed25519 receipts + hash-chained ledger: ON"),
         format!("Jev risk scoring: {} (threshold {:.2})", on(opts.use_jev), opts.risk_threshold),
         format!("payments: {}", if opts.use_stripe { "Stripe TEST mode" } else { "demo provider (labelled)" }),
+        format!("ledger anchoring to Supabase Storage: {}", on(opts.use_supabase)),
     ]
 }
 
@@ -91,6 +97,7 @@ pub fn build_app(opts: &Options) -> anyhow::Result<axum::Router> {
         None => SqliteLedger::open_in_memory(),
     }
     .map_err(|e| anyhow::anyhow!("ledger: {e}"))?;
+    let ledger: Arc<dyn aegis_core::Ledger> = Arc::new(ledger);
     let signer = match opts.signing_seed_hex.as_deref().and_then(parse_seed) {
         Some(seed) => Ed25519Signer::from_seed(seed),
         None => Ed25519Signer::generate(),
@@ -118,11 +125,17 @@ pub fn build_app(opts: &Options) -> anyhow::Result<axum::Router> {
         risk_threshold: opts.risk_threshold,
         payments: Some(payments),
         signer: Arc::new(signer),
-        ledger: Arc::new(ledger),
+        ledger: ledger.clone(),
         scenarios: Some(Arc::new(Scenarios::new(llm)) as Arc<dyn ScenarioRunner>),
         base_url: format!("http://127.0.0.1:{}", opts.port),
         consent_timeout_secs: opts.consent_timeout_secs,
         require_mcp_token: opts.require_mcp_token,
     };
-    Ok(router(deps).merge(aegis_dashboard::router()))
+    let mut app = router(deps).merge(aegis_dashboard::router());
+    if let Some(anchorer) = opts.use_supabase.then(anchor::Anchorer::from_env).flatten() {
+        app = app.merge(anchorer.router());
+        let subjects = demo_vaults().iter().map(|v| v.subject()).collect();
+        anchorer.spawn(ledger, subjects, std::time::Duration::from_secs(20));
+    }
+    Ok(app)
 }

@@ -1,0 +1,71 @@
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 8 tests
+. 1/8
+admin_responses_never_echo_secret_value --- FAILED
+rejects_log_usage_rows_with_ok_false --- FAILED
+stripe_proxy_refuses_non_test_real_key --- FAILED
+proxy_uses_real_key_and_scrubs_leaks_from_body_and_headers --- FAILED
+expired_and_revoked_keys_return_401 --- FAILED
+admin_requires_correct_bearer_token --- FAILED
+fake_key_is_bound_to_subject_and_provider --- FAILED
+
+failures:
+
+---- admin_responses_never_echo_secret_value stdout ----
+
+thread 'admin_responses_never_echo_secret_value' (30405023) panicked at crates/aegis-broker/src/lib.rs:266:10:
+Path segments must not start with `:`. For capture groups, use `{capture}`. If you meant to literally match a segment starting with a colon, call `without_v07_checks` on the router.
+
+---- rejects_log_usage_rows_with_ok_false stdout ----
+
+thread 'rejects_log_usage_rows_with_ok_false' (30405027) panicked at crates/aegis-broker/src/lib.rs:266:10:
+Path segments must not start with `:`. For capture groups, use `{capture}`. If you meant to literally match a segment starting with a colon, call `without_v07_checks` on the router.
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- stripe_proxy_refuses_non_test_real_key stdout ----
+
+thread 'stripe_proxy_refuses_non_test_real_key' (30405029) panicked at crates/aegis-broker/src/lib.rs:266:10:
+Path segments must not start with `:`. For capture groups, use `{capture}`. If you meant to literally match a segment starting with a colon, call `without_v07_checks` on the router.
+
+---- proxy_uses_real_key_and_scrubs_leaks_from_body_and_headers stdout ----
+
+thread 'proxy_uses_real_key_and_scrubs_leaks_from_body_and_headers' (30405026) panicked at crates/aegis-broker/src/lib.rs:266:10:
+Path segments must not start with `:`. For capture groups, use `{capture}`. If you meant to literally match a segment starting with a colon, call `without_v07_checks` on the router.
+
+---- expired_and_revoked_keys_return_401 stdout ----
+
+thread 'expired_and_revoked_keys_return_401' (30405024) panicked at crates/aegis-broker/src/lib.rs:266:10:
+Path segments must not start with `:`. For capture groups, use `{capture}`. If you meant to literally match a segment starting with a colon, call `without_v07_checks` on the router.
+
+---- admin_requires_correct_bearer_token stdout ----
+
+thread 'admin_requires_correct_bearer_token' (30405022) panicked at crates/aegis-broker/src/lib.rs:266:10:
+Path segments must not start with `:`. For capture groups, use `{capture}`. If you meant to literally match a segment starting with a colon, call `without_v07_checks` on the router.
+
+---- fake_key_is_bound_to_subject_and_provider stdout ----
+
+thread 'fake_key_is_bound_to_subject_and_provider' (30405025) panicked at crates/aegis-broker/src/lib.rs:266:10:
+Path segments must not start with `:`. For capture groups, use `{capture}`. If you meant to literally match a segment starting with a colon, call `without_v07_checks` on the router.
+
+
+failures:
+    admin_requires_correct_bearer_token
+    admin_responses_never_echo_secret_value
+    expired_and_revoked_keys_return_401
+    fake_key_is_bound_to_subject_and_provider
+    proxy_uses_real_key_and_scrubs_leaks_from_body_and_headers
+    rejects_log_usage_rows_with_ok_false
+    stripe_proxy_refuses_non_test_real_key
+
+test result: FAILED. 1 passed; 7 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

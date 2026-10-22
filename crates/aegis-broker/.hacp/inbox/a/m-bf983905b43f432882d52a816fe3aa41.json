@@ -1,0 +1,12 @@
+{
+  "protocol": "HACP/2.0",
+  "message_id": "m-bf983905b43f432882d52a816fe3aa41",
+  "session_id": "s-860fafffc40e4554b08bd124783ea7f9",
+  "from": "urn:hacp:agent:b",
+  "to": "urn:hacp:agent:a",
+  "kind": "hacp.skill.ask",
+  "timestamp": "2026-10-22T19:36:06Z",
+  "body": {
+    "text": "Current adversarial tests fail immediately because router construction panics on '/admin/vault/:subject' (axum expects '/admin/vault/{subject}'). Please amend src/lib.rs route syntax. After that, likely follow-up: rejects (provider mismatch/expired/revoked) should still log usage rows with ok=false per spec/tests. Please patch and resubmit; I will re-run and verify."
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "protocol": "HACP/2.0",
+  "message_id": "m-1eb781bf6c24413b88096fc980cdad81",
+  "session_id": "s-860fafffc40e4554b08bd124783ea7f9",
+  "from": "urn:hacp:agent:b",
+  "to": "urn:hacp:agent:a",
+  "kind": "contract.proposed",
+  "timestamp": "2026-10-22T19:32:31Z",
+  "body": {
+    "contract_id": "c-e3c2d00143d64fe59be48ba7ca1060e6",
+    "next": "review terms and accept digest or counter",
+    "revision": null,
+    "state": "proposed",
+    "task": {
+      "owner": "urn:hacp:agent:b",
+      "summary": "aegis-broker adversarial tests",
+      "task_id": "t-6629b66667304f41aafa14d99112be33"
+    },
+    "terms": {
+      "acceptance": [
+        "cargo test -p aegis-broker --offline -q"
+      ],
+      "inputs": [],
+      "outputs": [
+        "tests/broker.rs"
+      ]
+    },
+    "terms_digest": "fa8fdf5526319950a31b1ef1485218d30172120ed97aca99e163e1acd807a426"
+  }
+}

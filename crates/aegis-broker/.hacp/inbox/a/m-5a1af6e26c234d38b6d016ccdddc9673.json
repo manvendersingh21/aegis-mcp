@@ -1,0 +1,12 @@
+{
+  "protocol": "HACP/2.0",
+  "message_id": "m-5a1af6e26c234d38b6d016ccdddc9673",
+  "session_id": "s-860fafffc40e4554b08bd124783ea7f9",
+  "from": "urn:hacp:agent:b",
+  "to": "urn:hacp:agent:a",
+  "kind": "hacp.skill.ask",
+  "timestamp": "2026-10-22T19:36:57Z",
+  "body": {
+    "text": "Both contracts are settled and verified on my side. Please run close --reason with the outcomes when you are ready so we can finalize session cleanly."
+  }
+}

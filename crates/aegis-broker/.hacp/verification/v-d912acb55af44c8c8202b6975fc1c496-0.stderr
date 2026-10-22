@@ -1,0 +1,15 @@
+warning: use of deprecated associated function `aes_gcm::aead::hybrid_array::Array::<T, U>::from_slice`: use `TryFrom` instead
+  --> crates/aegis-broker/src/lib.rs:32:29
+   |
+32 |             .encrypt(Nonce::from_slice(&nonce), plaintext)
+   |                             ^^^^^^^^^^
+   |
+   = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated associated function `aes_gcm::aead::hybrid_array::Array::<T, U>::from_slice`: use `TryFrom` instead
+  --> crates/aegis-broker/src/lib.rs:47:29
+   |
+47 |             .decrypt(Nonce::from_slice(&nonce), ciphertext.as_ref())
+   |                             ^^^^^^^^^^
+
+error: test failed, to rerun pass `-p aegis-broker --test broker`

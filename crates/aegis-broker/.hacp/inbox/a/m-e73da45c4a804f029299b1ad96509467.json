@@ -1,0 +1,12 @@
+{
+  "protocol": "HACP/2.0",
+  "message_id": "m-e73da45c4a804f029299b1ad96509467",
+  "session_id": "s-860fafffc40e4554b08bd124783ea7f9",
+  "from": "urn:hacp:agent:b",
+  "to": "urn:hacp:agent:a",
+  "kind": "hacp.skill.ask",
+  "timestamp": "2026-10-22T19:32:59Z",
+  "body": {
+    "text": "Please share the exact public API names/signatures you are implementing in src/lib.rs for tests (BrokerState fields, MemoryStore ctor, Sealer methods, StoredSecret/StoredFakeKey/UsageRow fields, and any helper fns), plus any deterministic behavior needed by adversarial tests."
+  }
+}

@@ -1,0 +1,208 @@
+{
+  "artifacts": [
+    {
+      "path": "src/lib.rs",
+      "record": {
+        "artifact_id": "urn:hacp:artifact:4fe41194-d4b9-4a3e-8f22-88a380c541eb",
+        "contract_id": "c-32ac252473f3490a9f75d3df7d5adfe4",
+        "contract_revision": "8ae0b7b2eb953e505b7255867b8c6dd1e49eaa3c3fd08af376c3da1c3255f926",
+        "derived_from": [],
+        "digest": "e0f4cd252c1abf8ad0b1f4dedc9baf7e9ed19755a2db4e93e3a374d7e8996305",
+        "location": ".hacp/artifacts/4fe41194-d4b9-4a3e-8f22-88a380c541eb.bin",
+        "media_type": "application/octet-stream",
+        "producer": "urn:hacp:agent:a",
+        "size": 22000,
+        "task_id": "t-e1affbd0c3ee45929ed6efed766cc23e",
+        "visibility": "participants"
+      }
+    },
+    {
+      "path": "src/lib.rs",
+      "record": {
+        "artifact_id": "urn:hacp:artifact:39f7ff76-9c1a-4f71-9ffd-02ffa55fb54b",
+        "contract_id": "c-32ac252473f3490a9f75d3df7d5adfe4",
+        "contract_revision": "8ae0b7b2eb953e505b7255867b8c6dd1e49eaa3c3fd08af376c3da1c3255f926",
+        "derived_from": [],
+        "digest": "d4d337116eb26ca8d4d31aa557a1910fc79489ea5f9474ff5a050d10f46a97f8",
+        "location": ".hacp/artifacts/39f7ff76-9c1a-4f71-9ffd-02ffa55fb54b.bin",
+        "media_type": "application/octet-stream",
+        "producer": "urn:hacp:agent:a",
+        "size": 22106,
+        "task_id": "t-e1affbd0c3ee45929ed6efed766cc23e",
+        "visibility": "participants"
+      }
+    }
+  ],
+  "attempts": [
+    {
+      "commands": [
+        {
+          "command": "cargo test -p aegis-broker --offline -q",
+          "duration_ms": 2300,
+          "exit_code": 101,
+          "signal": null,
+          "stderr": "warning: use of deprecated associated function `aes_gcm::aead::hybrid_array::Array::<T, U>::from_slice`: use `TryFrom` instead\n  --> crates/aegis-broker/src/lib.rs:32:29\n   |\n32 |             .encrypt(Nonce::from_slice(&nonce), plaintext)\n   |                             ^^^^^^^^^^\n   |\n   = note: `#[warn(deprecated)]` on by default\n\nwarning: use of deprecated associated function `aes_gcm::aead::hybrid_array::Array::<T, U>::from_slice`: use `TryFrom` instead\n  --> crates/aegis-broker/src/lib.rs:47:29\n   |\n47 |             .decrypt(Nonce::from_slice(&nonce), ciphertext.as_ref())\n   |                             ^^^^^^^^^^\n\nerror: test failed, to rerun pass `-p aegis-broker --test broker`\n",
+          "stdout": "\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 8 tests\n. 1/8\nadmin_responses_never_echo_secret_value --- FAILED\nrejects_log_usage_rows_with_ok_false --- FAILED\nstripe_proxy_refuses_non_test_real_key --- FAILED\nproxy_uses_real_key_and_scrubs_leaks_from_body_and_headers --- FAILED\nexpired_and_revoked_keys_return_401 --- FAILED\nadmin_requires_correct_bearer_token --- FAILED\nfake_key_is_bound_to_subject_and_provider --- FAILED\n\nfailures:\n\n---- admin_responses_never_echo_secret_value stdout ----\n\nthread 'admin_responses_never_echo_secret_value' (30405023) panicked at crates/aegis-broker/src/lib.rs:266:10:\nPath segments must not start with `:`. For capture groups, use `{capture}`. If you meant to literally match a segment starting with a colon, call `without_v07_checks` on the router.\n\n---- rejects_log_usage_rows_with_ok_false stdout ----\n\nthread 'rejects_log_usage_rows_with_ok_false' (30405027) panicked at crates/aegis-broker/src/lib.rs:266:10:\nPath segments must not start with `:`. For capture groups, use `{capture}`. If you meant to literally match a segment starting with a colon, call `without_v07_checks` on the router.\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n---- stripe_proxy_refuses_non_test_real_key stdout ----\n\nthread 'stripe_proxy_refuses_non_test_real_key' (30405029) panicked at crates/aegis-broker/src/lib.rs:266:10:\nPath segments must not start with `:`. For capture groups, use `{capture}`. If you meant to literally match a segment starting with a colon, call `without_v07_checks` on the router.\n\n---- proxy_uses_real_key_and_scrubs_leaks_from_body_and_headers stdout ----\n\nthread 'proxy_uses_real_key_and_scrubs_leaks_from_body_and_headers' (30405026) panicked at crates/aegis-broker/src/lib.rs:266:10:\nPath segments must not start with `:`. For capture groups, use `{capture}`. If you meant to literally match a segment starting with a colon, call `without_v07_checks` on the router.\n\n---- expired_and_revoked_keys_return_401 stdout ----\n\nthread 'expired_and_revoked_keys_return_401' (30405024) panicked at crates/aegis-broker/src/lib.rs:266:10:\nPath segments must not start with `:`. For capture groups, use `{capture}`. If you meant to literally match a segment starting with a colon, call `without_v07_checks` on the router.\n\n---- admin_requires_correct_bearer_token stdout ----\n\nthread 'admin_requires_correct_bearer_token' (30405022) panicked at crates/aegis-broker/src/lib.rs:266:10:\nPath segments must not start with `:`. For capture groups, use `{capture}`. If you meant to literally match a segment starting with a colon, call `without_v07_checks` on the router.\n\n---- fake_key_is_bound_to_subject_and_provider stdout ----\n\nthread 'fake_key_is_bound_to_subject_and_provider' (30405025) panicked at crates/aegis-broker/src/lib.rs:266:10:\nPath segments must not start with `:`. For capture groups, use `{capture}`. If you meant to literally match a segment starting with a colon, call `without_v07_checks` on the router.\n\n\nfailures:\n    admin_requires_correct_bearer_token\n    admin_responses_never_echo_secret_value\n    expired_and_revoked_keys_return_401\n    fake_key_is_bound_to_subject_and_provider\n    proxy_uses_real_key_and_scrubs_leaks_from_body_and_headers\n    rejects_log_usage_rows_with_ok_false\n    stripe_proxy_refuses_non_test_real_key\n\ntest result: FAILED. 1 passed; 7 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n",
+          "timed_out": false
+        }
+      ],
+      "id": "v-d912acb55af44c8c8202b6975fc1c496",
+      "peer": "b",
+      "status": "completed"
+    },
+    {
+      "commands": [
+        {
+          "command": "cargo test -p aegis-broker --offline -q",
+          "duration_ms": 251,
+          "exit_code": 0,
+          "signal": null,
+          "stderr": "warning: use of deprecated associated function `aes_gcm::aead::hybrid_array::Array::<T, U>::from_slice`: use `TryFrom` instead\n  --> crates/aegis-broker/src/lib.rs:32:29\n   |\n32 |             .encrypt(Nonce::from_slice(&nonce), plaintext)\n   |                             ^^^^^^^^^^\n   |\n   = note: `#[warn(deprecated)]` on by default\n\nwarning: use of deprecated associated function `aes_gcm::aead::hybrid_array::Array::<T, U>::from_slice`: use `TryFrom` instead\n  --> crates/aegis-broker/src/lib.rs:47:29\n   |\n47 |             .decrypt(Nonce::from_slice(&nonce), ciphertext.as_ref())\n   |                             ^^^^^^^^^^\n\n",
+          "stdout": "\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 8 tests\n........\ntest result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n",
+          "timed_out": false
+        }
+      ],
+      "id": "v-00e4773f814742d49125647a69211475",
+      "peer": "b",
+      "status": "completed"
+    }
+  ],
+  "contract": {
+    "agreed_by": [],
+    "agreed_terms_digest": null,
+    "amendments": 0,
+    "contract_id": "c-32ac252473f3490a9f75d3df7d5adfe4",
+    "escalation_path": [],
+    "limits": {
+      "max_amendments": 3,
+      "max_rounds": 3
+    },
+    "participants": [
+      "urn:hacp:agent:a",
+      "urn:hacp:agent:b"
+    ],
+    "pending_submission": null,
+    "pending_submitter": null,
+    "relationship": "collaboration",
+    "revisions": [
+      {
+        "content": {
+          "acceptance": [
+            "cargo test -p aegis-broker --offline -q"
+          ],
+          "inputs": [],
+          "outputs": [
+            "src/lib.rs"
+          ]
+        },
+        "digest": "8ae0b7b2eb953e505b7255867b8c6dd1e49eaa3c3fd08af376c3da1c3255f926",
+        "number": 1
+      }
+    ],
+    "rework_scope": null,
+    "rounds": 0,
+    "state": "settled",
+    "task": {
+      "owner": "urn:hacp:agent:a",
+      "summary": "aegis-broker: fake-key swapping proxy",
+      "task_id": "t-e1affbd0c3ee45929ed6efed766cc23e"
+    }
+  },
+  "pending_digest": "0515127536d04aae50746327e79f2c3a55b21bcde2aa8815a19f3811149aa8eb",
+  "pending_terms": {
+    "acceptance": [
+      "cargo test -p aegis-broker --offline -q"
+    ],
+    "inputs": [],
+    "outputs": [
+      "src/lib.rs"
+    ]
+  },
+  "proposer": "a",
+  "submissions": [
+    {
+      "against_revision": "8ae0b7b2eb953e505b7255867b8c6dd1e49eaa3c3fd08af376c3da1c3255f926",
+      "artifacts": [
+        "urn:hacp:artifact:4fe41194-d4b9-4a3e-8f22-88a380c541eb"
+      ],
+      "claim": "Implemented encrypted secret storage abstractions, fake-key issuance and validation, admin API, vault seeding, key-swapping proxies, scrubbing and usage logging.",
+      "evidence": []
+    },
+    {
+      "against_revision": "8ae0b7b2eb953e505b7255867b8c6dd1e49eaa3c3fd08af376c3da1c3255f926",
+      "artifacts": [
+        "urn:hacp:artifact:39f7ff76-9c1a-4f71-9ffd-02ffa55fb54b"
+      ],
+      "claim": "Fixed Axum route syntax and added failed usage logging for known expired, revoked, and provider-mismatched keys; cargo test -p aegis-broker --offline -q passes.",
+      "evidence": []
+    }
+  ],
+  "verifications": [
+    {
+      "against_revision": "8ae0b7b2eb953e505b7255867b8c6dd1e49eaa3c3fd08af376c3da1c3255f926",
+      "artifacts": [
+        "urn:hacp:artifact:4fe41194-d4b9-4a3e-8f22-88a380c541eb"
+      ],
+      "attests": [],
+      "checks": [
+        {
+          "detail": "SHA-256 e0f4cd252c1abf8ad0b1f4dedc9baf7e9ed19755a2db4e93e3a374d7e8996305 and 22000 bytes match working file and immutable copy",
+          "name": "before: src/lib.rs",
+          "passed": true
+        },
+        {
+          "detail": "{\"command\":\"cargo test -p aegis-broker --offline -q\",\"stdout\":\"\\nrunning 0 tests\\n\\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\\n\\n\\nrunning 0 tests\\n\\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\\n\\n\\nrunning 8 tests\\n. 1/8\\nadmin_responses_never_echo_secret_value --- FAILED\\nrejects_log_usage_rows_with_ok_false --- FAILED\\nstripe_proxy_refuses_non_test_real_key --- FAILED\\nproxy_uses_real_key_and_scrubs_leaks_from_body_and_headers --- FAILED\\nexpired_and_revoked_keys_return_401 --- FAILED\\nadmin_requires_correct_bearer_token --- FAILED\\nfake_key_is_bound_to_subject_and_provider --- FAILED\\n\\nfailures:\\n\\n---- admin_responses_never_echo_secret_value stdout ----\\n\\nthread 'admin_responses_never_echo_secret_value' (30405023) panicked at crates/aegis-broker/src/lib.rs:266:10:\\nPath segments must not start with `:`. For capture groups, use `{capture}`. If you meant to literally match a segment starting with a colon, call `without_v07_checks` on the router.\\n\\n---- rejects_log_usage_rows_with_ok_false stdout ----\\n\\nthread 'rejects_log_usage_rows_with_ok_false' (30405027) panicked at crates/aegis-broker/src/lib.rs:266:10:\\nPath segments must not start with `:`. For capture groups, use `{capture}`. If you meant to literally match a segment starting with a colon, call `without_v07_checks` on the router.\\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\\n\\n---- stripe_proxy_refuses_non_test_real_key stdout ----\\n\\nthread 'stripe_proxy_refuses_non_test_real_key' (30405029) panicked at crates/aegis-broker/src/lib.rs:266:10:\\nPath segments must not start with `:`. For capture groups, use `{capture}`. If you meant to literally match a segment starting with a colon, call `without_v07_checks` on the router.\\n\\n---- proxy_uses_real_key_and_scrubs_leaks_from_body_and_headers stdout ----\\n\\nthread 'proxy_uses_real_key_and_scrubs_leaks_from_body_and_headers' (30405026) panicked at crates/aegis-broker/src/lib.rs:266:10:\\nPath segments must not start with `:`. For capture groups, use `{capture}`. If you meant to literally match a segment starting with a colon, call `without_v07_checks` on the router.\\n\\n---- expired_and_revoked_keys_return_401 stdout ----\\n\\nthread 'expired_and_revoked_keys_return_401' (30405024) panicked at crates/aegis-broker/src/lib.rs:266:10:\\nPath segments must not start with `:`. For capture groups, use `{capture}`. If you meant to literally match a segment starting with a colon, call `without_v07_checks` on the router.\\n\\n---- admin_requires_correct_bearer_token stdout ----\\n\\nthread 'admin_requires_correct_bearer_token' (30405022) panicked at crates/aegis-broker/src/lib.rs:266:10:\\nPath segments must not start with `:`. For capture groups, use `{capture}`. If you meant to literally match a segment starting with a colon, call `without_v07_checks` on the router.\\n\\n---- fake_key_is_bound_to_subject_and_provider stdout ----\\n\\nthread 'fake_key_is_bound_to_subject_and_provider' (30405025) panicked at crates/aegis-broker/src/lib.rs:266:10:\\nPath segments must not start with `:`. For capture groups, use `{capture}`. If you meant to literally match a segment starting with a colon, call `without_v07_checks` on the router.\\n\\n\\nfailures:\\n    admin_requires_correct_bearer_token\\n    admin_responses_never_echo_secret_value\\n    expired_and_revoked_keys_return_401\\n    fake_key_is_bound_to_subject_and_provider\\n    proxy_uses_real_key_and_scrubs_leaks_from_body_and_headers\\n    rejects_log_usage_rows_with_ok_false\\n    stripe_proxy_refuses_non_test_real_key\\n\\ntest result: FAILED. 1 passed; 7 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\\n\\n\",\"stderr\":\"warning: use of deprecated associated function `aes_gcm::aead::hybrid_array::Array::<T, U>::from_slice`: use `TryFrom` instead\\n  --> crates/aegis-broker/src/lib.rs:32:29\\n   |\\n32 |             .encrypt(Nonce::from_slice(&nonce), plaintext)\\n   |                             ^^^^^^^^^^\\n   |\\n   = note: `#[warn(deprecated)]` on by default\\n\\nwarning: use of deprecated associated function `aes_gcm::aead::hybrid_array::Array::<T, U>::from_slice`: use `TryFrom` instead\\n  --> crates/aegis-broker/src/lib.rs:47:29\\n   |\\n47 |             .decrypt(Nonce::from_slice(&nonce), ciphertext.as_ref())\\n   |                             ^^^^^^^^^^\\n\\nerror: test failed, to rerun pass `-p aegis-broker --test broker`\\n\",\"duration_ms\":2300,\"exit_code\":101,\"signal\":null,\"timed_out\":false}",
+          "name": "cargo test -p aegis-broker --offline -q",
+          "passed": false
+        },
+        {
+          "detail": "SHA-256 e0f4cd252c1abf8ad0b1f4dedc9baf7e9ed19755a2db4e93e3a374d7e8996305 and 22000 bytes match working file and immutable copy",
+          "name": "after: src/lib.rs",
+          "passed": true
+        }
+      ],
+      "contract_id": "c-32ac252473f3490a9f75d3df7d5adfe4",
+      "evidence": [],
+      "reasons": [
+        "cargo test -p aegis-broker --offline -q: {\"command\":\"cargo test -p aegis-broker --offline -q\",\"stdout\":\"\\nrunning 0 tests\\n\\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\\n\\n\\nrunning 0 tests\\n\\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\\n\\n\\nrunning 8 tests\\n. 1/8\\nadmin_responses_never_echo_secret_value --- FAILED\\nrejects_log_usage_rows_with_ok_false --- FAILED\\nstripe_proxy_refuses_non_test_real_key --- FAILED\\nproxy_uses_real_key_and_scrubs_leaks_from_body_and_headers --- FAILED\\nexpired_and_revoked_keys_return_401 --- FAILED\\nadmin_requires_correct_bearer_token --- FAILED\\nfake_key_is_bound_to_subject_and_provider --- FAILED\\n\\nfailures:\\n\\n---- admin_responses_never_echo_secret_value stdout ----\\n\\nthread 'admin_responses_never_echo_secret_value' (30405023) panicked at crates/aegis-broker/src/lib.rs:266:10:\\nPath segments must not start with `:`. For capture groups, use `{capture}`. If you meant to literally match a segment starting with a colon, call `without_v07_checks` on the router.\\n\\n---- rejects_log_usage_rows_with_ok_false stdout ----\\n\\nthread 'rejects_log_usage_rows_with_ok_false' (30405027) panicked at crates/aegis-broker/src/lib.rs:266:10:\\nPath segments must not start with `:`. For capture groups, use `{capture}`. If you meant to literally match a segment starting with a colon, call `without_v07_checks` on the router.\\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\\n\\n---- stripe_proxy_refuses_non_test_real_key stdout ----\\n\\nthread 'stripe_proxy_refuses_non_test_real_key' (30405029) panicked at crates/aegis-broker/src/lib.rs:266:10:\\nPath segments must not start with `:`. For capture groups, use `{capture}`. If you meant to literally match a segment starting with a colon, call `without_v07_checks` on the router.\\n\\n---- proxy_uses_real_key_and_scrubs_leaks_from_body_and_headers stdout ----\\n\\nthread 'proxy_uses_real_key_and_scrubs_leaks_from_body_and_headers' (30405026) panicked at crates/aegis-broker/src/lib.rs:266:10:\\nPath segments must not start with `:`. For capture groups, use `{capture}`. If you meant to literally match a segment starting with a colon, call `without_v07_checks` on the router.\\n\\n---- expired_and_revoked_keys_return_401 stdout ----\\n\\nthread 'expired_and_revoked_keys_return_401' (30405024) panicked at crates/aegis-broker/src/lib.rs:266:10:\\nPath segments must not start with `:`. For capture groups, use `{capture}`. If you meant to literally match a segment starting with a colon, call `without_v07_checks` on the router.\\n\\n---- admin_requires_correct_bearer_token stdout ----\\n\\nthread 'admin_requires_correct_bearer_token' (30405022) panicked at crates/aegis-broker/src/lib.rs:266:10:\\nPath segments must not start with `:`. For capture groups, use `{capture}`. If you meant to literally match a segment starting with a colon, call `without_v07_checks` on the router.\\n\\n---- fake_key_is_bound_to_subject_and_provider stdout ----\\n\\nthread 'fake_key_is_bound_to_subject_and_provider' (30405025) panicked at crates/aegis-broker/src/lib.rs:266:10:\\nPath segments must not start with `:`. For capture groups, use `{capture}`. If you meant to literally match a segment starting with a colon, call `without_v07_checks` on the router.\\n\\n\\nfailures:\\n    admin_requires_correct_bearer_token\\n    admin_responses_never_echo_secret_value\\n    expired_and_revoked_keys_return_401\\n    fake_key_is_bound_to_subject_and_provider\\n    proxy_uses_real_key_and_scrubs_leaks_from_body_and_headers\\n    rejects_log_usage_rows_with_ok_false\\n    stripe_proxy_refuses_non_test_real_key\\n\\ntest result: FAILED. 1 passed; 7 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\\n\\n\",\"stderr\":\"warning: use of deprecated associated function `aes_gcm::aead::hybrid_array::Array::<T, U>::from_slice`: use `TryFrom` instead\\n  --> crates/aegis-broker/src/lib.rs:32:29\\n   |\\n32 |             .encrypt(Nonce::from_slice(&nonce), plaintext)\\n   |                             ^^^^^^^^^^\\n   |\\n   = note: `#[warn(deprecated)]` on by default\\n\\nwarning: use of deprecated associated function `aes_gcm::aead::hybrid_array::Array::<T, U>::from_slice`: use `TryFrom` instead\\n  --> crates/aegis-broker/src/lib.rs:47:29\\n   |\\n47 |             .decrypt(Nonce::from_slice(&nonce), ciphertext.as_ref())\\n   |                             ^^^^^^^^^^\\n\\nerror: test failed, to rerun pass `-p aegis-broker --test broker`\\n\",\"duration_ms\":2300,\"exit_code\":101,\"signal\":null,\"timed_out\":false}"
+      ],
+      "verdict": {
+        "rework": {
+          "scope": "cargo test -p aegis-broker --offline -q: {\"command\":\"cargo test -p aegis-broker --offline -q\",\"stdout\":\"\\nrunning 0 tests\\n\\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\\n\\n\\nrunning 0 tests\\n\\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\\n\\n\\nrunning 8 tests\\n. 1/8\\nadmin_responses_never_echo_secret_value --- FAILED\\nrejects_log_usage_rows_with_ok_false --- FAILED\\nstripe_proxy_refuses_non_test_real_key --- FAILED\\nproxy_uses_real_key_and_scrubs_leaks_from_body_and_headers --- FAILED\\nexpired_and_revoked_keys_return_401 --- FAILED\\nadmin_requires_correct_bearer_token --- FAILED\\nfake_key_is_bound_to_subject_and_provider --- FAILED\\n\\nfailures:\\n\\n---- admin_responses_never_echo_secret_value stdout ----\\n\\nthread 'admin_responses_never_echo_secret_value' (30405023) panicked at crates/aegis-broker/src/lib.rs:266:10:\\nPath segments must not start with `:`. For capture groups, use `{capture}`. If you meant to literally match a segment starting with a colon, call `without_v07_checks` on the router.\\n\\n---- rejects_log_usage_rows_with_ok_false stdout ----\\n\\nthread 'rejects_log_usage_rows_with_ok_false' (30405027) panicked at crates/aegis-broker/src/lib.rs:266:10:\\nPath segments must not start with `:`. For capture groups, use `{capture}`. If you meant to literally match a segment starting with a colon, call `without_v07_checks` on the router.\\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\\n\\n---- stripe_proxy_refuses_non_test_real_key stdout ----\\n\\nthread 'stripe_proxy_refuses_non_test_real_key' (30405029) panicked at crates/aegis-broker/src/lib.rs:266:10:\\nPath segments must not start with `:`. For capture groups, use `{capture}`. If you meant to literally match a segment starting with a colon, call `without_v07_checks` on the router.\\n\\n---- proxy_uses_real_key_and_scrubs_leaks_from_body_and_headers stdout ----\\n\\nthread 'proxy_uses_real_key_and_scrubs_leaks_from_body_and_headers' (30405026) panicked at crates/aegis-broker/src/lib.rs:266:10:\\nPath segments must not start with `:`. For capture groups, use `{capture}`. If you meant to literally match a segment starting with a colon, call `without_v07_checks` on the router.\\n\\n---- expired_and_revoked_keys_return_401 stdout ----\\n\\nthread 'expired_and_revoked_keys_return_401' (30405024) panicked at crates/aegis-broker/src/lib.rs:266:10:\\nPath segments must not start with `:`. For capture groups, use `{capture}`. If you meant to literally match a segment starting with a colon, call `without_v07_checks` on the router.\\n\\n---- admin_requires_correct_bearer_token stdout ----\\n\\nthread 'admin_requires_correct_bearer_token' (30405022) panicked at crates/aegis-broker/src/lib.rs:266:10:\\nPath segments must not start with `:`. For capture groups, use `{capture}`. If you meant to literally match a segment starting with a colon, call `without_v07_checks` on the router.\\n\\n---- fake_key_is_bound_to_subject_and_provider stdout ----\\n\\nthread 'fake_key_is_bound_to_subject_and_provider' (30405025) panicked at crates/aegis-broker/src/lib.rs:266:10:\\nPath segments must not start with `:`. For capture groups, use `{capture}`. If you meant to literally match a segment starting with a colon, call `without_v07_checks` on the router.\\n\\n\\nfailures:\\n    admin_requires_correct_bearer_token\\n    admin_responses_never_echo_secret_value\\n    expired_and_revoked_keys_return_401\\n    fake_key_is_bound_to_subject_and_provider\\n    proxy_uses_real_key_and_scrubs_leaks_from_body_and_headers\\n    rejects_log_usage_rows_with_ok_false\\n    stripe_proxy_refuses_non_test_real_key\\n\\ntest result: FAILED. 1 passed; 7 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\\n\\n\",\"stderr\":\"warning: use of deprecated associated function `aes_gcm::aead::hybrid_array::Array::<T, U>::from_slice`: use `TryFrom` instead\\n  --> crates/aegis-broker/src/lib.rs:32:29\\n   |\\n32 |             .encrypt(Nonce::from_slice(&nonce), plaintext)\\n   |                             ^^^^^^^^^^\\n   |\\n   = note: `#[warn(deprecated)]` on by default\\n\\nwarning: use of deprecated associated function `aes_gcm::aead::hybrid_array::Array::<T, U>::from_slice`: use `TryFrom` instead\\n  --> crates/aegis-broker/src/lib.rs:47:29\\n   |\\n47 |             .decrypt(Nonce::from_slice(&nonce), ciphertext.as_ref())\\n   |                             ^^^^^^^^^^\\n\\nerror: test failed, to rerun pass `-p aegis-broker --test broker`\\n\",\"duration_ms\":2300,\"exit_code\":101,\"signal\":null,\"timed_out\":false}"
+        }
+      },
+      "verification_id": "v-d912acb55af44c8c8202b6975fc1c496",
+      "verifier": "urn:hacp:agent:b"
+    },
+    {
+      "against_revision": "8ae0b7b2eb953e505b7255867b8c6dd1e49eaa3c3fd08af376c3da1c3255f926",
+      "artifacts": [
+        "urn:hacp:artifact:39f7ff76-9c1a-4f71-9ffd-02ffa55fb54b"
+      ],
+      "attests": [],
+      "checks": [
+        {
+          "detail": "SHA-256 d4d337116eb26ca8d4d31aa557a1910fc79489ea5f9474ff5a050d10f46a97f8 and 22106 bytes match working file and immutable copy",
+          "name": "before: src/lib.rs",
+          "passed": true
+        },
+        {
+          "detail": "{\"command\":\"cargo test -p aegis-broker --offline -q\",\"stdout\":\"\\nrunning 0 tests\\n\\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\\n\\n\\nrunning 0 tests\\n\\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\\n\\n\\nrunning 8 tests\\n........\\ntest result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\\n\\n\\nrunning 0 tests\\n\\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\\n\\n\",\"stderr\":\"warning: use of deprecated associated function `aes_gcm::aead::hybrid_array::Array::<T, U>::from_slice`: use `TryFrom` instead\\n  --> crates/aegis-broker/src/lib.rs:32:29\\n   |\\n32 |             .encrypt(Nonce::from_slice(&nonce), plaintext)\\n   |                             ^^^^^^^^^^\\n   |\\n   = note: `#[warn(deprecated)]` on by default\\n\\nwarning: use of deprecated associated function `aes_gcm::aead::hybrid_array::Array::<T, U>::from_slice`: use `TryFrom` instead\\n  --> crates/aegis-broker/src/lib.rs:47:29\\n   |\\n47 |             .decrypt(Nonce::from_slice(&nonce), ciphertext.as_ref())\\n   |                             ^^^^^^^^^^\\n\\n\",\"duration_ms\":251,\"exit_code\":0,\"signal\":null,\"timed_out\":false}",
+          "name": "cargo test -p aegis-broker --offline -q",
+          "passed": true
+        },
+        {
+          "detail": "SHA-256 d4d337116eb26ca8d4d31aa557a1910fc79489ea5f9474ff5a050d10f46a97f8 and 22106 bytes match working file and immutable copy",
+          "name": "after: src/lib.rs",
+          "passed": true
+        }
+      ],
+      "contract_id": "c-32ac252473f3490a9f75d3df7d5adfe4",
+      "evidence": [],
+      "reasons": [],
+      "verdict": "accept",
+      "verification_id": "v-00e4773f814742d49125647a69211475",
+      "verifier": "urn:hacp:agent:b"
+    }
+  ]
+}

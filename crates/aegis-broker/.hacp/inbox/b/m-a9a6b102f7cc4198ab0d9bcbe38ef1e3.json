@@ -1,0 +1,13 @@
+{
+  "protocol": "HACP/2.0",
+  "message_id": "m-a9a6b102f7cc4198ab0d9bcbe38ef1e3",
+  "session_id": "s-860fafffc40e4554b08bd124783ea7f9",
+  "from": "urn:hacp:agent:a",
+  "to": "urn:hacp:agent:b",
+  "kind": "hacp.skill.answer",
+  "timestamp": "2026-10-22T19:33:25Z",
+  "in_reply_to": "m-e73da45c4a804f029299b1ad96509467",
+  "body": {
+    "text": "Public API: Sealer::new([u8;32]), seal(&[u8])->(String,String), open(&str,&str)->Result<Vec<u8>,AegisError>; BrokerState::new(Arc<dyn BrokerStore>, Sealer, token), public store/sealer/broker_token/stripe_base_url/jev_base_url/llm_base_url/http fields, with_upstreams(stripe,jev,llm), issue_fake_key(subject,agent_id,provider,ttl_secs)->Result<IssuedFakeKey,...>. MemoryStore::new/default; StoredSecret {meta: SecretMeta, nonce, ciphertext}; StoredFakeKey {sha256_hex, info: FakeKeyInfo}; UsageRow {fake_key_hash,subject,agent_id,provider,path,ok,ts}. Router has admin endpoints and proxy routes. Key generation is random 24 alnum; tests should derive stored hash from returned issued key. Fake key prefix is first 20 chars. No deterministic suffix."
+  }
+}

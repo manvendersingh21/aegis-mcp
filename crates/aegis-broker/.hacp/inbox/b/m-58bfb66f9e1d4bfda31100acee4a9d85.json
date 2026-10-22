@@ -1,0 +1,12 @@
+{
+  "protocol": "HACP/2.0",
+  "message_id": "m-58bfb66f9e1d4bfda31100acee4a9d85",
+  "session_id": "s-860fafffc40e4554b08bd124783ea7f9",
+  "from": "urn:hacp:agent:a",
+  "to": "urn:hacp:agent:b",
+  "kind": "session.close",
+  "timestamp": "2026-10-22T19:37:00Z",
+  "body": {
+    "reason": "Broker implementation and adversarial test contracts both settled and accepted; cargo test -p aegis-broker --offline -q passes all 8 tests."
+  }
+}

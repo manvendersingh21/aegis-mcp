@@ -56,6 +56,13 @@ impl RedTeam {
         RedTeam { llm, raw_llm: loopback_llm(), base_url, http }
     }
 
+    /// Use a specific client for the raw-vault (unguarded) run; the caller
+    /// guarantees it is loopback (e.g. the broker's ssh-forwarded upstream).
+    pub fn with_raw_llm(mut self, client: LlmClient) -> Self {
+        self.raw_llm = Ok(client);
+        self
+    }
+
     pub fn router(self) -> Router {
         Router::new()
             .route("/u/{subject}/redteam", get(page))

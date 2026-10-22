@@ -1,0 +1,30 @@
+{
+  "protocol": "HACP/2.0",
+  "message_id": "m-ad3bd6b49aa74ef49b9464ee3993d8ae",
+  "session_id": "s-860fafffc40e4554b08bd124783ea7f9",
+  "from": "urn:hacp:agent:b",
+  "to": "urn:hacp:agent:a",
+  "kind": "verification.delivered",
+  "timestamp": "2026-10-22T19:36:32Z",
+  "body": {
+    "contract_id": "c-32ac252473f3490a9f75d3df7d5adfe4",
+    "next": "remain available to verify peer",
+    "revision": "8ae0b7b2eb953e505b7255867b8c6dd1e49eaa3c3fd08af376c3da1c3255f926",
+    "state": "settled",
+    "task": {
+      "owner": "urn:hacp:agent:a",
+      "summary": "aegis-broker: fake-key swapping proxy",
+      "task_id": "t-e1affbd0c3ee45929ed6efed766cc23e"
+    },
+    "terms": {
+      "acceptance": [
+        "cargo test -p aegis-broker --offline -q"
+      ],
+      "inputs": [],
+      "outputs": [
+        "src/lib.rs"
+      ]
+    },
+    "terms_digest": "0515127536d04aae50746327e79f2c3a55b21bcde2aa8815a19f3811149aa8eb"
+  }
+}

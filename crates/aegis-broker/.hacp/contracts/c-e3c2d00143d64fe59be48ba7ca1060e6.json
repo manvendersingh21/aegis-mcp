@@ -1,0 +1,132 @@
+{
+  "artifacts": [
+    {
+      "path": "tests/broker.rs",
+      "record": {
+        "artifact_id": "urn:hacp:artifact:5ad48752-8b90-4f76-bf80-c515b3e1b206",
+        "contract_id": "c-e3c2d00143d64fe59be48ba7ca1060e6",
+        "contract_revision": "1fe707c7d221ba5b9c0c8cb04cd90c23da9e88326f8a8eaedfb4b39592a26767",
+        "derived_from": [],
+        "digest": "0cd34deb7b6385d625b09c0873750c776539940fd7e905696047cba2ec70d294",
+        "location": ".hacp/artifacts/5ad48752-8b90-4f76-bf80-c515b3e1b206.bin",
+        "media_type": "application/octet-stream",
+        "producer": "urn:hacp:agent:b",
+        "size": 16010,
+        "task_id": "t-6629b66667304f41aafa14d99112be33",
+        "visibility": "participants"
+      }
+    }
+  ],
+  "attempts": [
+    {
+      "commands": [
+        {
+          "command": "cargo test -p aegis-broker --offline -q",
+          "duration_ms": 323,
+          "exit_code": 0,
+          "signal": null,
+          "stderr": "warning: use of deprecated associated function `aes_gcm::aead::hybrid_array::Array::<T, U>::from_slice`: use `TryFrom` instead\n  --> crates/aegis-broker/src/lib.rs:32:29\n   |\n32 |             .encrypt(Nonce::from_slice(&nonce), plaintext)\n   |                             ^^^^^^^^^^\n   |\n   = note: `#[warn(deprecated)]` on by default\n\nwarning: use of deprecated associated function `aes_gcm::aead::hybrid_array::Array::<T, U>::from_slice`: use `TryFrom` instead\n  --> crates/aegis-broker/src/lib.rs:47:29\n   |\n47 |             .decrypt(Nonce::from_slice(&nonce), ciphertext.as_ref())\n   |                             ^^^^^^^^^^\n\n",
+          "stdout": "\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 8 tests\n........\ntest result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n",
+          "timed_out": false
+        }
+      ],
+      "id": "v-8e25adada0cb4a35ae5080822f460305",
+      "peer": "a",
+      "status": "completed"
+    }
+  ],
+  "contract": {
+    "agreed_by": [],
+    "agreed_terms_digest": null,
+    "amendments": 0,
+    "contract_id": "c-e3c2d00143d64fe59be48ba7ca1060e6",
+    "escalation_path": [],
+    "limits": {
+      "max_amendments": 3,
+      "max_rounds": 3
+    },
+    "participants": [
+      "urn:hacp:agent:a",
+      "urn:hacp:agent:b"
+    ],
+    "pending_submission": null,
+    "pending_submitter": null,
+    "relationship": "collaboration",
+    "revisions": [
+      {
+        "content": {
+          "acceptance": [
+            "cargo test -p aegis-broker --offline -q"
+          ],
+          "inputs": [],
+          "outputs": [
+            "tests/broker.rs"
+          ]
+        },
+        "digest": "1fe707c7d221ba5b9c0c8cb04cd90c23da9e88326f8a8eaedfb4b39592a26767",
+        "number": 1
+      }
+    ],
+    "rework_scope": null,
+    "rounds": 0,
+    "state": "settled",
+    "task": {
+      "owner": "urn:hacp:agent:b",
+      "summary": "aegis-broker adversarial tests",
+      "task_id": "t-6629b66667304f41aafa14d99112be33"
+    }
+  },
+  "pending_digest": "fa8fdf5526319950a31b1ef1485218d30172120ed97aca99e163e1acd807a426",
+  "pending_terms": {
+    "acceptance": [
+      "cargo test -p aegis-broker --offline -q"
+    ],
+    "inputs": [],
+    "outputs": [
+      "tests/broker.rs"
+    ]
+  },
+  "proposer": "b",
+  "submissions": [
+    {
+      "against_revision": "1fe707c7d221ba5b9c0c8cb04cd90c23da9e88326f8a8eaedfb4b39592a26767",
+      "artifacts": [
+        "urn:hacp:artifact:5ad48752-8b90-4f76-bf80-c515b3e1b206"
+      ],
+      "claim": "Added tests/broker.rs adversarial offline coverage: admin auth and non-leak checks, subject/provider-bound fake-key rejects (expired/revoked/mismatch), local upstream key-swap + header/body scrubbing assertions, Stripe non-test key refusal, Sealer round-trip/wrong-key failure, and usage-row ok=false reject logging; cargo test -p aegis-broker --offline -q passes.",
+      "evidence": []
+    }
+  ],
+  "verifications": [
+    {
+      "against_revision": "1fe707c7d221ba5b9c0c8cb04cd90c23da9e88326f8a8eaedfb4b39592a26767",
+      "artifacts": [
+        "urn:hacp:artifact:5ad48752-8b90-4f76-bf80-c515b3e1b206"
+      ],
+      "attests": [],
+      "checks": [
+        {
+          "detail": "SHA-256 0cd34deb7b6385d625b09c0873750c776539940fd7e905696047cba2ec70d294 and 16010 bytes match working file and immutable copy",
+          "name": "before: tests/broker.rs",
+          "passed": true
+        },
+        {
+          "detail": "{\"command\":\"cargo test -p aegis-broker --offline -q\",\"stdout\":\"\\nrunning 0 tests\\n\\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\\n\\n\\nrunning 0 tests\\n\\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\\n\\n\\nrunning 8 tests\\n........\\ntest result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s\\n\\n\\nrunning 0 tests\\n\\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\\n\\n\",\"stderr\":\"warning: use of deprecated associated function `aes_gcm::aead::hybrid_array::Array::<T, U>::from_slice`: use `TryFrom` instead\\n  --> crates/aegis-broker/src/lib.rs:32:29\\n   |\\n32 |             .encrypt(Nonce::from_slice(&nonce), plaintext)\\n   |                             ^^^^^^^^^^\\n   |\\n   = note: `#[warn(deprecated)]` on by default\\n\\nwarning: use of deprecated associated function `aes_gcm::aead::hybrid_array::Array::<T, U>::from_slice`: use `TryFrom` instead\\n  --> crates/aegis-broker/src/lib.rs:47:29\\n   |\\n47 |             .decrypt(Nonce::from_slice(&nonce), ciphertext.as_ref())\\n   |                             ^^^^^^^^^^\\n\\n\",\"duration_ms\":323,\"exit_code\":0,\"signal\":null,\"timed_out\":false}",
+          "name": "cargo test -p aegis-broker --offline -q",
+          "passed": true
+        },
+        {
+          "detail": "SHA-256 0cd34deb7b6385d625b09c0873750c776539940fd7e905696047cba2ec70d294 and 16010 bytes match working file and immutable copy",
+          "name": "after: tests/broker.rs",
+          "passed": true
+        }
+      ],
+      "contract_id": "c-e3c2d00143d64fe59be48ba7ca1060e6",
+      "evidence": [],
+      "reasons": [],
+      "verdict": "accept",
+      "verification_id": "v-8e25adada0cb4a35ae5080822f460305",
+      "verifier": "urn:hacp:agent:a"
+    }
+  ]
+}

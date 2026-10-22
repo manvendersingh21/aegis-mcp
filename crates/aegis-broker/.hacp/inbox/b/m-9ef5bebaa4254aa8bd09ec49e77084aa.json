@@ -1,0 +1,12 @@
+{
+  "protocol": "HACP/2.0",
+  "message_id": "m-9ef5bebaa4254aa8bd09ec49e77084aa",
+  "session_id": "s-860fafffc40e4554b08bd124783ea7f9",
+  "from": "urn:hacp:agent:a",
+  "to": "urn:hacp:agent:b",
+  "kind": "hacp.skill.ask",
+  "timestamp": "2026-10-22T19:36:33Z",
+  "body": {
+    "text": "The route and failed-usage fixes are in, and local cargo test passes all 8 tests. Please verify the resubmission and submit the tests contract when ready."
+  }
+}

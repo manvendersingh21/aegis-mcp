@@ -1,6 +1,6 @@
 -- AegisMCP system of record. Paste once into the Supabase SQL editor.
 -- Access is service-key only: RLS is on and no policies are granted to anon/authenticated.
--- Secret values and vault blobs are AES-256-GCM ciphertext; the key (AEGIS_MASTER_KEY)
+-- Secret values and personal vaults (provider '__vault') are AES-256-GCM ciphertext; the key (AEGIS_MASTER_KEY)
 -- never leaves the broker host.
 
 create table if not exists aegis_people (
@@ -19,38 +19,27 @@ create table if not exists aegis_wallets (
 );
 create unique index if not exists aegis_wallets_subject_kind on aegis_wallets(subject, kind);
 
-create table if not exists aegis_vaults (
-  subject     text primary key references aegis_people(subject) on delete cascade,
-  nonce_b64   text not null,
-  ciphertext_b64 text not null,
-  updated_at  timestamptz not null default now()
-);
+
 
 create table if not exists aegis_secrets (
   secret_id   text primary key,
-  subject     text,                      -- null = platform secret (e.g. Jev, LLM)
-  provider    text not null,             -- stripe | jev | llm | chain | ...
-  label       text not null,
+  subject     text,                      -- null = platform secret (Jev, LLM, ...)
+  provider    text not null,             -- stripe | jev | llm | __vault (sealed personal vault)
+  revoked     boolean not null default false,
+  meta        jsonb not null,            -- SecretMeta (label, last4, created_at) — never the value
   nonce_b64   text not null,
-  ciphertext_b64 text not null,
-  last4       text not null,             -- for display only
-  created_at  timestamptz not null default now(),
-  revoked     boolean not null default false
+  ciphertext_b64 text not null           -- AES-256-GCM; key lives only on the broker host
 );
 create index if not exists aegis_secrets_provider on aegis_secrets(provider, subject);
 
 create table if not exists aegis_fake_keys (
   fake_key_sha256 text primary key,      -- the fake key itself is never stored
-  prefix      text not null,             -- e.g. aegis_fk_stripe_ab12 (display)
-  secret_id   text not null references aegis_secrets(secret_id) on delete cascade,
   subject     text not null,
   agent_id    text not null,
   provider    text not null,
-  actions     text[] not null,
-  issued_at   timestamptz not null default now(),
-  expires_at  timestamptz not null,
   revoked     boolean not null default false,
-  last_used_at timestamptz
+  expires_at  bigint not null,
+  info        jsonb not null             -- FakeKeyInfo (prefix, uses, last_used_at, ...)
 );
 create index if not exists aegis_fake_keys_subject on aegis_fake_keys(subject, revoked);
 
@@ -59,11 +48,12 @@ create table if not exists aegis_key_usage (
   fake_key_sha256 text not null,
   subject     text not null,
   agent_id    text not null,
-  action      text not null,
+  provider    text not null,
+  path        text not null,
   ok          boolean not null,
-  detail      text not null default '',
-  at          timestamptz not null default now()
+  at          bigint not null
 );
+
 
 create table if not exists aegis_receipts (
   receipt_id  text primary key,
@@ -88,7 +78,7 @@ create index if not exists aegis_ledger_subject on aegis_ledger(subject, seq);
 do $$
 declare t text;
 begin
-  foreach t in array array['aegis_people','aegis_wallets','aegis_vaults','aegis_secrets',
+  foreach t in array array['aegis_people','aegis_wallets','aegis_secrets',
                            'aegis_fake_keys','aegis_key_usage','aegis_receipts','aegis_ledger']
   loop
     execute format('alter table %I enable row level security', t);

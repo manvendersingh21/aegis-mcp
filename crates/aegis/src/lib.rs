@@ -66,9 +66,10 @@ impl Options {
             port: get("AEGIS_PORT").and_then(|p| p.parse().ok()).unwrap_or(8787),
             db_path: Some(get("AEGIS_DB").unwrap_or_else(|| "aegis.db".into())),
             signing_seed_hex: get("AEGIS_SIGNING_SEED"),
-            use_llm: !offline && get("AEGIS_LLM_URL").is_some(),
-            use_jev: !offline && get("JEV_API_KEY").is_some(),
-            use_stripe: !offline && (get("STRIPE_API_KEY").is_some() || get("STRIPE_SECRET_KEY").is_some()),
+            // With the broker configured, providers are reached through it with fake keys.
+            use_llm: !offline && (get("AEGIS_LLM_URL").is_some() || get("AEGIS_BROKER_TOKEN").is_some()),
+            use_jev: !offline && (get("JEV_API_KEY").is_some() || get("AEGIS_BROKER_TOKEN").is_some()),
+            use_stripe: !offline && (get("STRIPE_API_KEY").is_some() || get("STRIPE_SECRET_KEY").is_some() || get("AEGIS_BROKER_TOKEN").is_some()),
             risk_threshold: get("AEGIS_RISK_THRESHOLD").and_then(|t| t.parse().ok()).unwrap_or(0.8),
             consent_timeout_secs: get("AEGIS_CONSENT_TIMEOUT").and_then(|t| t.parse().ok()).unwrap_or(90),
             require_mcp_token: get("AEGIS_REQUIRE_MCP_TOKEN").as_deref() == Some("1"),
@@ -95,8 +96,9 @@ pub fn describe(opts: &Options) -> Vec<String> {
         format!("layer 3 Ed25519 receipts + hash-chained ledger: ON"),
         format!("Jev risk scoring: {} (threshold {:.2})", on(opts.use_jev), opts.risk_threshold),
         format!("payments: {}", match opts.use_stripe.then(StripePayments::from_env).flatten() {
-            Some(Ok(_)) => "Stripe TEST mode".to_string(),
+            Some(Ok(_)) => "Stripe TEST mode (direct key)".to_string(),
             Some(Err(e)) => format!("demo provider (labelled) — Stripe key rejected: {e}"),
+            None if std::env::var("AEGIS_BROKER_TOKEN").is_ok() => "Stripe TEST mode via aegis-broker (fake key)".to_string(),
             None => "demo provider (labelled)".to_string(),
         }),
         format!("ledger anchoring to Supabase Storage: {}", on(opts.use_supabase)),
@@ -113,6 +115,8 @@ struct Providers {
     payments: Arc<dyn PaymentProvider>,
     vaults: Vec<aegis_core::Vault>,
     broker: Option<broker_client::BrokerClient>,
+    /// Red team's raw-vault model client (loopback via the broker), if any.
+    raw_llm: Option<LlmClient>,
 }
 
 fn providers_from_env(opts: &Options) -> Providers {
@@ -132,6 +136,7 @@ fn providers_from_env(opts: &Options) -> Providers {
         payments,
         vaults: demo_vaults(),
         broker: None,
+        raw_llm: None,
     }
 }
 
@@ -174,7 +179,10 @@ async fn providers_from_broker(opts: &Options, broker: broker_client::BrokerClie
             Ok(_) | Err(_) => vaults.push(v),
         }
     }
-    Providers { llm, risk, payments, vaults, broker: Some(broker) }
+    // The broker's LLM upstream is the ssh loopback forward, so the red team's
+    // raw-vault prompt never crosses the public tunnel.
+    let raw_llm = llm.clone();
+    Providers { llm, risk, payments, vaults, broker: Some(broker), raw_llm }
 }
 
 /// Offline / env-key build (tests, `AEGIS_OFFLINE=1`).
@@ -196,7 +204,7 @@ fn opts_offline() -> bool {
 }
 
 fn assemble(opts: &Options, providers: Providers) -> anyhow::Result<axum::Router> {
-    let Providers { llm, risk, payments, vaults, broker } = providers;
+    let Providers { llm, risk, payments, vaults, broker, raw_llm } = providers;
 
     let ledger = match &opts.db_path {
         Some(path) => SqliteLedger::open(path),
@@ -227,7 +235,10 @@ fn assemble(opts: &Options, providers: Providers) -> anyhow::Result<axum::Router
         consent_timeout_secs: opts.consent_timeout_secs,
         require_mcp_token: opts.require_mcp_token,
     };
-    let redteam = redteam::RedTeam::new(llm_for_redteam, format!("http://127.0.0.1:{}", opts.port));
+    let mut redteam = redteam::RedTeam::new(llm_for_redteam, format!("http://127.0.0.1:{}", opts.port));
+    if let Some(raw) = raw_llm {
+        redteam = redteam.with_raw_llm(raw);
+    }
     let siwe_domain = std::env::var("AEGIS_SIWE_DOMAIN").unwrap_or_else(|_| format!("127.0.0.1:{}", opts.port));
     let chain = onchain::OnChain::from_env();
     let siwe = Arc::new(aegis_chain::SiweAuth::new(siwe_domain, 84532));

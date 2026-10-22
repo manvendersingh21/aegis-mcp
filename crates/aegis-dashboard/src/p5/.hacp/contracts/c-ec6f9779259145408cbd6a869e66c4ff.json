@@ -1,0 +1,192 @@
+{
+  "artifacts": [
+    {
+      "path": "keys.rs",
+      "record": {
+        "artifact_id": "urn:hacp:artifact:7effedef-767f-4a21-a6e8-db22ac918b77",
+        "contract_id": "c-ec6f9779259145408cbd6a869e66c4ff",
+        "contract_revision": "17befd27b99619daa35cad69cbc98b8dede11d8be903c45feff77c1bf90387d5",
+        "derived_from": [],
+        "digest": "441998bf2df0c70e46c9951fe00f5d36ad8558bb2e7bc8b5a8e02383b9ae96bd",
+        "location": ".hacp/artifacts/7effedef-767f-4a21-a6e8-db22ac918b77.bin",
+        "media_type": "application/octet-stream",
+        "producer": "urn:hacp:agent:a",
+        "size": 7167,
+        "task_id": "t-6f346f6a45934a0988583f444db5de0b",
+        "visibility": "participants"
+      }
+    },
+    {
+      "path": "login.rs",
+      "record": {
+        "artifact_id": "urn:hacp:artifact:39e2ca95-ba12-45a5-8363-b13078781732",
+        "contract_id": "c-ec6f9779259145408cbd6a869e66c4ff",
+        "contract_revision": "17befd27b99619daa35cad69cbc98b8dede11d8be903c45feff77c1bf90387d5",
+        "derived_from": [],
+        "digest": "a5381ff9b9ab2897682b986eb2e12dcea2884cea3f803b12ee9c9a385da15a57",
+        "location": ".hacp/artifacts/39e2ca95-ba12-45a5-8363-b13078781732.bin",
+        "media_type": "application/octet-stream",
+        "producer": "urn:hacp:agent:a",
+        "size": 4422,
+        "task_id": "t-6f346f6a45934a0988583f444db5de0b",
+        "visibility": "participants"
+      }
+    },
+    {
+      "path": "mod.rs",
+      "record": {
+        "artifact_id": "urn:hacp:artifact:22443330-11b8-4d31-a1bf-023448ea0026",
+        "contract_id": "c-ec6f9779259145408cbd6a869e66c4ff",
+        "contract_revision": "17befd27b99619daa35cad69cbc98b8dede11d8be903c45feff77c1bf90387d5",
+        "derived_from": [],
+        "digest": "1a3dbff4bf02ef5288d3cca7716adbd6dc6427014eea2b80fdf0044221fd344e",
+        "location": ".hacp/artifacts/22443330-11b8-4d31-a1bf-023448ea0026.bin",
+        "media_type": "application/octet-stream",
+        "producer": "urn:hacp:agent:a",
+        "size": 157,
+        "task_id": "t-6f346f6a45934a0988583f444db5de0b",
+        "visibility": "participants"
+      }
+    }
+  ],
+  "attempts": [
+    {
+      "commands": [
+        {
+          "command": "cargo test -p aegis-dashboard --offline -q",
+          "duration_ms": 694,
+          "exit_code": 0,
+          "signal": null,
+          "stderr": "warning: unused imports: `KEYS_JS` and `keys_card`\n --> crates/aegis-dashboard/src/p5/mod.rs:5:16\n  |\n5 | pub use keys::{keys_card, KEYS_JS};\n  |                ^^^^^^^^^  ^^^^^^^\n  |\n  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default\n\nwarning: unused import: `login::login_page`\n --> crates/aegis-dashboard/src/p5/mod.rs:6:9\n  |\n6 | pub use login::login_page;\n  |         ^^^^^^^^^^^^^^^^^\n\nwarning: function `keys_card` is never used\n --> crates/aegis-dashboard/src/p5/keys.rs:5:8\n  |\n5 | pub fn keys_card(_subject: &str) -> Markup {\n  |        ^^^^^^^^^\n  |\n  = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default\n\nwarning: constant `KEYS_JS` is never used\n  --> crates/aegis-dashboard/src/p5/keys.rs:48:11\n   |\n48 | pub const KEYS_JS: &str = r#\"\n   |           ^^^^^^^\n\nwarning: function `login_page` is never used\n --> crates/aegis-dashboard/src/p5/login.rs:8:8\n  |\n8 | pub fn login_page() -> Markup {\n  |        ^^^^^^^^^^\n\nwarning: constant `LOGIN_JS` is never used\n  --> crates/aegis-dashboard/src/p5/login.rs:42:7\n   |\n42 | const LOGIN_JS: &str = r#\"\n   |       ^^^^^^^^\n\n",
+          "stdout": "\nrunning 14 tests\n..............\ntest result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s\n\n\nrunning 3 tests\n...\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s\n\n\nrunning 2 tests\n..\ntest result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n",
+          "timed_out": false
+        }
+      ],
+      "id": "v-2242d73bd22b4874a23609dbcfaa4f90",
+      "peer": "b",
+      "status": "completed"
+    }
+  ],
+  "contract": {
+    "agreed_by": [],
+    "agreed_terms_digest": null,
+    "amendments": 0,
+    "contract_id": "c-ec6f9779259145408cbd6a869e66c4ff",
+    "escalation_path": [],
+    "limits": {
+      "max_amendments": 3,
+      "max_rounds": 3
+    },
+    "participants": [
+      "urn:hacp:agent:a",
+      "urn:hacp:agent:b"
+    ],
+    "pending_submission": null,
+    "pending_submitter": null,
+    "relationship": "collaboration",
+    "revisions": [
+      {
+        "content": {
+          "acceptance": [
+            "cargo test -p aegis-dashboard --offline -q"
+          ],
+          "inputs": [],
+          "outputs": [
+            "keys.rs",
+            "login.rs",
+            "mod.rs"
+          ]
+        },
+        "digest": "17befd27b99619daa35cad69cbc98b8dede11d8be903c45feff77c1bf90387d5",
+        "number": 1
+      }
+    ],
+    "rework_scope": null,
+    "rounds": 0,
+    "state": "settled",
+    "task": {
+      "owner": "urn:hacp:agent:a",
+      "summary": "dashboard: wallet-only login + Keys card",
+      "task_id": "t-6f346f6a45934a0988583f444db5de0b"
+    }
+  },
+  "pending_digest": "0e35058056c65609b8b593a56b8aa4bdbe768d9714dde72fcf966f240c29c9ee",
+  "pending_terms": {
+    "acceptance": [
+      "cargo test -p aegis-dashboard --offline -q"
+    ],
+    "inputs": [],
+    "outputs": [
+      "keys.rs",
+      "login.rs",
+      "mod.rs"
+    ]
+  },
+  "proposer": "a",
+  "submissions": [
+    {
+      "against_revision": "17befd27b99619daa35cad69cbc98b8dede11d8be903c45feff77c1bf90387d5",
+      "artifacts": [
+        "urn:hacp:artifact:7effedef-767f-4a21-a6e8-db22ac918b77",
+        "urn:hacp:artifact:39e2ca95-ba12-45a5-8363-b13078781732",
+        "urn:hacp:artifact:22443330-11b8-4d31-a1bf-023448ea0026"
+      ],
+      "claim": "login_page (wallet-only SIWE + DEMO wallet buttons, no password), keys_card + KEYS_JS (escaped dynamic strings, write-only secret input), mod.rs re-exports",
+      "evidence": []
+    }
+  ],
+  "verifications": [
+    {
+      "against_revision": "17befd27b99619daa35cad69cbc98b8dede11d8be903c45feff77c1bf90387d5",
+      "artifacts": [
+        "urn:hacp:artifact:7effedef-767f-4a21-a6e8-db22ac918b77",
+        "urn:hacp:artifact:39e2ca95-ba12-45a5-8363-b13078781732",
+        "urn:hacp:artifact:22443330-11b8-4d31-a1bf-023448ea0026"
+      ],
+      "attests": [],
+      "checks": [
+        {
+          "detail": "SHA-256 441998bf2df0c70e46c9951fe00f5d36ad8558bb2e7bc8b5a8e02383b9ae96bd and 7167 bytes match working file and immutable copy",
+          "name": "before: keys.rs",
+          "passed": true
+        },
+        {
+          "detail": "SHA-256 a5381ff9b9ab2897682b986eb2e12dcea2884cea3f803b12ee9c9a385da15a57 and 4422 bytes match working file and immutable copy",
+          "name": "before: login.rs",
+          "passed": true
+        },
+        {
+          "detail": "SHA-256 1a3dbff4bf02ef5288d3cca7716adbd6dc6427014eea2b80fdf0044221fd344e and 157 bytes match working file and immutable copy",
+          "name": "before: mod.rs",
+          "passed": true
+        },
+        {
+          "detail": "{\"command\":\"cargo test -p aegis-dashboard --offline -q\",\"stdout\":\"\\nrunning 14 tests\\n..............\\ntest result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s\\n\\n\\nrunning 3 tests\\n...\\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s\\n\\n\\nrunning 2 tests\\n..\\ntest result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s\\n\\n\\nrunning 0 tests\\n\\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\\n\\n\",\"stderr\":\"warning: unused imports: `KEYS_JS` and `keys_card`\\n --> crates/aegis-dashboard/src/p5/mod.rs:5:16\\n  |\\n5 | pub use keys::{keys_card, KEYS_JS};\\n  |                ^^^^^^^^^  ^^^^^^^\\n  |\\n  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default\\n\\nwarning: unused import: `login::login_page`\\n --> crates/aegis-dashboard/src/p5/mod.rs:6:9\\n  |\\n6 | pub use login::login_page;\\n  |         ^^^^^^^^^^^^^^^^^\\n\\nwarning: function `keys_card` is never used\\n --> crates/aegis-dashboard/src/p5/keys.rs:5:8\\n  |\\n5 | pub fn keys_card(_subject: &str) -> Markup {\\n  |        ^^^^^^^^^\\n  |\\n  = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default\\n\\nwarning: constant `KEYS_JS` is never used\\n  --> crates/aegis-dashboard/src/p5/keys.rs:48:11\\n   |\\n48 | pub const KEYS_JS: &str = r#\\\"\\n   |           ^^^^^^^\\n\\nwarning: function `login_page` is never used\\n --> crates/aegis-dashboard/src/p5/login.rs:8:8\\n  |\\n8 | pub fn login_page() -> Markup {\\n  |        ^^^^^^^^^^\\n\\nwarning: constant `LOGIN_JS` is never used\\n  --> crates/aegis-dashboard/src/p5/login.rs:42:7\\n   |\\n42 | const LOGIN_JS: &str = r#\\\"\\n   |       ^^^^^^^^\\n\\n\",\"duration_ms\":694,\"exit_code\":0,\"signal\":null,\"timed_out\":false}",
+          "name": "cargo test -p aegis-dashboard --offline -q",
+          "passed": true
+        },
+        {
+          "detail": "SHA-256 441998bf2df0c70e46c9951fe00f5d36ad8558bb2e7bc8b5a8e02383b9ae96bd and 7167 bytes match working file and immutable copy",
+          "name": "after: keys.rs",
+          "passed": true
+        },
+        {
+          "detail": "SHA-256 a5381ff9b9ab2897682b986eb2e12dcea2884cea3f803b12ee9c9a385da15a57 and 4422 bytes match working file and immutable copy",
+          "name": "after: login.rs",
+          "passed": true
+        },
+        {
+          "detail": "SHA-256 1a3dbff4bf02ef5288d3cca7716adbd6dc6427014eea2b80fdf0044221fd344e and 157 bytes match working file and immutable copy",
+          "name": "after: mod.rs",
+          "passed": true
+        }
+      ],
+      "contract_id": "c-ec6f9779259145408cbd6a869e66c4ff",
+      "evidence": [],
+      "reasons": [],
+      "verdict": "accept",
+      "verification_id": "v-2242d73bd22b4874a23609dbcfaa4f90",
+      "verifier": "urn:hacp:agent:b"
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+warning: unused imports: `KEYS_JS` and `keys_card`
+ --> crates/aegis-dashboard/src/p5/mod.rs:5:16
+  |
+5 | pub use keys::{keys_card, KEYS_JS};
+  |                ^^^^^^^^^  ^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused import: `login::login_page`
+ --> crates/aegis-dashboard/src/p5/mod.rs:6:9
+  |
+6 | pub use login::login_page;
+  |         ^^^^^^^^^^^^^^^^^
+
+warning: function `keys_card` is never used
+ --> crates/aegis-dashboard/src/p5/keys.rs:5:8
+  |
+5 | pub fn keys_card(_subject: &str) -> Markup {
+  |        ^^^^^^^^^
+  |
+  = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: constant `KEYS_JS` is never used
+  --> crates/aegis-dashboard/src/p5/keys.rs:48:11
+   |
+48 | pub const KEYS_JS: &str = r#"
+   |           ^^^^^^^
+
+warning: function `login_page` is never used
+ --> crates/aegis-dashboard/src/p5/login.rs:8:8
+  |
+8 | pub fn login_page() -> Markup {
+  |        ^^^^^^^^^^
+
+warning: constant `LOGIN_JS` is never used
+  --> crates/aegis-dashboard/src/p5/login.rs:42:7
+   |
+42 | const LOGIN_JS: &str = r#"
+   |       ^^^^^^^^
+

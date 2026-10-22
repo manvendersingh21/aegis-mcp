@@ -152,9 +152,9 @@ async fn login_page_has_siwe_sign_in() {
     assert_has(&html, &["Sign in with Ethereum", "No wallet detected"], "/login");
     assert_siwe_flow(&html, "/login");
     let js = scripts(&html);
-    assert_has(&js, &["fetch('/api/login/siwe'", "location.href = '/u/' + encodeURIComponent("], "/login");
-    // Password login remains.
-    assert!(html.contains("type=\"password\"") && js.contains("fetch('/api/login'"), "/login: password login must remain");
+    assert_has(&js, &["'/api/login/siwe'", "location.href = '/u/' + encodeURIComponent("], "/login");
+    // Phase 5: wallet-only — no password form and no password endpoint.
+    assert!(!html.contains("type=\"password\"") && !js.contains("'/api/login'"), "/login: password login must be gone");
 }
 
 #[tokio::test]
@@ -193,7 +193,7 @@ async fn person_page_links_redteam() {
 }
 
 /// Helpers that escape everything they render: `esc` and `addrLink`.
-const ESCAPING: &[&str] = &["esc", "addrLink"];
+const ESCAPING: &[&str] = &["esc", "addrLink", "kesc"];
 
 /// `ag(id, safe)` chips `id` only when it is a regex-validated 0x address and
 /// otherwise renders `safe` verbatim — so only its first argument is safe.

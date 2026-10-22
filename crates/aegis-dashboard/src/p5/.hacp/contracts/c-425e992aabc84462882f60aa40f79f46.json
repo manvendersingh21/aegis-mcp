@@ -1,0 +1,132 @@
+{
+  "artifacts": [
+    {
+      "path": "tests.rs",
+      "record": {
+        "artifact_id": "urn:hacp:artifact:b3a0ca73-8a88-4a10-b925-86cccedc09ae",
+        "contract_id": "c-425e992aabc84462882f60aa40f79f46",
+        "contract_revision": "a3c268915be6e54e87af2be1acf9bf79498e6356be52b526838d4f79dcbd9edb",
+        "derived_from": [],
+        "digest": "c7601f5a468d5c75520882414b6e9e774c082eecbce206b092064a7e1c260215",
+        "location": ".hacp/artifacts/b3a0ca73-8a88-4a10-b925-86cccedc09ae.bin",
+        "media_type": "application/octet-stream",
+        "producer": "urn:hacp:agent:b",
+        "size": 6003,
+        "task_id": "t-7558b3a9e15e428da15f756b04b7518d",
+        "visibility": "participants"
+      }
+    }
+  ],
+  "attempts": [
+    {
+      "commands": [
+        {
+          "command": "cargo test -p aegis-dashboard --offline -q",
+          "duration_ms": 5884,
+          "exit_code": 0,
+          "signal": null,
+          "stderr": "warning: unused imports: `KEYS_JS` and `keys_card`\n --> crates/aegis-dashboard/src/p5/mod.rs:5:16\n  |\n5 | pub use keys::{keys_card, KEYS_JS};\n  |                ^^^^^^^^^  ^^^^^^^\n  |\n  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default\n\nwarning: unused import: `login::login_page`\n --> crates/aegis-dashboard/src/p5/mod.rs:6:9\n  |\n6 | pub use login::login_page;\n  |         ^^^^^^^^^^^^^^^^^\n\nwarning: function `keys_card` is never used\n --> crates/aegis-dashboard/src/p5/keys.rs:5:8\n  |\n5 | pub fn keys_card(_subject: &str) -> Markup {\n  |        ^^^^^^^^^\n  |\n  = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default\n\nwarning: constant `KEYS_JS` is never used\n  --> crates/aegis-dashboard/src/p5/keys.rs:48:11\n   |\n48 | pub const KEYS_JS: &str = r#\"\n   |           ^^^^^^^\n\nwarning: function `login_page` is never used\n --> crates/aegis-dashboard/src/p5/login.rs:8:8\n  |\n8 | pub fn login_page() -> Markup {\n  |        ^^^^^^^^^^\n\nwarning: constant `LOGIN_JS` is never used\n  --> crates/aegis-dashboard/src/p5/login.rs:42:7\n   |\n42 | const LOGIN_JS: &str = r#\"\n   |       ^^^^^^^^\n\n",
+          "stdout": "\nrunning 14 tests\n..............\ntest result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 3 tests\n...\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s\n\n\nrunning 2 tests\n..\ntest result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n",
+          "timed_out": false
+        }
+      ],
+      "id": "v-cc4c05234f20450d971777e924bce94e",
+      "peer": "a",
+      "status": "completed"
+    }
+  ],
+  "contract": {
+    "agreed_by": [],
+    "agreed_terms_digest": null,
+    "amendments": 0,
+    "contract_id": "c-425e992aabc84462882f60aa40f79f46",
+    "escalation_path": [],
+    "limits": {
+      "max_amendments": 3,
+      "max_rounds": 3
+    },
+    "participants": [
+      "urn:hacp:agent:a",
+      "urn:hacp:agent:b"
+    ],
+    "pending_submission": null,
+    "pending_submitter": null,
+    "relationship": "collaboration",
+    "revisions": [
+      {
+        "content": {
+          "acceptance": [
+            "cargo test -p aegis-dashboard --offline -q"
+          ],
+          "inputs": [],
+          "outputs": [
+            "tests.rs"
+          ]
+        },
+        "digest": "a3c268915be6e54e87af2be1acf9bf79498e6356be52b526838d4f79dcbd9edb",
+        "number": 1
+      }
+    ],
+    "rework_scope": null,
+    "rounds": 0,
+    "state": "settled",
+    "task": {
+      "owner": "urn:hacp:agent:b",
+      "summary": "dashboard phase 5 tests",
+      "task_id": "t-7558b3a9e15e428da15f756b04b7518d"
+    }
+  },
+  "pending_digest": "08e0d85f265adcc987acd79faa7bd8f4187bfa85618a2f17f68cfe02c841fb15",
+  "pending_terms": {
+    "acceptance": [
+      "cargo test -p aegis-dashboard --offline -q"
+    ],
+    "inputs": [],
+    "outputs": [
+      "tests.rs"
+    ]
+  },
+  "proposer": "b",
+  "submissions": [
+    {
+      "against_revision": "a3c268915be6e54e87af2be1acf9bf79498e6356be52b526838d4f79dcbd9edb",
+      "artifacts": [
+        "urn:hacp:artifact:b3a0ca73-8a88-4a10-b925-86cccedc09ae"
+      ],
+      "claim": "tests.rs: 7 tests covering wallet-only login (no password input/route, SIWE nonce+login, DEMO button per demo_vaults person), keys card (type=password secret input, not prefilled), KEYS_JS (all 4 /api/keys endpoints, secret cleared on ok+error paths and never rendered, fake key via textContent + 'worthless outside Aegis' + shown once, kesc on prefix/agent_id/label/provider/last4). cargo test -p aegis-dashboard --offline -q passes.",
+      "evidence": []
+    }
+  ],
+  "verifications": [
+    {
+      "against_revision": "a3c268915be6e54e87af2be1acf9bf79498e6356be52b526838d4f79dcbd9edb",
+      "artifacts": [
+        "urn:hacp:artifact:b3a0ca73-8a88-4a10-b925-86cccedc09ae"
+      ],
+      "attests": [],
+      "checks": [
+        {
+          "detail": "SHA-256 c7601f5a468d5c75520882414b6e9e774c082eecbce206b092064a7e1c260215 and 6003 bytes match working file and immutable copy",
+          "name": "before: tests.rs",
+          "passed": true
+        },
+        {
+          "detail": "{\"command\":\"cargo test -p aegis-dashboard --offline -q\",\"stdout\":\"\\nrunning 14 tests\\n..............\\ntest result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\\n\\n\\nrunning 3 tests\\n...\\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s\\n\\n\\nrunning 2 tests\\n..\\ntest result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s\\n\\n\\nrunning 0 tests\\n\\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\\n\\n\",\"stderr\":\"warning: unused imports: `KEYS_JS` and `keys_card`\\n --> crates/aegis-dashboard/src/p5/mod.rs:5:16\\n  |\\n5 | pub use keys::{keys_card, KEYS_JS};\\n  |                ^^^^^^^^^  ^^^^^^^\\n  |\\n  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default\\n\\nwarning: unused import: `login::login_page`\\n --> crates/aegis-dashboard/src/p5/mod.rs:6:9\\n  |\\n6 | pub use login::login_page;\\n  |         ^^^^^^^^^^^^^^^^^\\n\\nwarning: function `keys_card` is never used\\n --> crates/aegis-dashboard/src/p5/keys.rs:5:8\\n  |\\n5 | pub fn keys_card(_subject: &str) -> Markup {\\n  |        ^^^^^^^^^\\n  |\\n  = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default\\n\\nwarning: constant `KEYS_JS` is never used\\n  --> crates/aegis-dashboard/src/p5/keys.rs:48:11\\n   |\\n48 | pub const KEYS_JS: &str = r#\\\"\\n   |           ^^^^^^^\\n\\nwarning: function `login_page` is never used\\n --> crates/aegis-dashboard/src/p5/login.rs:8:8\\n  |\\n8 | pub fn login_page() -> Markup {\\n  |        ^^^^^^^^^^\\n\\nwarning: constant `LOGIN_JS` is never used\\n  --> crates/aegis-dashboard/src/p5/login.rs:42:7\\n   |\\n42 | const LOGIN_JS: &str = r#\\\"\\n   |       ^^^^^^^^\\n\\n\",\"duration_ms\":5884,\"exit_code\":0,\"signal\":null,\"timed_out\":false}",
+          "name": "cargo test -p aegis-dashboard --offline -q",
+          "passed": true
+        },
+        {
+          "detail": "SHA-256 c7601f5a468d5c75520882414b6e9e774c082eecbce206b092064a7e1c260215 and 6003 bytes match working file and immutable copy",
+          "name": "after: tests.rs",
+          "passed": true
+        }
+      ],
+      "contract_id": "c-425e992aabc84462882f60aa40f79f46",
+      "evidence": [],
+      "reasons": [],
+      "verdict": "accept",
+      "verification_id": "v-cc4c05234f20450d971777e924bce94e",
+      "verifier": "urn:hacp:agent:a"
+    }
+  ]
+}

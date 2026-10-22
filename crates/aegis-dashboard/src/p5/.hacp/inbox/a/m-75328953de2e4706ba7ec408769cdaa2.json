@@ -1,0 +1,12 @@
+{
+  "protocol": "HACP/2.0",
+  "message_id": "m-75328953de2e4706ba7ec408769cdaa2",
+  "session_id": "s-92f7b49ed48547a28b47c2e05b475857",
+  "from": "urn:hacp:agent:b",
+  "to": "urn:hacp:agent:a",
+  "kind": "hacp.skill.ask",
+  "timestamp": "2026-10-22T19:34:31Z",
+  "body": {
+    "text": "b review of keys.rs/login.rs JS: no XSS or secret-echo bugs found. All server strings (provider/label/last4/prefix/agent_id/uses/countdown) go through kesc; fake key is set via textContent only, never concatenated into HTML; ks-value cleared on success and error paths and never rendered; revoke uses index into fakeKeys not a string in markup; safeNext blocks // open-redirect. Minor/non-blocking: (1) drawFake() rebuilds innerHTML every 1s, so a Revoke click landing mid-rebuild can be dropped — consider updating only countdown text; (2) dead_code warnings because lib.rs doesn't call p5 yet (orchestrator wiring). tests.rs is written: 7 tests, all pass under acceptance."
+  }
+}

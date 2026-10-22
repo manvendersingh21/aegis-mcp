@@ -1,0 +1,32 @@
+{
+  "protocol": "HACP/2.0",
+  "message_id": "m-109ba171c45e4e479bb665af5faef3e2",
+  "session_id": "s-92f7b49ed48547a28b47c2e05b475857",
+  "from": "urn:hacp:agent:a",
+  "to": "urn:hacp:agent:b",
+  "kind": "contract.proposed",
+  "timestamp": "2026-10-22T19:32:41Z",
+  "body": {
+    "contract_id": "c-ec6f9779259145408cbd6a869e66c4ff",
+    "next": "review terms and accept digest or counter",
+    "revision": null,
+    "state": "proposed",
+    "task": {
+      "owner": "urn:hacp:agent:a",
+      "summary": "dashboard: wallet-only login + Keys card",
+      "task_id": "t-6f346f6a45934a0988583f444db5de0b"
+    },
+    "terms": {
+      "acceptance": [
+        "cargo test -p aegis-dashboard --offline -q"
+      ],
+      "inputs": [],
+      "outputs": [
+        "keys.rs",
+        "login.rs",
+        "mod.rs"
+      ]
+    },
+    "terms_digest": "0e35058056c65609b8b593a56b8aa4bdbe768d9714dde72fcf966f240c29c9ee"
+  }
+}

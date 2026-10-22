@@ -1,0 +1,30 @@
+{
+  "protocol": "HACP/2.0",
+  "message_id": "m-c87d9a169f30493fbfd7e785255eea50",
+  "session_id": "s-92f7b49ed48547a28b47c2e05b475857",
+  "from": "urn:hacp:agent:a",
+  "to": "urn:hacp:agent:b",
+  "kind": "contract.frozen",
+  "timestamp": "2026-10-22T19:32:49Z",
+  "body": {
+    "contract_id": "c-425e992aabc84462882f60aa40f79f46",
+    "next": "owner implements frozen outputs then submits",
+    "revision": "a3c268915be6e54e87af2be1acf9bf79498e6356be52b526838d4f79dcbd9edb",
+    "state": "executing",
+    "task": {
+      "owner": "urn:hacp:agent:b",
+      "summary": "dashboard phase 5 tests",
+      "task_id": "t-7558b3a9e15e428da15f756b04b7518d"
+    },
+    "terms": {
+      "acceptance": [
+        "cargo test -p aegis-dashboard --offline -q"
+      ],
+      "inputs": [],
+      "outputs": [
+        "tests.rs"
+      ]
+    },
+    "terms_digest": "08e0d85f265adcc987acd79faa7bd8f4187bfa85618a2f17f68cfe02c841fb15"
+  }
+}

@@ -72,37 +72,7 @@ async fn index() -> Markup {
 }
 
 async fn login() -> Markup {
-    let people = people();
-    layout(
-        "AegisMCP — Log in",
-        html! {
-            (pill_header(html! {}))
-            main.wrap.narrow {
-                div.eyebrow { "Secure access" }
-                h1.mid { "Log in to your " span.acc { "firewall" } }
-                form #loginform.card.form {
-                    label { "Person" }
-                    select #who name="subject" {
-                        @for p in &people { option value=(p.subject) { (p.display_name) } }
-                    }
-                    label { "Password" }
-                    input #pw type="password" name="password" placeholder="password" autocomplete="current-password";
-                    button.primary type="submit" { "Log in" span.arrow { "↘" } }
-                    div #err.err {}
-                    p.hint { "Demo password: " code { "<subject>-demo" } }
-                }
-                div.card.form.web3 {
-                    label { "Or use a wallet" }
-                    button.primary #siwe type="button" { "Sign in with Ethereum" span.arrow { "↘" } }
-                    div #siwe-err.err {}
-                    p #nowallet.hint style="display:none" { "No wallet detected — install MetaMask or another EIP-1193 wallet." }
-                }
-            }
-            script { (PreEscaped(SIWE_JS)) }
-            script { (PreEscaped(LOGIN_JS)) }
-            script { (PreEscaped(GLOBE_JS)) }
-        },
-    )
+    p5::login_page()
 }
 
 async fn person_page(Path(subject): Path<String>) -> Response {
@@ -156,6 +126,7 @@ async fn person_page(Path(subject): Path<String>) -> Response {
                         span #wallet-err.err {}
                     }
                 }
+                (p5::keys_card(&me.subject))
                 div.cols {
                     section.col {
                         div.eyebrow { "Agent" }
@@ -191,6 +162,7 @@ async fn person_page(Path(subject): Path<String>) -> Response {
             }
             script { (PreEscaped(SIWE_JS)) }
             script { (PreEscaped(format!("const SUBJECT = {subj_js};\n{JS}"))) }
+            script { (PreEscaped(p5::KEYS_JS)) }
             script { (PreEscaped(GLOBE_JS)) }
         },
     );
@@ -381,44 +353,6 @@ async function siweSign() {
 }
 "#;
 
-const LOGIN_JS: &str = r#"
-(function(){
-  const params = new URLSearchParams(location.search);
-  const pre = params.get('subject');
-  if (pre) document.getElementById('who').value = pre;
-  const sb = document.getElementById('siwe');
-  if (!window.ethereum) document.getElementById('nowallet').style.display = '';
-  sb.addEventListener('click', async () => {
-    const e2 = document.getElementById('siwe-err');
-    e2.textContent = '';
-    if (!window.ethereum) { document.getElementById('nowallet').style.display = ''; return; }
-    try {
-      const body = await siweSign();
-      const res = await fetch('/api/login/siwe', {method: 'POST', headers: {'content-type': 'application/json'}, body: JSON.stringify(body)});
-      if (!res.ok) { e2.textContent = 'Wallet sign-in failed'; return; }
-      const j = await res.json().catch(() => ({}));
-      const next = params.get('next');
-      if (next && next.startsWith('/') && !next.startsWith('//')) location.href = next;
-      else if (j.subject) location.href = '/u/' + encodeURIComponent(j.subject);
-      else { const me = await (await fetch('/api/me')).json(); location.href = '/u/' + encodeURIComponent(me.subject); }
-    } catch (x) { e2.textContent = (x && x.message) || 'Wallet sign-in cancelled'; }
-  });
-  document.getElementById('loginform').addEventListener('submit', async e => {
-    e.preventDefault();
-    const err = document.getElementById('err');
-    err.textContent = '';
-    const subject = document.getElementById('who').value;
-    try {
-      const res = await fetch('/api/login', {method: 'POST', headers: {'content-type': 'application/json'},
-        body: JSON.stringify({subject: subject, password: document.getElementById('pw').value})});
-      if (!res.ok) { err.textContent = 'Invalid credentials'; return; }
-      const next = params.get('next');
-      location.href = (next && next.startsWith('/') && !next.startsWith('//')) ? next : '/u/' + encodeURIComponent(subject);
-    } catch (x) { err.textContent = 'Network error'; }
-  });
-})();
-"#;
-
 const JS: &str = r#"
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -452,7 +386,11 @@ function post(url, body) {
     .catch(e => console.error(url, e));
 }
 function scenario(n) { post('/api/scenario/' + n + '?subject=' + q); term('aegis', 'launching scenario ' + n + '…'); }
-async function kill() { await post('/api/revoke?subject=' + q); loadState(); }
+async function kill() {
+  await post('/api/revoke?subject=' + q);
+  if (window.keysRevokeAll) await window.keysRevokeAll();  // fake keys die with the leases
+  loadState();
+}
 async function logout() { await post('/api/logout'); location.href = '/login'; }
 function copyToken() {
   const done = () => { $('copybtn').textContent = 'Copied ✓'; setTimeout(() => $('copybtn').textContent = 'Copy', 1500); };

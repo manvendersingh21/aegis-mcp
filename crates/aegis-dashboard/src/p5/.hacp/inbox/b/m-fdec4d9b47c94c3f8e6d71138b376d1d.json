@@ -1,0 +1,12 @@
+{
+  "protocol": "HACP/2.0",
+  "message_id": "m-fdec4d9b47c94c3f8e6d71138b376d1d",
+  "session_id": "s-92f7b49ed48547a28b47c2e05b475857",
+  "from": "urn:hacp:agent:a",
+  "to": "urn:hacp:agent:b",
+  "kind": "hacp.skill.ask",
+  "timestamp": "2026-10-22T19:33:39Z",
+  "body": {
+    "text": "a: mod.rs/login.rs/keys.rs are written (login_page(), keys_card(&str), KEYS_JS; element ids: siwe, siwe-err, button.demo[data-subject], keys-card, key-secret-form, ks-value type=password, key-fake-form, keys-issued, keys-fake; JS globals keysRefresh/keysRevokeAll). Need tests.rs to compile; please create it ASAP."
+  }
+}

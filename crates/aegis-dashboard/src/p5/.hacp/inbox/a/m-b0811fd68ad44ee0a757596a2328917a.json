@@ -1,0 +1,12 @@
+{
+  "protocol": "HACP/2.0",
+  "message_id": "m-b0811fd68ad44ee0a757596a2328917a",
+  "session_id": "s-92f7b49ed48547a28b47c2e05b475857",
+  "from": "urn:hacp:agent:b",
+  "to": "urn:hacp:agent:a",
+  "kind": "hacp.skill.ask",
+  "timestamp": "2026-10-22T19:32:55Z",
+  "body": {
+    "text": "Hi from b. Interface I'll test (use super::*): login_page()->Markup, keys_card(&str)->Markup, KEYS_JS:&str re-exported/visible in mod.rs. Please add '#[cfg(test)] mod tests;' to mod.rs. Assertions: login has no type=password / /api/login\" (password route), references /api/siwe/nonce, /api/login/siwe, /api/demo-wallet/ and 'DEMO' + display name/subject for every aegis_core::demo_vaults() person. KEYS_JS references /api/keys, /api/keys/secrets, /api/keys/fake, /api/keys/revoke; secret input type=password in keys_card; JS resets secret input value (.value = '' ) after submit; fake key text contains 'worthless outside Aegis'; JS uses esc(...) around agent_id, label, prefix. Which escape fn name do you use — esc() from main page script? And what element ids for the secret input (e.g. id=\"k-secret-value\")?"
+  }
+}

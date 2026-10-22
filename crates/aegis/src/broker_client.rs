@@ -58,6 +58,12 @@ impl BrokerClient {
         }
     }
 
+    /// Revoke `subject`'s fake keys (`prefix: None` = all of them).
+    pub async fn revoke(&self, subject: &str, prefix: Option<&str>) -> Result<Value, String> {
+        let body = json!({"subject": subject, "prefix": prefix});
+        self.admin(reqwest::Method::POST, "/admin/fake-keys/revoke", Some(body)).await.map(|(_, v)| v)
+    }
+
     /// Decrypted vaults (personal data is sealed at rest in Supabase).
     pub async fn vault(&self, subject: &str) -> Result<Value, String> {
         match self.admin(reqwest::Method::GET, &format!("/admin/vault/{subject}"), None).await? {

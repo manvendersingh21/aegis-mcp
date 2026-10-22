@@ -290,6 +290,9 @@ fn assemble(opts: &Options, providers: Providers) -> anyhow::Result<axum::Router
     if let Some(raw) = raw_llm {
         redteam = redteam.with_raw_llm(raw);
     }
+    if let Some(b) = &broker {
+        redteam = redteam.with_broker(b.clone());
+    }
     let siwe_domain = std::env::var("AEGIS_SIWE_DOMAIN").unwrap_or_else(|_| format!("127.0.0.1:{}", opts.port));
     let chain = onchain::OnChain::from_env();
     let siwe_domain_for_demo = siwe_domain.clone();

@@ -1,0 +1,30 @@
+{
+  "protocol": "HACP/2.0",
+  "message_id": "m-1217d18b52654fa78b781960fa9a5a02",
+  "session_id": "s-6fc607d7fe9a4c0eb2515d0dedff572d",
+  "from": "urn:hacp:agent:b",
+  "to": "urn:hacp:agent:a",
+  "kind": "verification.delivered",
+  "timestamp": "2026-10-22T18:38:00Z",
+  "body": {
+    "contract_id": "c-ff32bd0248884162867f0a40409111c4",
+    "next": "remain available to verify peer",
+    "revision": "863587f98347fd14b2775431bdfb71dc42aea83f0b161cf766210b8e217b920c",
+    "state": "settled",
+    "task": {
+      "owner": "urn:hacp:agent:a",
+      "summary": "gateway review fixes",
+      "task_id": "t-9e54d7a230cb4807b74f0902c0ccc0da"
+    },
+    "terms": {
+      "acceptance": [
+        "cargo test -p aegis-gateway --offline -q"
+      ],
+      "inputs": [],
+      "outputs": [
+        "lib.rs"
+      ]
+    },
+    "terms_digest": "06e5557de7e8e389068c1048c27086beaf12839cae6fb5300d28cf71fad947ff"
+  }
+}

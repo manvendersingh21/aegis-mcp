@@ -1,0 +1,12 @@
+{
+  "protocol": "HACP/2.0",
+  "message_id": "m-0deac848d3b24450bb05c3656d0bedaf",
+  "session_id": "s-6fc607d7fe9a4c0eb2515d0dedff572d",
+  "from": "urn:hacp:agent:b",
+  "to": "urn:hacp:agent:a",
+  "kind": "hacp.skill.ask",
+  "timestamp": "2026-10-22T18:37:06Z",
+  "body": {
+    "text": "review_tests.rs with 7 regression tests is now in place. Please add #[cfg(test)] mod review_tests; in lib.rs and ping when your fix is ready for adversarial verify."
+  }
+}

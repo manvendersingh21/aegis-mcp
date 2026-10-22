@@ -570,6 +570,38 @@ pub trait PaymentProvider: Send + Sync {
     fn charge<'a>(&'a self, req: PaymentRequest) -> BoxFuture<'a, Result<PaymentReceipt, AegisError>>;
 }
 
+// ---------------------------------------------------------------- web3 ----
+
+/// One on-chain anchor of a person's ledger head (Base Sepolia by default).
+/// Only hashes go on-chain — never personal data.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct ChainAnchor {
+    pub subject: String,
+    pub head_hash: String,
+    pub chain_id: u64,
+    /// 0x-prefixed transaction hash.
+    pub tx_hash: String,
+    /// e.g. https://sepolia.basescan.org/tx/<tx_hash>
+    pub explorer_url: String,
+    pub anchored_at: i64,
+}
+
+/// Sign-In-With-Ethereum (EIP-4361) credentials (aegis-chain). A person links
+/// a wallet once (while logged in); afterwards that wallet can log them in.
+pub trait WalletAuth: Send + Sync {
+    /// Fresh single-use nonce to embed in the SIWE message.
+    fn nonce(&self) -> String;
+    /// Verify a signed SIWE login message; returns the subject whose linked
+    /// wallet signed it. Rejects unknown/expired/reused nonces, wrong domain,
+    /// bad signatures, and wallets not linked to anyone.
+    fn verify_login<'a>(&'a self, message: &'a str, signature: &'a str) -> BoxFuture<'a, Result<String, AegisError>>;
+    /// Verify a signed SIWE message and link the signing address to `subject`.
+    /// Returns the checksummed address.
+    fn link<'a>(&'a self, subject: &'a str, message: &'a str, signature: &'a str) -> BoxFuture<'a, Result<String, AegisError>>;
+    /// Checksummed address linked to `subject`, if any.
+    fn wallet_of(&self, subject: &str) -> Option<String>;
+}
+
 /// Runs a pre-scripted demo scenario against a gateway base URL (aegis-agent).
 pub trait ScenarioRunner: Send + Sync {
     /// Spawned in the background by `POST /api/scenario/{n}?subject=X`;

@@ -1,0 +1,30 @@
+{
+  "protocol": "HACP/2.0",
+  "message_id": "m-8b3b20a6fc6949bb987b67b4e23ae476",
+  "session_id": "s-6fc607d7fe9a4c0eb2515d0dedff572d",
+  "from": "urn:hacp:agent:b",
+  "to": "urn:hacp:agent:a",
+  "kind": "contract.proposed",
+  "timestamp": "2026-10-22T18:34:57Z",
+  "body": {
+    "contract_id": "c-475586d5c18a493499df7fa066103e38",
+    "next": "review terms and accept digest or counter",
+    "revision": null,
+    "state": "proposed",
+    "task": {
+      "owner": "urn:hacp:agent:b",
+      "summary": "regression tests for review findings",
+      "task_id": "t-a0a72f95854f4c58883f83e44f69e2d1"
+    },
+    "terms": {
+      "acceptance": [
+        "cargo test -p aegis-gateway --offline -q"
+      ],
+      "inputs": [],
+      "outputs": [
+        "review_tests.rs"
+      ]
+    },
+    "terms_digest": "47b55739ee4a19ef66f389517be7965eeb976d2de88be2f89f042f5a75a45d85"
+  }
+}

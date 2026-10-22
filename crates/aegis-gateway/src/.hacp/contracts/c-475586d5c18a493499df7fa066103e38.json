@@ -1,0 +1,132 @@
+{
+  "artifacts": [
+    {
+      "path": "review_tests.rs",
+      "record": {
+        "artifact_id": "urn:hacp:artifact:da8765ee-465b-4799-84b5-b4748a835450",
+        "contract_id": "c-475586d5c18a493499df7fa066103e38",
+        "contract_revision": "9f05243e4037bf3159859dc5eedfed16d06360b1933072873ab862243640d995",
+        "derived_from": [],
+        "digest": "2728b06315592f45839e95be38d5b758ce717506a824576e5c767df1df698afe",
+        "location": ".hacp/artifacts/da8765ee-465b-4799-84b5-b4748a835450.bin",
+        "media_type": "application/octet-stream",
+        "producer": "urn:hacp:agent:b",
+        "size": 16520,
+        "task_id": "t-a0a72f95854f4c58883f83e44f69e2d1",
+        "visibility": "participants"
+      }
+    }
+  ],
+  "attempts": [
+    {
+      "commands": [
+        {
+          "command": "cargo test -p aegis-gateway --offline -q",
+          "duration_ms": 2870,
+          "exit_code": 0,
+          "signal": null,
+          "stderr": "",
+          "stdout": "\nrunning 7 tests\n.......\ntest result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.15s\n\n\nrunning 7 tests\n.......\ntest result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.36s\n\n\nrunning 4 tests\n....\ntest result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.22s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s\n\n",
+          "timed_out": false
+        }
+      ],
+      "id": "v-f415cbdc2eec4f8bba8adc3f1f9ba8df",
+      "peer": "a",
+      "status": "completed"
+    }
+  ],
+  "contract": {
+    "agreed_by": [],
+    "agreed_terms_digest": null,
+    "amendments": 0,
+    "contract_id": "c-475586d5c18a493499df7fa066103e38",
+    "escalation_path": [],
+    "limits": {
+      "max_amendments": 3,
+      "max_rounds": 3
+    },
+    "participants": [
+      "urn:hacp:agent:a",
+      "urn:hacp:agent:b"
+    ],
+    "pending_submission": null,
+    "pending_submitter": null,
+    "relationship": "collaboration",
+    "revisions": [
+      {
+        "content": {
+          "acceptance": [
+            "cargo test -p aegis-gateway --offline -q"
+          ],
+          "inputs": [],
+          "outputs": [
+            "review_tests.rs"
+          ]
+        },
+        "digest": "9f05243e4037bf3159859dc5eedfed16d06360b1933072873ab862243640d995",
+        "number": 1
+      }
+    ],
+    "rework_scope": null,
+    "rounds": 0,
+    "state": "settled",
+    "task": {
+      "owner": "urn:hacp:agent:b",
+      "summary": "regression tests for review findings",
+      "task_id": "t-a0a72f95854f4c58883f83e44f69e2d1"
+    }
+  },
+  "pending_digest": "47b55739ee4a19ef66f389517be7965eeb976d2de88be2f89f042f5a75a45d85",
+  "pending_terms": {
+    "acceptance": [
+      "cargo test -p aegis-gateway --offline -q"
+    ],
+    "inputs": [],
+    "outputs": [
+      "review_tests.rs"
+    ]
+  },
+  "proposer": "b",
+  "submissions": [
+    {
+      "against_revision": "9f05243e4037bf3159859dc5eedfed16d06360b1933072873ab862243640d995",
+      "artifacts": [
+        "urn:hacp:artifact:da8765ee-465b-4799-84b5-b4748a835450"
+      ],
+      "claim": "Added review_tests.rs with seven focused regressions covering payment non-leakage, no payment lease bleed, lease field-scope enforcement, Allow field projection, CLEAN_ROOM metadata casing, stale pending cleanup visibility, and oversized /mcp body rejection.",
+      "evidence": []
+    }
+  ],
+  "verifications": [
+    {
+      "against_revision": "9f05243e4037bf3159859dc5eedfed16d06360b1933072873ab862243640d995",
+      "artifacts": [
+        "urn:hacp:artifact:da8765ee-465b-4799-84b5-b4748a835450"
+      ],
+      "attests": [],
+      "checks": [
+        {
+          "detail": "SHA-256 2728b06315592f45839e95be38d5b758ce717506a824576e5c767df1df698afe and 16520 bytes match working file and immutable copy",
+          "name": "before: review_tests.rs",
+          "passed": true
+        },
+        {
+          "detail": "{\"command\":\"cargo test -p aegis-gateway --offline -q\",\"stdout\":\"\\nrunning 7 tests\\n.......\\ntest result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.15s\\n\\n\\nrunning 7 tests\\n.......\\ntest result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.36s\\n\\n\\nrunning 4 tests\\n....\\ntest result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.22s\\n\\n\\nrunning 0 tests\\n\\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s\\n\\n\",\"stderr\":\"\",\"duration_ms\":2870,\"exit_code\":0,\"signal\":null,\"timed_out\":false}",
+          "name": "cargo test -p aegis-gateway --offline -q",
+          "passed": true
+        },
+        {
+          "detail": "SHA-256 2728b06315592f45839e95be38d5b758ce717506a824576e5c767df1df698afe and 16520 bytes match working file and immutable copy",
+          "name": "after: review_tests.rs",
+          "passed": true
+        }
+      ],
+      "contract_id": "c-475586d5c18a493499df7fa066103e38",
+      "evidence": [],
+      "reasons": [],
+      "verdict": "accept",
+      "verification_id": "v-f415cbdc2eec4f8bba8adc3f1f9ba8df",
+      "verifier": "urn:hacp:agent:a"
+    }
+  ]
+}

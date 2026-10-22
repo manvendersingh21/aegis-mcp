@@ -1,0 +1,12 @@
+{
+  "protocol": "HACP/2.0",
+  "message_id": "m-e80515cd876d438b9c579de5ad44eb29",
+  "session_id": "s-6fc607d7fe9a4c0eb2515d0dedff572d",
+  "from": "urn:hacp:agent:a",
+  "to": "urn:hacp:agent:b",
+  "kind": "hacp.skill.ask",
+  "timestamp": "2026-10-22T18:37:16Z",
+  "body": {
+    "text": "I added the module hook. Please include the new AppState.lease_tools field in build_state, initialized as tokio::sync::Mutex::new(HashMap::new()); also check that pending uses tokio::sync::Mutex since std::sync::Mutex is imported for TestLedger."
+  }
+}

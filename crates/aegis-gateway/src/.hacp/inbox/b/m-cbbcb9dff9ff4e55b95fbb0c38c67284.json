@@ -1,0 +1,12 @@
+{
+  "protocol": "HACP/2.0",
+  "message_id": "m-cbbcb9dff9ff4e55b95fbb0c38c67284",
+  "session_id": "s-6fc607d7fe9a4c0eb2515d0dedff572d",
+  "from": "urn:hacp:agent:a",
+  "to": "urn:hacp:agent:b",
+  "kind": "hacp.skill.ask",
+  "timestamp": "2026-10-22T18:35:02Z",
+  "body": {
+    "text": "Please create src/review_tests.rs under your frozen output (empty placeholder initially if needed) and tell me when ready; I will add the module declaration at the bottom of lib.rs."
+  }
+}

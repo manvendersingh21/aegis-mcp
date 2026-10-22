@@ -111,3 +111,27 @@ New core items (already in aegis-core): `RiskScores`, `RiskScorer`, `PaymentRequ
 - gateway/ledger metrics: REDACT can make `bytes_released > bytes_raw` (placeholders are longer than the values), so "bytes withheld" goes negative. Compute withheld as bytes of *sensitive values removed*, or clamp at 0 and lead the dashboard with `sensitive_fields_blocked` / `pii_blocked_pct`.
 - dashboard: show Supabase anchors from public `GET /api/anchors` → `{"provider":"supabase-storage","bucket","anchors":{subject:{head_hash, anchored_at, chain_valid, object}}}` as an "Anchored off-box ✓ <short hash> · <time ago>" line in the ledger column (only the viewer's own subject).
 - Stripe key in .env is rejected by Stripe (401 invalid key) — payments run on the labelled demo provider until the user supplies a fresh sk_test key; UI must label provider clearly.
+
+## PHASE 4 — Web3: on-chain anchors + wallet credentials (Base Sepolia, chain id 84532)
+Principle: personal data NEVER goes on-chain. Only hashes (ledger heads, which commit every receipt and decision) and wallet signatures.
+Env (repo .env): `AEGIS_CHAIN_KEY` (0x… funded Base Sepolia private key — anchoring is disabled if absent), `AEGIS_CHAIN_RPC` (default https://sepolia.base.org), `AEGIS_CHAIN_ID` (default 84532), `AEGIS_EXPLORER` (default https://sepolia.basescan.org), `AEGIS_SIWE_DOMAIN` (default 127.0.0.1:8787).
+New core items (in aegis-core): `ChainAnchor`, trait `WalletAuth { nonce, verify_login, link, wallet_of }`.
+Gateway (done by orchestrator): `router_with_wallet(deps, Option<Arc<dyn WalletAuth>>)` adds `GET /api/siwe/nonce` → `{"nonce"}`, `POST /api/login/siwe {message, signature}` → session cookie like password login (401 `{"error"}` on failure), `POST /api/wallet/link {message, signature}` (session required) → `{"ok":true,"address"}`; `GET /api/me` now includes `"wallet": "0x…" | null`.
+
+### aegis-chain (new crate; alloy =2.4.2 with features std, providers, reqwest, reqwest-rustls-tls, signers, signer-local, network, rpc-types, consensus, eips — already compiles)
+- `SiweAuth::new(domain: String, chain_id: u64)` impl `WalletAuth`:
+  - nonces: random 16+ alnum chars, single-use, expire after 10 min.
+  - parse EIP-4361 text: `{domain} wants you to sign in with your Ethereum account:\n{address}\n\n{statement}\n\nURI: …\nVersion: 1\nChain ID: {id}\nNonce: {nonce}\nIssued At: {rfc3339}` (Expiration Time optional). Check domain == configured domain, chain id, nonce valid+unused, not expired.
+  - signature: EIP-191 personal_sign, 65-byte hex (0x…); recover with alloy (`Signature::from_str` / `recover_address_from_msg`); must equal the message's address (case-insensitive) → store checksummed.
+  - wallet links in memory (`Mutex<HashMap<subject,address>>` + reverse map); a wallet links to at most one person; relinking replaces.
+  - `pub fn siwe_message(domain, address, statement, uri, chain_id, nonce, issued_at) -> String` helper (used by tests and the dashboard's expectations).
+- `ChainAnchorer::from_env() -> Option<Self>` (needs AEGIS_CHAIN_KEY); `async fn anchor(&self, subject: &str, head_hash: &str) -> Result<ChainAnchor, AegisError>`: send a 0-value EIP-1559 tx from the key's address to itself with calldata = UTF-8 `"AEGIS1:" + sha256_hex(subject) + ":" + head_hash` (subject is hashed — no names on-chain); wait for 1 confirmation (timeout 60s); return ChainAnchor with explorer_url `{explorer}/tx/{hash}`. `pub fn anchor_calldata(subject, head_hash) -> Vec<u8>` (pure, testable). `pub fn address(&self) -> String`.
+- Offline tests only in acceptance (sign SIWE messages with `PrivateKeySigner::random()` locally). A live anchor test is `#[ignore]` and may be run once manually if AEGIS_CHAIN_KEY is set.
+
+### Orchestrator wiring (crates/aegis): background loop anchors each person's ledger head on-chain when it changes (≤ 1 tx / person / 60s), exposes `GET /api/chain/anchors` → `{"chain_id","explorer","anchors":{subject: ChainAnchor}}` (public: hashes only) and `GET /api/chain/info` → `{"enabled","chain_id","anchor_address","explorer"}`.
+
+### Dashboard web3 UI
+- /login: "Sign in with Ethereum" button (uses `window.ethereum`: eth_requestAccounts → GET /api/siwe/nonce → build the exact EIP-4361 message (domain = location.host, URI = location.origin, Chain ID 84532, statement "Sign in to AegisMCP — your consent firewall.") → personal_sign → POST /api/login/siwe → go to /u/{subject}). If no wallet extension: show "No wallet detected" hint. Password login remains.
+- /u/{subject}: credentials card shows linked wallet (short 0x…, basescan address link) or a "Link wallet" button (same signing flow → POST /api/wallet/link).
+- Ledger column: "Anchored on Base Sepolia ✓ <short tx> · <time ago>" linking to explorer_url from GET /api/chain/anchors (own subject only), next to the existing Supabase anchor line; if `/api/chain/info.enabled` is false show "on-chain anchoring off".
+- Agent ids that look like 0x addresses render as short address chips with a basescan link.

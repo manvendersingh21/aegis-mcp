@@ -39,16 +39,38 @@ struct AppState {
     deps: GatewayDeps,
     events: broadcast::Sender<EventEnvelope>,
     pending: Mutex<HashMap<String, (ConsentRequest, oneshot::Sender<ConsentDecision>)>>,
+    /// Receipt ids are associated with the tool that caused them. ReceiptClaims
+    /// identify resources, so the gateway keeps the additional tool scope here.
+    lease_tools: Mutex<HashMap<String, String>>,
     sessions: Mutex<HashMap<String, String>>,
+    wallet: Option<Arc<dyn WalletAuth>>,
+}
+
+struct PendingDropGuard { state: Arc<AppState>, request_id: String }
+
+impl Drop for PendingDropGuard {
+    fn drop(&mut self) {
+        let state = self.state.clone();
+        let request_id = self.request_id.clone();
+        tokio::spawn(async move { state.pending.lock().await.remove(&request_id); });
+    }
 }
 
 pub fn router(deps: GatewayDeps) -> Router {
+    router_with_wallet(deps, None)
+}
+
+/// Like [`router`], plus Sign-In-With-Ethereum routes when `wallet` is set:
+/// `GET /api/siwe/nonce`, `POST /api/login/siwe`, `POST /api/wallet/link`.
+pub fn router_with_wallet(deps: GatewayDeps, wallet: Option<Arc<dyn WalletAuth>>) -> Router {
     let (event_tx, _) = broadcast::channel(512);
     let state = Arc::new(AppState {
         deps,
         events: event_tx,
         pending: Mutex::new(HashMap::new()),
+        lease_tools: Mutex::new(HashMap::new()),
         sessions: Mutex::new(HashMap::new()),
+        wallet,
     });
     Router::new()
         .route("/healthz", get(healthz))
@@ -56,6 +78,9 @@ pub fn router(deps: GatewayDeps) -> Router {
         .route("/api/login", post(login))
         .route("/api/logout", post(logout))
         .route("/api/me", get(me))
+        .route("/api/siwe/nonce", get(siwe_nonce))
+        .route("/api/login/siwe", post(siwe_login))
+        .route("/api/wallet/link", post(wallet_link))
         .route("/api/state", get(api_state))
         .route("/events", get(events))
         .route("/api/consent/{request_id}", post(consent))
@@ -101,12 +126,43 @@ async fn login(State(state): State<Arc<AppState>>, Json(body): Json<LoginBody>) 
     if !vault.verify_password(&body.password) {
         return json_response(StatusCode::UNAUTHORIZED, json!({"error":"invalid credentials"}));
     }
+    start_session(&state, body.subject).await
+}
+
+async fn start_session(state: &AppState, subject: String) -> Response {
     let token = uuid::Uuid::new_v4().simple().to_string();
-    state.sessions.lock().await.insert(token.clone(), body.subject.clone());
-    let mut response = json_response(StatusCode::OK, json!({"ok":true,"subject":body.subject}));
+    state.sessions.lock().await.insert(token.clone(), subject.clone());
+    let mut response = json_response(StatusCode::OK, json!({"ok":true,"subject":subject}));
     let cookie = format!("aegis_session={token}; HttpOnly; Path=/; SameSite=Lax");
     if let Ok(value) = HeaderValue::from_str(&cookie) { response.headers_mut().insert(header::SET_COOKIE, value); }
     response
+}
+
+#[derive(Deserialize)]
+struct SiweBody { message: String, signature: String }
+
+async fn siwe_nonce(State(state): State<Arc<AppState>>) -> Response {
+    match &state.wallet {
+        Some(wallet) => json_response(StatusCode::OK, json!({"nonce": wallet.nonce()})),
+        None => StatusCode::NOT_FOUND.into_response(),
+    }
+}
+
+async fn siwe_login(State(state): State<Arc<AppState>>, Json(body): Json<SiweBody>) -> Response {
+    let Some(wallet) = state.wallet.clone() else { return StatusCode::NOT_FOUND.into_response() };
+    match wallet.verify_login(&body.message, &body.signature).await {
+        Ok(subject) => start_session(&state, subject).await,
+        Err(e) => json_response(StatusCode::UNAUTHORIZED, json!({"error": e.to_string()})),
+    }
+}
+
+async fn wallet_link(State(state): State<Arc<AppState>>, headers: HeaderMap, Json(body): Json<SiweBody>) -> Response {
+    let Some(wallet) = state.wallet.clone() else { return StatusCode::NOT_FOUND.into_response() };
+    let Some(subject) = session_subject(&state, &headers).await else { return StatusCode::UNAUTHORIZED.into_response() };
+    match wallet.link(&subject, &body.message, &body.signature).await {
+        Ok(address) => json_response(StatusCode::OK, json!({"ok": true, "address": address})),
+        Err(e) => json_response(StatusCode::BAD_REQUEST, json!({"error": e.to_string()})),
+    }
 }
 
 async fn logout(State(state): State<Arc<AppState>>, headers: HeaderMap) -> Response {
@@ -119,7 +175,10 @@ async fn logout(State(state): State<Arc<AppState>>, headers: HeaderMap) -> Respo
 async fn me(State(state): State<Arc<AppState>>, headers: HeaderMap) -> Response {
     let Some(subject) = session_subject(&state, &headers).await else { return StatusCode::UNAUTHORIZED.into_response() };
     match state.deps.vaults.iter().find(|v| v.subject() == subject) {
-        Some(vault) => json_response(StatusCode::OK, json!({"subject":subject,"display_name":vault.person().display_name,"mcp_token":vault.mcp_token()})),
+        Some(vault) => {
+            let wallet = state.wallet.as_ref().and_then(|w| w.wallet_of(&subject));
+            json_response(StatusCode::OK, json!({"subject":subject,"display_name":vault.person().display_name,"mcp_token":vault.mcp_token(),"wallet":wallet}))
+        }
         None => StatusCode::UNAUTHORIZED.into_response(),
     }
 }
@@ -136,8 +195,12 @@ async fn api_state(State(state): State<Arc<AppState>>, headers: HeaderMap, Query
     let Some(session) = session_subject(&state, &headers).await else { return StatusCode::UNAUTHORIZED.into_response() };
     let subject = match authorized_subject(query.subject.as_deref(), &session) { Ok(s) => s, Err(status) => return status.into_response() };
     let Some(vault) = state.deps.vaults.iter().find(|v| v.subject() == subject) else { return StatusCode::NOT_FOUND.into_response() };
-    let pending = state.pending.lock().await.values().filter(|(req, _)| req.call.subject == subject).map(|(req, _)| req.clone()).collect();
     let now = now_unix();
+    let pending = {
+        let mut entries = state.pending.lock().await;
+        entries.retain(|_, (req, _)| req.deadline >= now);
+        entries.values().filter(|(req, _)| req.call.subject == subject).map(|(req, _)| req.clone()).collect()
+    };
     let snapshot = DashboardState {
         person: vault.person(),
         metrics: state.deps.ledger.metrics(Some(&subject), now),
@@ -237,7 +300,7 @@ async fn mcp(State(state): State<Arc<AppState>>, request: Request<Body>) -> Resp
     }
     let agent = headers.get("x-aegis-agent").and_then(|h| h.to_str().ok()).unwrap_or("anonymous_agent").to_string();
     let purpose = headers.get("x-aegis-purpose").and_then(|h| h.to_str().ok()).unwrap_or("unspecified").to_string();
-    let bytes = match axum::body::to_bytes(request.into_body(), usize::MAX).await {
+    let bytes = match axum::body::to_bytes(request.into_body(), 1_048_576).await {
         Ok(bytes) => bytes,
         Err(_) => return json_response(StatusCode::BAD_REQUEST, json!({"error":"invalid body"})),
     };
@@ -325,16 +388,35 @@ async fn call_tool(state: &Arc<AppState>, subject: &str, agent: &str, purpose: &
             risk_requires_consent = true;
         }
     }
-    if let Some(judge) = &state.deps.judge {
-        if let Ok(Some((false, rationale))) = tokio::time::timeout(Duration::from_secs(2), judge.judge(&call, &spec)).await {
-            emit(state, subject, Event::AgentLog { agent_id:"aegis".into(), text:format!("Purpose warning: {rationale}") });
-        }
+    if let Some(judge) = state.deps.judge.clone() {
+        let call = call.clone();
+        let spec = spec.clone();
+        let subject = subject.to_string();
+        let events = state.events.clone();
+        tokio::spawn(async move {
+            if let Some((false, rationale)) = judge.judge(&call, &spec).await {
+                let _ = events.send(EventEnvelope {
+                    subject,
+                    event: Event::AgentLog { agent_id:"aegis".into(), text:format!("Purpose warning: {rationale}") },
+                });
+            }
+        });
     }
 
+    let requested_fields = requested_fields(&call, &spec);
     let mut receipt_id = None;
-    let active_receipt = (!is_payment && !risk_requires_consent)
-        .then(|| state.deps.ledger.active_receipt(subject, agent, spec.resource, now_unix()))
-        .flatten();
+    let active_receipt = if !is_payment && !risk_requires_consent {
+        let now = now_unix();
+        let tool_ids = state.lease_tools.lock().await;
+        state.deps.ledger.active_receipts(Some(subject), now).into_iter().find(|receipt| {
+            receipt.claims.subject == subject
+                && receipt.claims.grantee_agent == agent
+                && receipt.claims.resource == spec.resource
+                && tool_ids.get(&receipt.claims.receipt_id).is_some_and(|tool| tool == name)
+                && requested_fields.iter().all(|field| receipt.claims.allowed_fields.contains(field))
+                && state.deps.signer.verify(receipt)
+        })
+    } else { None };
     let mode = if let Some(receipt) = active_receipt {
         receipt_id = Some(receipt.claims.receipt_id);
         receipt.claims.resolution_mode
@@ -352,6 +434,7 @@ async fn call_tool(state: &Arc<AppState>, subject: &str, agent: &str, purpose: &
         };
         let (tx, rx) = oneshot::channel();
         state.pending.lock().await.insert(request_id.clone(), (request.clone(), tx));
+        let _pending_guard = PendingDropGuard { state: state.clone(), request_id:request_id.clone() };
         emit(state, subject, Event::ConsentRequired { request });
         let decision = tokio::time::timeout(Duration::from_secs(state.deps.consent_timeout_secs), rx).await;
         state.pending.lock().await.remove(&request_id);
@@ -387,6 +470,7 @@ async fn call_tool(state: &Arc<AppState>, subject: &str, agent: &str, purpose: &
             };
             let receipt = state.deps.signer.issue(claims);
             let _ = state.deps.ledger.store_receipt(&receipt);
+            state.lease_tools.lock().await.insert(receipt.claims.receipt_id.clone(), name.to_string());
             receipt_id = Some(receipt.claims.receipt_id.clone());
             emit(state, subject, Event::ConsentResolved { request_id, approved:true, receipt:Some(receipt) });
         }
@@ -419,7 +503,7 @@ async fn call_tool(state: &Arc<AppState>, subject: &str, agent: &str, purpose: &
 
     let raw = vault.resource(spec.resource);
     let released = match mode {
-        Mode::Allow => raw.clone(),
+        Mode::Allow => project_fields(&raw, &requested_fields),
         Mode::Redact => state.deps.redactor.redact(spec.resource, &raw).value,
         Mode::CleanRoom => state.deps.clean_room.evaluate(spec.resource, &raw, &call.arguments),
         Mode::Block => json!({"status":"BLOCKED_BY_AEGIS"}),
@@ -430,7 +514,23 @@ async fn call_tool(state: &Arc<AppState>, subject: &str, agent: &str, purpose: &
     let entry = ledger_entry(&call, spec.resource, mode, Outcome::Released, released.clone(), bytes_raw, bytes_released, receipt_id.clone());
     let _ = state.deps.ledger.append(entry);
     emit(state, subject, Event::Metrics { metrics:state.deps.ledger.metrics(Some(subject), now_unix()) });
-    Ok(json!({"content":[{"type":"text","text":released.to_string()}],"structuredContent":released,"_meta":{"aegis":{"mode":format!("{mode:?}").to_uppercase(),"receipt_id":receipt_id}}}))
+    Ok(json!({"content":[{"type":"text","text":released.to_string()}],"structuredContent":released,"_meta":{"aegis":{"mode":mode,"receipt_id":receipt_id}}}))
+}
+
+fn requested_fields(call: &ToolCall, spec: &ToolSpec) -> Vec<String> {
+    match call.arguments.get("fields").and_then(Value::as_array) {
+        Some(fields) => fields.iter().filter_map(Value::as_str).map(str::to_string).collect(),
+        None => spec.allowed_fields.iter().map(|field| (*field).to_string()).collect(),
+    }
+}
+
+fn project_fields(raw: &Value, fields: &[String]) -> Value {
+    let Some(object) = raw.as_object() else { return Value::Null };
+    let mut projected = serde_json::Map::new();
+    for field in fields {
+        if let Some(value) = object.get(field) { projected.insert(field.clone(), value.clone()); }
+    }
+    Value::Object(projected)
 }
 
 fn tool_error(message: String) -> Value { json!({"isError":true,"content":[{"type":"text","text":message}]}) }
@@ -441,3 +541,6 @@ fn ledger_entry(call: &ToolCall, resource: Resource, mode: Mode, outcome: Outcom
     let _ = resource;
     LedgerEntry { id:new_id("entry"), ts:now_unix(), subject:call.subject.clone(), call_id:call.call_id.clone(), agent_id:call.agent_id.clone(), tool:call.tool.clone(), purpose:call.purpose.clone(), raw_requested, policy_applied:mode, outcome, payload_returned:payload, bytes_raw, bytes_released, receipt_id, entry_hash:String::new() }
 }
+
+#[cfg(test)]
+mod review_tests;

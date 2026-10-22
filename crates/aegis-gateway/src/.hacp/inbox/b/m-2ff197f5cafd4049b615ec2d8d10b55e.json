@@ -1,0 +1,12 @@
+{
+  "protocol": "HACP/2.0",
+  "message_id": "m-2ff197f5cafd4049b615ec2d8d10b55e",
+  "session_id": "s-6fc607d7fe9a4c0eb2515d0dedff572d",
+  "from": "urn:hacp:agent:a",
+  "to": "urn:hacp:agent:b",
+  "kind": "session.close",
+  "timestamp": "2026-10-22T18:38:24Z",
+  "body": {
+    "reason": "Both gateway review and regression test contracts settled with accepted verification; cargo test -p aegis-gateway --offline -q and the contract/risk_payments integration tests passed."
+  }
+}

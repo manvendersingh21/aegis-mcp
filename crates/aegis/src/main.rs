@@ -3,7 +3,7 @@
 //! AEGIS_OFFLINE=1, AEGIS_RISK_THRESHOLD (0.8), AEGIS_CONSENT_TIMEOUT (90),
 //! AEGIS_REQUIRE_MCP_TOKEN=1, AEGIS_LLM_URL/KEY/MODEL, JEV_API_KEY, STRIPE_API_KEY.
 
-use aegis::{build_app, describe, load_dotenv, Options};
+use aegis::{build_app_live, describe, load_dotenv, Options};
 use aegis_core::demo_vaults;
 
 #[tokio::main]
@@ -15,15 +15,15 @@ async fn main() -> anyhow::Result<()> {
         .init();
 
     let opts = Options::from_env();
-    let app = build_app(&opts)?;
+    let app = build_app_live(&opts).await?;
     for line in describe(&opts) {
         tracing::info!("{line}");
     }
     let port = opts.port;
     for v in demo_vaults() {
         tracing::info!(
-            "{:<12} dashboard http://127.0.0.1:{port}/u/{}  password: {}-demo  MCP token: {}",
-            v.person().display_name, v.subject(), v.subject(), v.mcp_token()
+            "{:<12} dashboard http://127.0.0.1:{port}/u/{}  (sign in with your wallet or the labelled demo wallet)",
+            v.person().display_name, v.subject()
         );
     }
 

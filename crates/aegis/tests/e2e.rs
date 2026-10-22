@@ -35,10 +35,24 @@ fn cookie_header(token: &str) -> String {
     format!("aegis_session={token}")
 }
 
-async fn login(client: &reqwest::Client, base: &str, subject: &str, password: &str) -> String {
+/// Wallet-only sign-in via the labelled demo wallet: fetch its address, build
+/// the EIP-4361 message with a fresh nonce, have it signed, POST /api/login/siwe.
+async fn login(client: &reqwest::Client, base: &str, subject: &str) -> String {
+    let address: Value = client.get(format!("{base}/api/demo-wallet/{subject}")).send().await.unwrap().json().await.unwrap();
+    let address = address["address"].as_str().expect("demo wallet address").to_string();
+    let nonce: Value = client.get(format!("{base}/api/siwe/nonce")).send().await.unwrap().json().await.unwrap();
+    let host = base.trim_start_matches("http://");
+    let message = aegis_chain::siwe_message(
+        host, &address, "Sign in to AegisMCP — your consent firewall.", base, 84532,
+        nonce["nonce"].as_str().unwrap(), &chrono::Utc::now().to_rfc3339(),
+    );
+    let signed: Value = client
+        .post(format!("{base}/api/demo-wallet/sign"))
+        .json(&json!({"subject": subject, "message": message}))
+        .send().await.unwrap().json().await.unwrap();
     let resp = client
-        .post(format!("{base}/api/login"))
-        .json(&json!({"subject": subject, "password": password}))
+        .post(format!("{base}/api/login/siwe"))
+        .json(&json!({"message": message, "signature": signed["signature"]}))
         .send()
         .await
         .unwrap();
@@ -140,16 +154,13 @@ async fn full_app_e2e_privacy_multi_tenancy_payments() {
         let people: Value = get(&client, &base, "/api/people", None).await.json().await.unwrap();
         assert_eq!(people.as_array().map(Vec::len), Some(2));
 
-        let maya = login(&client, &base, "maya", "maya-demo").await;
-        let dev = login(&client, &base, "dev", "dev-demo").await;
-        let bad = post_json(
-            &client,
-            &base,
-            "/api/login",
-            None,
-            &json!({"subject": "maya", "password": "nope"}),
-        )
-        .await;
+        let maya = login(&client, &base, "maya").await;
+        let dev = login(&client, &base, "dev").await;
+        // Wallet-only: the password route no longer exists on the live app.
+        let pw = post_json(&client, &base, "/api/login", None, &json!({"subject": "maya", "password": "maya-demo"})).await;
+        assert!(pw.status() == StatusCode::NOT_FOUND || pw.status() == StatusCode::METHOD_NOT_ALLOWED, "password login must be gone: {}", pw.status());
+        // A forged signature is rejected.
+        let bad = post_json(&client, &base, "/api/login/siwe", None, &json!({"message": "x", "signature": "0x00"})).await;
         assert_eq!(bad.status(), StatusCode::UNAUTHORIZED);
 
         let maya_me: Value = get(&client, &base, "/api/me", Some(&maya)).await.json().await.unwrap();

@@ -9,6 +9,9 @@ use aegis_receipts::{Ed25519Signer, SqliteLedger};
 use std::sync::Arc;
 
 pub mod anchor;
+pub mod auth;
+pub mod broker_client;
+pub mod demo_wallet;
 pub mod onchain;
 pub mod redteam;
 pub use aegis_integrations::load_dotenv;
@@ -102,7 +105,99 @@ pub fn describe(opts: &Options) -> Vec<String> {
 }
 
 /// Build the full app: gateway API + MCP endpoint + per-person dashboards.
+/// Provider clients the app runs with. Offline/env mode builds them from
+/// local keys; live mode builds them from broker-issued FAKE keys.
+struct Providers {
+    llm: Option<LlmClient>,
+    risk: Option<Arc<dyn RiskScorer>>,
+    payments: Arc<dyn PaymentProvider>,
+    vaults: Vec<aegis_core::Vault>,
+    broker: Option<broker_client::BrokerClient>,
+}
+
+fn providers_from_env(opts: &Options) -> Providers {
+    let risk: Option<Arc<dyn RiskScorer>> =
+        if opts.use_jev { JevScorer::from_env().map(|j| Arc::new(j) as Arc<dyn RiskScorer>) } else { None };
+    let payments: Arc<dyn PaymentProvider> = match opts.use_stripe.then(StripePayments::from_env).flatten() {
+        Some(Ok(stripe)) => Arc::new(stripe),
+        Some(Err(e)) => {
+            tracing::warn!("Stripe disabled ({e}); using demo payments");
+            Arc::new(DemoPayments)
+        }
+        None => Arc::new(DemoPayments),
+    };
+    Providers {
+        llm: if opts.use_llm { LlmClient::from_env() } else { None },
+        risk,
+        payments,
+        vaults: demo_vaults(),
+        broker: None,
+    }
+}
+
+/// Main process holds no real keys: every provider goes through the broker
+/// with a fake key issued to agent "aegis-gateway".
+async fn providers_from_broker(opts: &Options, broker: broker_client::BrokerClient) -> Providers {
+    const ME: &str = "aegis-gateway";
+    const PLATFORM: &str = "platform";
+    let day = 86_400;
+    let llm = match opts.use_llm.then_some(()) {
+        Some(()) => match broker.issue(PLATFORM, ME, "llm", day).await {
+            Ok(k) => Some(LlmClient::new(
+                broker.proxy_url("llm", "v1"),
+                k.fake_key,
+                std::env::var("AEGIS_LLM_MODEL").unwrap_or_else(|_| "aegis-9b".into()),
+                std::time::Duration::from_secs(20),
+            )),
+            Err(e) => { tracing::warn!("{e}"); None }
+        },
+        None => None,
+    };
+    let risk = match opts.use_jev.then_some(()) {
+        Some(()) => match broker.issue(PLATFORM, ME, "jev", day).await {
+            Ok(k) => Some(Arc::new(JevScorer::via_broker(k.fake_key, broker.proxy_url("jev", "v1/systemone"))) as Arc<dyn RiskScorer>),
+            Err(e) => { tracing::warn!("{e}"); None }
+        },
+        None => None,
+    };
+    let payments: Arc<dyn PaymentProvider> = match broker.issue(PLATFORM, ME, "stripe", day).await {
+        Ok(k) => match StripePayments::via_broker(k.fake_key, broker.proxy_url("stripe", "v1/payment_intents")) {
+            Ok(s) => Arc::new(s),
+            Err(e) => { tracing::warn!("{e}"); Arc::new(DemoPayments) }
+        },
+        Err(e) => { tracing::warn!("{e}; using demo payments"); Arc::new(DemoPayments) }
+    };
+    let mut vaults = Vec::new();
+    for v in demo_vaults() {
+        match broker.vault(&v.subject()).await {
+            Ok(value) if value.is_object() => vaults.push(aegis_core::Vault(value)),
+            Ok(_) | Err(_) => vaults.push(v),
+        }
+    }
+    Providers { llm, risk, payments, vaults, broker: Some(broker) }
+}
+
+/// Offline / env-key build (tests, `AEGIS_OFFLINE=1`).
 pub fn build_app(opts: &Options) -> anyhow::Result<axum::Router> {
+    assemble(opts, providers_from_env(opts))
+}
+
+/// Live build: uses the key broker when `AEGIS_BROKER_TOKEN` is set.
+pub async fn build_app_live(opts: &Options) -> anyhow::Result<axum::Router> {
+    let providers = match broker_client::BrokerClient::from_env() {
+        Some(broker) if !opts_offline() => providers_from_broker(opts, broker).await,
+        _ => providers_from_env(opts),
+    };
+    assemble(opts, providers)
+}
+
+fn opts_offline() -> bool {
+    std::env::var("AEGIS_OFFLINE").as_deref() == Ok("1")
+}
+
+fn assemble(opts: &Options, providers: Providers) -> anyhow::Result<axum::Router> {
+    let Providers { llm, risk, payments, vaults, broker } = providers;
+
     let ledger = match &opts.db_path {
         Some(path) => SqliteLedger::open(path),
         None => SqliteLedger::open_in_memory(),
@@ -114,21 +209,10 @@ pub fn build_app(opts: &Options) -> anyhow::Result<axum::Router> {
         None => Ed25519Signer::generate(),
     };
 
-    let llm = if opts.use_llm { LlmClient::from_env() } else { None };
     let llm_for_redteam = llm.clone();
-    let risk: Option<Arc<dyn RiskScorer>> =
-        if opts.use_jev { JevScorer::from_env().map(|j| Arc::new(j) as Arc<dyn RiskScorer>) } else { None };
-    let payments: Arc<dyn PaymentProvider> = match opts.use_stripe.then(StripePayments::from_env).flatten() {
-        Some(Ok(stripe)) => Arc::new(stripe),
-        Some(Err(e)) => {
-            tracing::warn!("Stripe disabled ({e}); using demo payments");
-            Arc::new(DemoPayments)
-        }
-        None => Arc::new(DemoPayments),
-    };
 
     let deps = GatewayDeps {
-        vaults: demo_vaults(),
+        vaults,
         redactor: Arc::new(RegexRedactor::new()),
         guard: Arc::new(SchemaGuard::new()),
         clean_room: Arc::new(LocalCleanRoom::new()),
@@ -146,11 +230,19 @@ pub fn build_app(opts: &Options) -> anyhow::Result<axum::Router> {
     let redteam = redteam::RedTeam::new(llm_for_redteam, format!("http://127.0.0.1:{}", opts.port));
     let siwe_domain = std::env::var("AEGIS_SIWE_DOMAIN").unwrap_or_else(|_| format!("127.0.0.1:{}", opts.port));
     let chain = onchain::OnChain::from_env();
-    let wallet = Arc::new(aegis_chain::SiweAuth::new(siwe_domain, 84532)) as Arc<dyn aegis_core::WalletAuth>;
+    let siwe = Arc::new(aegis_chain::SiweAuth::new(siwe_domain, 84532));
+    let subjects: Vec<String> = demo_vaults().iter().map(|v| v.subject()).collect();
+    let demo = demo_wallet::router(&siwe, &subjects);
+    let wallet = siwe.clone() as Arc<dyn aegis_core::WalletAuth>;
+    let base_url = format!("http://127.0.0.1:{}", opts.port);
     let mut app = router_with_wallet(deps, Some(wallet))
         .merge(aegis_dashboard::router())
+        .merge(demo)
         .merge(redteam.router())
         .merge(chain.router());
+    if let Some(broker) = broker {
+        app = app.merge(broker.router(base_url));
+    }
     if opts.use_chain {
         let subjects = demo_vaults().iter().map(|v| v.subject()).collect();
         chain.spawn(ledger.clone(), subjects, std::time::Duration::from_secs(60));

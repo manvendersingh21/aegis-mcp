@@ -43,7 +43,15 @@ pub struct SiweAuth {
     chain_id: u64,
     nonces: Mutex<HashMap<String, DateTime<Utc>>>,
     links: Mutex<WalletLinks>,
+    /// Labelled demo wallets (address lowercase -> subject). They can log in but
+    /// never replace the person's real linked wallet.
+    demo_logins: Mutex<HashMap<String, String>>,
+    on_link: Mutex<Option<LinkHook>>,
 }
+
+/// Called after a successful link with (subject, checksummed address), e.g. to
+/// persist it in Supabase.
+pub type LinkHook = Box<dyn Fn(&str, &str) + Send + Sync>;
 
 #[derive(Default)]
 struct WalletLinks {
@@ -64,7 +72,28 @@ impl SiweAuth {
             chain_id,
             nonces: Mutex::new(HashMap::new()),
             links: Mutex::new(WalletLinks::default()),
+            demo_logins: Mutex::new(HashMap::new()),
+            on_link: Mutex::new(None),
         }
+    }
+
+    /// Restore a previously persisted link (no signature check: it was verified
+    /// when it was made).
+    pub fn preload_link(&self, subject: &str, address: &str) {
+        let Ok(parsed) = Address::from_str(address) else { return };
+        let checksum = parsed.to_checksum(None);
+        let mut links = self.links.lock().unwrap_or_else(|e| e.into_inner());
+        links.by_address.insert(checksum.to_ascii_lowercase(), subject.to_owned());
+        links.by_subject.insert(subject.to_owned(), checksum);
+    }
+
+    /// Allow a labelled demo wallet to log `subject` in.
+    pub fn allow_demo_login(&self, subject: &str, address: &str) {
+        self.demo_logins.lock().unwrap_or_else(|e| e.into_inner()).insert(address.to_ascii_lowercase(), subject.to_owned());
+    }
+
+    pub fn set_on_link(&self, hook: LinkHook) {
+        *self.on_link.lock().unwrap_or_else(|e| e.into_inner()) = Some(hook);
     }
 
     fn verify_signed(&self, message: &str, signature: &str) -> Result<Address, AegisError> {
@@ -169,8 +198,10 @@ impl WalletAuth for SiweAuth {
         Box::pin(async move {
             let address = self.verify_signed(message, signature)?;
             let checksum = address.to_checksum(None);
-            let links = self.links.lock().unwrap_or_else(|e| e.into_inner());
-            links.by_address.get(&checksum.to_ascii_lowercase()).cloned()
+            let key = checksum.to_ascii_lowercase();
+            let linked = self.links.lock().unwrap_or_else(|e| e.into_inner()).by_address.get(&key).cloned();
+            linked
+                .or_else(|| self.demo_logins.lock().unwrap_or_else(|e| e.into_inner()).get(&key).cloned())
                 .ok_or_else(|| AegisError::Other("wallet is not linked to a person".into()))
         })
     }
@@ -191,6 +222,10 @@ impl WalletAuth for SiweAuth {
             }
             links.by_subject.insert(subject.to_owned(), checksum.clone());
             links.by_address.insert(address_key, subject.to_owned());
+            drop(links);
+            if let Some(hook) = self.on_link.lock().unwrap_or_else(|e| e.into_inner()).as_ref() {
+                hook(subject, &checksum);
+            }
             Ok(checksum)
         })
     }
@@ -267,5 +302,34 @@ impl ChainAnchorer {
             explorer_url: format!("{}/tx/{tx_hash}", self.explorer),
             anchored_at: Utc::now().timestamp(),
         })
+    }
+}
+
+/// Throwaway, clearly labelled demo wallets (one per person) so the stage demo
+/// never depends on a browser extension. Keys are generated at boot and never
+/// persisted or funded.
+pub struct DemoWallets {
+    signers: HashMap<String, PrivateKeySigner>,
+}
+
+impl DemoWallets {
+    pub fn generate(subjects: &[String]) -> Self {
+        DemoWallets { signers: subjects.iter().map(|s| (s.clone(), PrivateKeySigner::random())).collect() }
+    }
+
+    pub fn address(&self, subject: &str) -> Option<String> {
+        self.signers.get(subject).map(|s| s.address().to_checksum(None))
+    }
+
+    /// EIP-191 personal_sign of `message`, only if it names this demo address.
+    pub fn sign(&self, subject: &str, message: &str) -> Result<String, AegisError> {
+        use alloy::signers::SignerSync;
+        let signer = self.signers.get(subject).ok_or_else(|| AegisError::Other("no demo wallet".into()))?;
+        let address = signer.address().to_checksum(None);
+        if !message.lines().nth(1).is_some_and(|l| l.trim().eq_ignore_ascii_case(&address)) {
+            return Err(AegisError::Other("message is not for this demo wallet".into()));
+        }
+        let sig = signer.sign_message_sync(message.as_bytes()).map_err(|e| AegisError::Other(e.to_string()))?;
+        Ok(format!("0x{}", hex::encode(sig.as_bytes())))
     }
 }

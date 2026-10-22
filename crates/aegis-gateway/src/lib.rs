@@ -72,10 +72,12 @@ pub fn router_with_wallet(deps: GatewayDeps, wallet: Option<Arc<dyn WalletAuth>>
         sessions: Mutex::new(HashMap::new()),
         wallet,
     });
-    Router::new()
+    // Wallet-only when SIWE is configured: the password route only exists on
+    // the plain `router()` used by offline tests.
+    let password_login = state.wallet.is_none();
+    let router = Router::new()
         .route("/healthz", get(healthz))
         .route("/api/people", get(people))
-        .route("/api/login", post(login))
         .route("/api/logout", post(logout))
         .route("/api/me", get(me))
         .route("/api/siwe/nonce", get(siwe_nonce))
@@ -88,7 +90,9 @@ pub fn router_with_wallet(deps: GatewayDeps, wallet: Option<Arc<dyn WalletAuth>>
         .route("/api/receipts/{id}", get(receipt))
         .route("/api/scenario/{n}", post(scenario))
         .route("/api/agent-log", post(agent_log))
-        .route("/mcp", post(mcp))
+        .route("/mcp", post(mcp));
+    let router = if password_login { router.route("/api/login", post(login)) } else { router };
+    router
         .with_state(state)
         .layer(CorsLayer::permissive())
 }

@@ -3,12 +3,13 @@
 use aegis_agent::Scenarios;
 use aegis_cleanroom::{LlmPurposeJudge, LocalCleanRoom, RegexRedactor, SchemaGuard};
 use aegis_core::{demo_vaults, LlmClient, PaymentProvider, PurposeJudge, RiskScorer, ScenarioRunner};
-use aegis_gateway::{router, GatewayDeps};
+use aegis_gateway::{router_with_wallet, GatewayDeps};
 use aegis_integrations::{DemoPayments, JevScorer, StripePayments};
 use aegis_receipts::{Ed25519Signer, SqliteLedger};
 use std::sync::Arc;
 
 pub mod anchor;
+pub mod onchain;
 pub mod redteam;
 pub use aegis_integrations::load_dotenv;
 
@@ -29,6 +30,8 @@ pub struct Options {
     pub risk_threshold: f64,
     pub consent_timeout_secs: u64,
     pub require_mcp_token: bool,
+    /// Anchor ledger head hashes on Base Sepolia (needs AEGIS_CHAIN_KEY).
+    pub use_chain: bool,
     /// Anchor ledger head hashes to Supabase Storage (needs SUPABASE_URL + SUPABASE_SECRET_KEY).
     pub use_supabase: bool,
 }
@@ -47,6 +50,7 @@ impl Options {
             consent_timeout_secs: 90,
             require_mcp_token: false,
             use_supabase: false,
+            use_chain: false,
         }
     }
 
@@ -65,6 +69,7 @@ impl Options {
             risk_threshold: get("AEGIS_RISK_THRESHOLD").and_then(|t| t.parse().ok()).unwrap_or(0.8),
             consent_timeout_secs: get("AEGIS_CONSENT_TIMEOUT").and_then(|t| t.parse().ok()).unwrap_or(90),
             require_mcp_token: get("AEGIS_REQUIRE_MCP_TOKEN").as_deref() == Some("1"),
+            use_chain: !offline && get("AEGIS_CHAIN_KEY").is_some(),
             use_supabase: !offline && get("SUPABASE_URL").is_some() && get("SUPABASE_SECRET_KEY").is_some(),
         }
     }
@@ -92,6 +97,7 @@ pub fn describe(opts: &Options) -> Vec<String> {
             None => "demo provider (labelled)".to_string(),
         }),
         format!("ledger anchoring to Supabase Storage: {}", on(opts.use_supabase)),
+        format!("ledger anchoring on Base Sepolia: {}   SIWE wallet login: ON", on(opts.use_chain)),
     ]
 }
 
@@ -138,7 +144,17 @@ pub fn build_app(opts: &Options) -> anyhow::Result<axum::Router> {
         require_mcp_token: opts.require_mcp_token,
     };
     let redteam = redteam::RedTeam::new(llm_for_redteam, format!("http://127.0.0.1:{}", opts.port));
-    let mut app = router(deps).merge(aegis_dashboard::router()).merge(redteam.router());
+    let siwe_domain = std::env::var("AEGIS_SIWE_DOMAIN").unwrap_or_else(|_| format!("127.0.0.1:{}", opts.port));
+    let chain = onchain::OnChain::from_env();
+    let wallet = Arc::new(aegis_chain::SiweAuth::new(siwe_domain, 84532)) as Arc<dyn aegis_core::WalletAuth>;
+    let mut app = router_with_wallet(deps, Some(wallet))
+        .merge(aegis_dashboard::router())
+        .merge(redteam.router())
+        .merge(chain.router());
+    if opts.use_chain {
+        let subjects = demo_vaults().iter().map(|v| v.subject()).collect();
+        chain.spawn(ledger.clone(), subjects, std::time::Duration::from_secs(60));
+    }
     if let Some(anchorer) = opts.use_supabase.then(anchor::Anchorer::from_env).flatten() {
         app = app.merge(anchorer.router());
         let subjects = demo_vaults().iter().map(|v| v.subject()).collect();

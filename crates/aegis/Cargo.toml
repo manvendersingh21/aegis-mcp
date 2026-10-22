@@ -18,6 +18,7 @@ aegis-gateway.workspace = true
 aegis-agent.workspace = true
 aegis-dashboard.workspace = true
 aegis-integrations.workspace = true
+aegis-chain.workspace = true
 tokio.workspace = true
 axum.workspace = true
 anyhow.workspace = true

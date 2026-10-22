@@ -1,0 +1,31 @@
+{
+  "protocol": "HACP/2.0",
+  "message_id": "m-b4442099ebda499eb5dfc1dd2c4b7578",
+  "session_id": "s-fd763bc1d5fc452a99affd01d36265e8",
+  "from": "urn:hacp:agent:b",
+  "to": "urn:hacp:agent:a",
+  "kind": "contract.frozen",
+  "timestamp": "2026-10-22T18:34:34Z",
+  "body": {
+    "contract_id": "c-be29708be1a640d8b38dfbfab1f78379",
+    "next": "owner implements frozen outputs then submits",
+    "revision": "f019f709432f9fdcf86635ec5eb041917673562cfc32e71acbb38a09c95cb977",
+    "state": "executing",
+    "task": {
+      "owner": "urn:hacp:agent:a",
+      "summary": "review fixes: dashboard",
+      "task_id": "t-6603eb490f9b4d8b8f188f7baf9d59fe"
+    },
+    "terms": {
+      "acceptance": [
+        "cargo test -p aegis-dashboard --offline -q"
+      ],
+      "inputs": [],
+      "outputs": [
+        "aegis-dashboard/src/lib.rs",
+        "aegis-dashboard/tests/review.rs"
+      ]
+    },
+    "terms_digest": "0c31aaef8562d5e492322300f55a6364ae8a35f8fa748fdea2fbb75b4f7e3da4"
+  }
+}

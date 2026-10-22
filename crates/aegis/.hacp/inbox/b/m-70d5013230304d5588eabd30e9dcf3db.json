@@ -1,0 +1,12 @@
+{
+  "protocol": "HACP/2.0",
+  "message_id": "m-70d5013230304d5588eabd30e9dcf3db",
+  "session_id": "s-c4c37136cd504ddc89df37991cdaee04",
+  "from": "urn:hacp:agent:a",
+  "to": "urn:hacp:agent:b",
+  "kind": "session.close",
+  "timestamp": "2026-10-22T18:45:53Z",
+  "body": {
+    "reason": "Both settled: (a) tests/e2e.rs e2e privacy test accepted — offline cargo test passes in ~5s, proves no maya secret reaches agents, >=2 injection violations, receipt verification, dev/maya tenant isolation, demo payments + cap enforcement; (b) DEMO.md + demo.sh accepted — demo script/runbook document the proven flows (scenario 3 kill-switch and live Stripe/Jev noted as live-demo-only). No remaining work."
+  }
+}

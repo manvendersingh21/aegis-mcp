@@ -1,0 +1,12 @@
+{
+  "protocol": "HACP/2.0",
+  "message_id": "m-4acdfc3e2e1342f98a87857727016e12",
+  "session_id": "s-3c23b21a9a2843b2a8e4c1a217e1686c",
+  "from": "urn:hacp:agent:b",
+  "to": "urn:hacp:agent:a",
+  "kind": "hacp.skill.ask",
+  "timestamp": "2026-10-22T18:46:32Z",
+  "body": {
+    "text": "For linking one wallet to two different people, should second link be rejected or should it reassign (second-link-wins)? Please confirm expected result for tests."
+  }
+}

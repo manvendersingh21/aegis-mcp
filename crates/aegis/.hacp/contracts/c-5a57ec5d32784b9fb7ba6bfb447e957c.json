@@ -33,7 +33,42 @@
       }
     }
   ],
-  "attempts": [],
+  "attempts": [
+    {
+      "commands": [
+        {
+          "command": "sh -n demo.sh",
+          "duration_ms": 25,
+          "exit_code": 0,
+          "signal": null,
+          "stderr": "",
+          "stdout": "",
+          "timed_out": false
+        },
+        {
+          "command": "grep -q \"claude mcp add\" DEMO.md",
+          "duration_ms": 21,
+          "exit_code": 0,
+          "signal": null,
+          "stderr": "",
+          "stdout": "",
+          "timed_out": false
+        },
+        {
+          "command": "grep -q \"/u/maya\" DEMO.md",
+          "duration_ms": 21,
+          "exit_code": 0,
+          "signal": null,
+          "stderr": "",
+          "stdout": "",
+          "timed_out": false
+        }
+      ],
+      "id": "v-e76ffaf4ab444dd4b5b27c268f91d4c8",
+      "peer": "a",
+      "status": "completed"
+    }
+  ],
   "contract": {
     "agreed_by": [],
     "agreed_terms_digest": null,
@@ -48,16 +83,8 @@
       "urn:hacp:agent:a",
       "urn:hacp:agent:b"
     ],
-    "pending_submission": {
-      "against_revision": "06c015f5767b5550c3a6b978101b01f3711e7d5ce0fc2e785df9beebc48820ac",
-      "artifacts": [
-        "urn:hacp:artifact:76789b93-8149-41bb-b743-1dd45f900f57",
-        "urn:hacp:artifact:6c7cbfc2-9d60-4f10-b7cc-ccd2a63617ef"
-      ],
-      "claim": "Implemented POSIX demo.sh with release build, background server, /healthz polling, credential printing, browser opening, and exit trap, plus DEMO.md with 20s pitch, ASCII architecture diagram, 3-minute demo script, MCP client attachment guides, and env var reference",
-      "evidence": []
-    },
-    "pending_submitter": "urn:hacp:agent:b",
+    "pending_submission": null,
+    "pending_submitter": null,
     "relationship": "collaboration",
     "revisions": [
       {
@@ -81,7 +108,7 @@
     ],
     "rework_scope": null,
     "rounds": 0,
-    "state": "verifying",
+    "state": "settled",
     "task": {
       "owner": "urn:hacp:agent:b",
       "summary": "demo script + runbook",
@@ -115,5 +142,57 @@
       "evidence": []
     }
   ],
-  "verifications": []
+  "verifications": [
+    {
+      "against_revision": "06c015f5767b5550c3a6b978101b01f3711e7d5ce0fc2e785df9beebc48820ac",
+      "artifacts": [
+        "urn:hacp:artifact:76789b93-8149-41bb-b743-1dd45f900f57",
+        "urn:hacp:artifact:6c7cbfc2-9d60-4f10-b7cc-ccd2a63617ef"
+      ],
+      "attests": [],
+      "checks": [
+        {
+          "detail": "SHA-256 f4ab1e49dd7993de38550ee841fa1c22f95bb33ec9e2222228d341d41abf2b18 and 17898 bytes match working file and immutable copy",
+          "name": "before: DEMO.md",
+          "passed": true
+        },
+        {
+          "detail": "SHA-256 29f238dc7a90696b74a739f28e9c9d6f3f9fad4fe1bd0255c0bbe01ef19a5413 and 2060 bytes match working file and immutable copy",
+          "name": "before: demo.sh",
+          "passed": true
+        },
+        {
+          "detail": "{\"command\":\"sh -n demo.sh\",\"stdout\":\"\",\"stderr\":\"\",\"duration_ms\":25,\"exit_code\":0,\"signal\":null,\"timed_out\":false}",
+          "name": "sh -n demo.sh",
+          "passed": true
+        },
+        {
+          "detail": "{\"command\":\"grep -q \\\"claude mcp add\\\" DEMO.md\",\"stdout\":\"\",\"stderr\":\"\",\"duration_ms\":21,\"exit_code\":0,\"signal\":null,\"timed_out\":false}",
+          "name": "grep -q \"claude mcp add\" DEMO.md",
+          "passed": true
+        },
+        {
+          "detail": "{\"command\":\"grep -q \\\"/u/maya\\\" DEMO.md\",\"stdout\":\"\",\"stderr\":\"\",\"duration_ms\":21,\"exit_code\":0,\"signal\":null,\"timed_out\":false}",
+          "name": "grep -q \"/u/maya\" DEMO.md",
+          "passed": true
+        },
+        {
+          "detail": "SHA-256 f4ab1e49dd7993de38550ee841fa1c22f95bb33ec9e2222228d341d41abf2b18 and 17898 bytes match working file and immutable copy",
+          "name": "after: DEMO.md",
+          "passed": true
+        },
+        {
+          "detail": "SHA-256 29f238dc7a90696b74a739f28e9c9d6f3f9fad4fe1bd0255c0bbe01ef19a5413 and 2060 bytes match working file and immutable copy",
+          "name": "after: demo.sh",
+          "passed": true
+        }
+      ],
+      "contract_id": "c-5a57ec5d32784b9fb7ba6bfb447e957c",
+      "evidence": [],
+      "reasons": [],
+      "verdict": "accept",
+      "verification_id": "v-e76ffaf4ab444dd4b5b27c268f91d4c8",
+      "verifier": "urn:hacp:agent:a"
+    }
+  ]
 }

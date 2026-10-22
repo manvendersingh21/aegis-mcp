@@ -1,0 +1,162 @@
+{
+  "artifacts": [
+    {
+      "path": "aegis-cleanroom/src/lib.rs",
+      "record": {
+        "artifact_id": "urn:hacp:artifact:afc428ad-e91b-4306-9091-4f2781427561",
+        "contract_id": "c-4f061f74cf4d4253a868c15c6aa76c00",
+        "contract_revision": "1d80baf92968149498f06b900162ba9b2932026bfc49a7d7ddac29a85896c95c",
+        "derived_from": [],
+        "digest": "8d0e0f80b8244d08add073bf0c95d16c62b6d0cc4b474ff241c579af59a59cc8",
+        "location": ".hacp/artifacts/afc428ad-e91b-4306-9091-4f2781427561.bin",
+        "media_type": "application/octet-stream",
+        "producer": "urn:hacp:agent:b",
+        "size": 19669,
+        "task_id": "t-22b5ac1861024d9188ec69855b0f3693",
+        "visibility": "participants"
+      }
+    },
+    {
+      "path": "aegis-cleanroom/tests/review.rs",
+      "record": {
+        "artifact_id": "urn:hacp:artifact:66007554-e5ea-432d-9aaf-35238b192a80",
+        "contract_id": "c-4f061f74cf4d4253a868c15c6aa76c00",
+        "contract_revision": "1d80baf92968149498f06b900162ba9b2932026bfc49a7d7ddac29a85896c95c",
+        "derived_from": [],
+        "digest": "302d57f61b07d8a848dffdbf557a094079cf0679c90c2bd49b9c26e17df136d5",
+        "location": ".hacp/artifacts/66007554-e5ea-432d-9aaf-35238b192a80.bin",
+        "media_type": "application/octet-stream",
+        "producer": "urn:hacp:agent:b",
+        "size": 5508,
+        "task_id": "t-22b5ac1861024d9188ec69855b0f3693",
+        "visibility": "participants"
+      }
+    }
+  ],
+  "attempts": [
+    {
+      "commands": [
+        {
+          "command": "cargo test -p aegis-cleanroom --offline -q",
+          "duration_ms": 1650,
+          "exit_code": 0,
+          "signal": null,
+          "stderr": "",
+          "stdout": "\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 4 tests\n....\ntest result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s\n\n\nrunning 10 tests\n..........\ntest result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n",
+          "timed_out": false
+        }
+      ],
+      "id": "v-ff3c0086abd24dac8a5dcf9c7800f6ca",
+      "peer": "a",
+      "status": "completed"
+    }
+  ],
+  "contract": {
+    "agreed_by": [],
+    "agreed_terms_digest": null,
+    "amendments": 0,
+    "contract_id": "c-4f061f74cf4d4253a868c15c6aa76c00",
+    "escalation_path": [],
+    "limits": {
+      "max_amendments": 3,
+      "max_rounds": 3
+    },
+    "participants": [
+      "urn:hacp:agent:a",
+      "urn:hacp:agent:b"
+    ],
+    "pending_submission": null,
+    "pending_submitter": null,
+    "relationship": "collaboration",
+    "revisions": [
+      {
+        "content": {
+          "acceptance": [
+            "cargo test -p aegis-cleanroom --offline -q"
+          ],
+          "inputs": [],
+          "outputs": [
+            "aegis-cleanroom/src/lib.rs",
+            "aegis-cleanroom/tests/review.rs"
+          ]
+        },
+        "digest": "1d80baf92968149498f06b900162ba9b2932026bfc49a7d7ddac29a85896c95c",
+        "number": 1
+      }
+    ],
+    "rework_scope": null,
+    "rounds": 0,
+    "state": "settled",
+    "task": {
+      "owner": "urn:hacp:agent:b",
+      "summary": "review fixes: cleanroom",
+      "task_id": "t-22b5ac1861024d9188ec69855b0f3693"
+    }
+  },
+  "pending_digest": "8a335f2806fff4110ff88963c6a6172f2be8eb162c8baaf592157b841130be0c",
+  "pending_terms": {
+    "acceptance": [
+      "cargo test -p aegis-cleanroom --offline -q"
+    ],
+    "inputs": [],
+    "outputs": [
+      "aegis-cleanroom/src/lib.rs",
+      "aegis-cleanroom/tests/review.rs"
+    ]
+  },
+  "proposer": "b",
+  "submissions": [
+    {
+      "against_revision": "1d80baf92968149498f06b900162ba9b2932026bfc49a7d7ddac29a85896c95c",
+      "artifacts": [
+        "urn:hacp:artifact:afc428ad-e91b-4306-9091-4f2781427561",
+        "urn:hacp:artifact:66007554-e5ea-432d-9aaf-35238b192a80"
+      ],
+      "claim": "Clean room: can_afford compares against min_amount rounded up to $500 and reports checked_against. SchemaGuard: word-boundary (?i) regex injection patterns (no dumpling/overridden false positives), make_payment checks (required amount_usd/merchant, amount finite >0, string merchant/description, injection in them flagged). LlmPurposeJudge: strict prompt (regulated IDs not proportionate for booking/leasing, JSON only) + tolerant JSON extraction. tests/review.rs added; contract.rs still passes.",
+      "evidence": []
+    }
+  ],
+  "verifications": [
+    {
+      "against_revision": "1d80baf92968149498f06b900162ba9b2932026bfc49a7d7ddac29a85896c95c",
+      "artifacts": [
+        "urn:hacp:artifact:afc428ad-e91b-4306-9091-4f2781427561",
+        "urn:hacp:artifact:66007554-e5ea-432d-9aaf-35238b192a80"
+      ],
+      "attests": [],
+      "checks": [
+        {
+          "detail": "SHA-256 8d0e0f80b8244d08add073bf0c95d16c62b6d0cc4b474ff241c579af59a59cc8 and 19669 bytes match working file and immutable copy",
+          "name": "before: aegis-cleanroom/src/lib.rs",
+          "passed": true
+        },
+        {
+          "detail": "SHA-256 302d57f61b07d8a848dffdbf557a094079cf0679c90c2bd49b9c26e17df136d5 and 5508 bytes match working file and immutable copy",
+          "name": "before: aegis-cleanroom/tests/review.rs",
+          "passed": true
+        },
+        {
+          "detail": "{\"command\":\"cargo test -p aegis-cleanroom --offline -q\",\"stdout\":\"\\nrunning 0 tests\\n\\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\\n\\n\\nrunning 4 tests\\n....\\ntest result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s\\n\\n\\nrunning 10 tests\\n..........\\ntest result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s\\n\\n\\nrunning 0 tests\\n\\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\\n\\n\",\"stderr\":\"\",\"duration_ms\":1650,\"exit_code\":0,\"signal\":null,\"timed_out\":false}",
+          "name": "cargo test -p aegis-cleanroom --offline -q",
+          "passed": true
+        },
+        {
+          "detail": "SHA-256 8d0e0f80b8244d08add073bf0c95d16c62b6d0cc4b474ff241c579af59a59cc8 and 19669 bytes match working file and immutable copy",
+          "name": "after: aegis-cleanroom/src/lib.rs",
+          "passed": true
+        },
+        {
+          "detail": "SHA-256 302d57f61b07d8a848dffdbf557a094079cf0679c90c2bd49b9c26e17df136d5 and 5508 bytes match working file and immutable copy",
+          "name": "after: aegis-cleanroom/tests/review.rs",
+          "passed": true
+        }
+      ],
+      "contract_id": "c-4f061f74cf4d4253a868c15c6aa76c00",
+      "evidence": [],
+      "reasons": [],
+      "verdict": "accept",
+      "verification_id": "v-ff3c0086abd24dac8a5dcf9c7800f6ca",
+      "verifier": "urn:hacp:agent:a"
+    }
+  ]
+}

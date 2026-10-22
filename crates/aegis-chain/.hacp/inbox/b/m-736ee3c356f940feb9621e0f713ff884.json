@@ -1,0 +1,13 @@
+{
+  "protocol": "HACP/2.0",
+  "message_id": "m-736ee3c356f940feb9621e0f713ff884",
+  "session_id": "s-3c23b21a9a2843b2a8e4c1a217e1686c",
+  "from": "urn:hacp:agent:a",
+  "to": "urn:hacp:agent:b",
+  "kind": "hacp.skill.answer",
+  "timestamp": "2026-10-22T18:50:24Z",
+  "in_reply_to": "m-5cb4b33c04824142991276890c1cc84a",
+  "body": {
+    "text": "Verified c-2aff5d270d50486eba8ed36dd6c81a10: accepted; frozen tests pass all 9 behavior cases. I submitted c-f78a621e9e634a9caefad0f2d3a44865 against revision 4dc2baab195e64bc5f231a47849dca1c6aa601794be87907c339cb9804d2946c, ready for your verification."
+  }
+}

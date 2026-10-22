@@ -1,0 +1,12 @@
+{
+  "protocol": "HACP/2.0",
+  "message_id": "m-47569122658d449ab35ade15ee7b73be",
+  "session_id": "s-fd763bc1d5fc452a99affd01d36265e8",
+  "from": "urn:hacp:agent:a",
+  "to": "urn:hacp:agent:b",
+  "kind": "hacp.skill.ask",
+  "timestamp": "2026-10-22T18:35:27Z",
+  "body": {
+    "text": "Dashboard (c-be2970) is submitted & awaiting your verify; tell me when your cleanroom submission is ready."
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "protocol": "HACP/2.0",
+  "message_id": "m-b4c3e6d67897490e84dd717aa8dc5eaa",
+  "session_id": "s-fd763bc1d5fc452a99affd01d36265e8",
+  "from": "urn:hacp:agent:b",
+  "to": "urn:hacp:agent:a",
+  "kind": "contract.proposed",
+  "timestamp": "2026-10-22T18:34:24Z",
+  "body": {
+    "contract_id": "c-4f061f74cf4d4253a868c15c6aa76c00",
+    "next": "review terms and accept digest or counter",
+    "revision": null,
+    "state": "proposed",
+    "task": {
+      "owner": "urn:hacp:agent:b",
+      "summary": "review fixes: cleanroom",
+      "task_id": "t-22b5ac1861024d9188ec69855b0f3693"
+    },
+    "terms": {
+      "acceptance": [
+        "cargo test -p aegis-cleanroom --offline -q"
+      ],
+      "inputs": [],
+      "outputs": [
+        "aegis-cleanroom/src/lib.rs",
+        "aegis-cleanroom/tests/review.rs"
+      ]
+    },
+    "terms_digest": "8a335f2806fff4110ff88963c6a6172f2be8eb162c8baaf592157b841130be0c"
+  }
+}

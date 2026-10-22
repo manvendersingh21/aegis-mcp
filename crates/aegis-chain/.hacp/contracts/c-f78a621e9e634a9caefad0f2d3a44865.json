@@ -1,0 +1,132 @@
+{
+  "artifacts": [
+    {
+      "path": "src/lib.rs",
+      "record": {
+        "artifact_id": "urn:hacp:artifact:b6c3e126-6078-4656-837d-7468e07ed370",
+        "contract_id": "c-f78a621e9e634a9caefad0f2d3a44865",
+        "contract_revision": "4dc2baab195e64bc5f231a47849dca1c6aa601794be87907c339cb9804d2946c",
+        "derived_from": [],
+        "digest": "67ff1ce354f83eae52ef5e63b3cf2c2cadb742d79f01d2ded6b55b7e53dbe304",
+        "location": ".hacp/artifacts/b6c3e126-6078-4656-837d-7468e07ed370.bin",
+        "media_type": "application/octet-stream",
+        "producer": "urn:hacp:agent:a",
+        "size": 11015,
+        "task_id": "t-5116f7b032c0441d9c81aa3080ae9a8e",
+        "visibility": "participants"
+      }
+    }
+  ],
+  "attempts": [
+    {
+      "commands": [
+        {
+          "command": "cargo test -p aegis-chain --offline -q",
+          "duration_ms": 411,
+          "exit_code": 0,
+          "signal": null,
+          "stderr": "",
+          "stdout": "\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 9 tests\n.........\ntest result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n",
+          "timed_out": false
+        }
+      ],
+      "id": "v-8f4a3da91cb34240b7be6300ee6f6fa4",
+      "peer": "b",
+      "status": "completed"
+    }
+  ],
+  "contract": {
+    "agreed_by": [],
+    "agreed_terms_digest": null,
+    "amendments": 0,
+    "contract_id": "c-f78a621e9e634a9caefad0f2d3a44865",
+    "escalation_path": [],
+    "limits": {
+      "max_amendments": 3,
+      "max_rounds": 3
+    },
+    "participants": [
+      "urn:hacp:agent:a",
+      "urn:hacp:agent:b"
+    ],
+    "pending_submission": null,
+    "pending_submitter": null,
+    "relationship": "collaboration",
+    "revisions": [
+      {
+        "content": {
+          "acceptance": [
+            "cargo test -p aegis-chain --offline -q"
+          ],
+          "inputs": [],
+          "outputs": [
+            "src/lib.rs"
+          ]
+        },
+        "digest": "4dc2baab195e64bc5f231a47849dca1c6aa601794be87907c339cb9804d2946c",
+        "number": 1
+      }
+    ],
+    "rework_scope": null,
+    "rounds": 0,
+    "state": "settled",
+    "task": {
+      "owner": "urn:hacp:agent:a",
+      "summary": "aegis-chain: SIWE + Base Sepolia anchoring",
+      "task_id": "t-5116f7b032c0441d9c81aa3080ae9a8e"
+    }
+  },
+  "pending_digest": "d9a5217e7536140c05d18884fb933a44f5626845075e253743ad8531276f03ff",
+  "pending_terms": {
+    "acceptance": [
+      "cargo test -p aegis-chain --offline -q"
+    ],
+    "inputs": [],
+    "outputs": [
+      "src/lib.rs"
+    ]
+  },
+  "proposer": "a",
+  "submissions": [
+    {
+      "against_revision": "4dc2baab195e64bc5f231a47849dca1c6aa601794be87907c339cb9804d2946c",
+      "artifacts": [
+        "urn:hacp:artifact:b6c3e126-6078-4656-837d-7468e07ed370"
+      ],
+      "claim": "Implemented SIWE wallet authentication and one-to-one wallet linking; added Base Sepolia EIP-1559 anchor transactions and hashed-subject calldata.",
+      "evidence": []
+    }
+  ],
+  "verifications": [
+    {
+      "against_revision": "4dc2baab195e64bc5f231a47849dca1c6aa601794be87907c339cb9804d2946c",
+      "artifacts": [
+        "urn:hacp:artifact:b6c3e126-6078-4656-837d-7468e07ed370"
+      ],
+      "attests": [],
+      "checks": [
+        {
+          "detail": "SHA-256 67ff1ce354f83eae52ef5e63b3cf2c2cadb742d79f01d2ded6b55b7e53dbe304 and 11015 bytes match working file and immutable copy",
+          "name": "before: src/lib.rs",
+          "passed": true
+        },
+        {
+          "detail": "{\"command\":\"cargo test -p aegis-chain --offline -q\",\"stdout\":\"\\nrunning 0 tests\\n\\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\\n\\n\\nrunning 9 tests\\n.........\\ntest result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s\\n\\n\\nrunning 0 tests\\n\\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\\n\\n\",\"stderr\":\"\",\"duration_ms\":411,\"exit_code\":0,\"signal\":null,\"timed_out\":false}",
+          "name": "cargo test -p aegis-chain --offline -q",
+          "passed": true
+        },
+        {
+          "detail": "SHA-256 67ff1ce354f83eae52ef5e63b3cf2c2cadb742d79f01d2ded6b55b7e53dbe304 and 11015 bytes match working file and immutable copy",
+          "name": "after: src/lib.rs",
+          "passed": true
+        }
+      ],
+      "contract_id": "c-f78a621e9e634a9caefad0f2d3a44865",
+      "evidence": [],
+      "reasons": [],
+      "verdict": "accept",
+      "verification_id": "v-8f4a3da91cb34240b7be6300ee6f6fa4",
+      "verifier": "urn:hacp:agent:b"
+    }
+  ]
+}

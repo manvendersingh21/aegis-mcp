@@ -161,10 +161,10 @@ async fn full_app_e2e_privacy_multi_tenancy_payments() {
             let stop = stop.clone();
             let client = client.clone();
             let base = base.clone();
-            let header = cookie_header(&maya);
+            let session = maya.clone();
             tokio::spawn(async move {
                 while !stop.load(Ordering::Relaxed) {
-                    if let Some(pending) = get(&client, &base, "/api/state?subject=maya", Some(&header))
+                    if let Some(pending) = get(&client, &base, "/api/state?subject=maya", Some(&session))
                         .await
                         .json::<Value>()
                         .await
@@ -182,7 +182,7 @@ async fn full_app_e2e_privacy_multi_tenancy_payments() {
                                 &client,
                                 &base,
                                 &format!("/api/consent/{request_id}"),
-                                Some(&header),
+                                Some(&session),
                                 &decision,
                             )
                             .await;
@@ -193,14 +193,12 @@ async fn full_app_e2e_privacy_multi_tenancy_payments() {
             })
         };
 
-        eprintln!("CK: pre-scenarios");
         let scenarios = Scenarios::new(None);
         let _ = tokio::join!(
             scenarios.run(1, "maya".to_string(), base.clone()),
             scenarios.run(2, "maya".to_string(), base.clone()),
         );
 
-        eprintln!("CK: post-join");
         let state = subject_state(&client, &base, &maya, "maya").await;
         let ledger = state["recent_ledger"].as_array().cloned().unwrap_or_default();
         assert!(ledger.len() >= 5, "scenarios 1 and 2 filled the ledger");
@@ -221,7 +219,6 @@ async fn full_app_e2e_privacy_multi_tenancy_payments() {
         assert!(hostile >= 2, "scenario 2 produced >= 2 violations, got {hostile}");
         assert!(state["metrics"]["violations"].as_u64().unwrap_or(0) >= 2);
 
-        eprintln!("CK: post-ledger-asserts");
         let receipt = state["active_receipts"]
             .as_array()
             .cloned()
@@ -254,7 +251,6 @@ async fn full_app_e2e_privacy_multi_tenancy_payments() {
         let dev_on_maya = get(&client, &base, "/api/state?subject=maya", Some(&dev)).await;
         assert_eq!(dev_on_maya.status(), StatusCode::FORBIDDEN);
 
-        eprintln!("CK: post-dev-403");
         let dev_me: Value = get(&client, &base, "/api/me", Some(&dev)).await.json().await.unwrap();
         let dev_token = dev_me["mcp_token"].as_str().unwrap().to_string();
         let bad_token = client
@@ -295,7 +291,6 @@ async fn full_app_e2e_privacy_multi_tenancy_payments() {
             assert_no_maya_secrets("dev ledger entry", entry);
         }
 
-        eprintln!("CK: pre-payment");
         let pay_ok = mcp(
             &client,
             &base,
@@ -320,7 +315,6 @@ async fn full_app_e2e_privacy_multi_tenancy_payments() {
         assert_eq!(payment["card"], json!("[TOKENIZED BY AEGIS]"));
         assert_no_maya_secrets("approved payment response", &pay_ok);
 
-        eprintln!("CK: post-pay-ok");
         let pay_bad = mcp(
             &client,
             &base,
@@ -351,7 +345,6 @@ async fn full_app_e2e_privacy_multi_tenancy_payments() {
         assert!(payment_entry["payload_returned"].to_string().contains("demo_pi_"));
         assert!(final_state["pending"].as_array().map(Vec::is_empty).unwrap_or(false));
 
-        eprintln!("CK: end");
         stop.store(true, Ordering::Relaxed);
         let _ = tokio::time::timeout(Duration::from_secs(2), approver).await;
         server.abort();

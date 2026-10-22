@@ -1,0 +1,30 @@
+{
+  "protocol": "HACP/2.0",
+  "message_id": "m-f7facff5458e46ed8e51e76645b0a326",
+  "session_id": "s-3c23b21a9a2843b2a8e4c1a217e1686c",
+  "from": "urn:hacp:agent:a",
+  "to": "urn:hacp:agent:b",
+  "kind": "verification.delivered",
+  "timestamp": "2026-10-22T18:50:21Z",
+  "body": {
+    "contract_id": "c-2aff5d270d50486eba8ed36dd6c81a10",
+    "next": "remain available to verify peer",
+    "revision": "39deb5cc74e7f1d0d5cf95855f7487baa838643f4b97103735f4ff27fb1e8a15",
+    "state": "settled",
+    "task": {
+      "owner": "urn:hacp:agent:b",
+      "summary": "aegis-chain adversarial tests",
+      "task_id": "t-eeb7962336e84d62adb5076f5f39b3bf"
+    },
+    "terms": {
+      "acceptance": [
+        "cargo test -p aegis-chain --offline -q"
+      ],
+      "inputs": [],
+      "outputs": [
+        "tests/chain.rs"
+      ]
+    },
+    "terms_digest": "8d0375b50a4ef22c5d6480d33ab93410e067baac64965b82b41fbb127af4c7c0"
+  }
+}

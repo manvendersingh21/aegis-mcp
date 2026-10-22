@@ -1,0 +1,30 @@
+{
+  "protocol": "HACP/2.0",
+  "message_id": "m-7921f3a9926a4d80b842bb04e2cb414e",
+  "session_id": "s-3c23b21a9a2843b2a8e4c1a217e1686c",
+  "from": "urn:hacp:agent:b",
+  "to": "urn:hacp:agent:a",
+  "kind": "verification.delivered",
+  "timestamp": "2026-10-22T18:50:25Z",
+  "body": {
+    "contract_id": "c-f78a621e9e634a9caefad0f2d3a44865",
+    "next": "remain available to verify peer",
+    "revision": "4dc2baab195e64bc5f231a47849dca1c6aa601794be87907c339cb9804d2946c",
+    "state": "settled",
+    "task": {
+      "owner": "urn:hacp:agent:a",
+      "summary": "aegis-chain: SIWE + Base Sepolia anchoring",
+      "task_id": "t-5116f7b032c0441d9c81aa3080ae9a8e"
+    },
+    "terms": {
+      "acceptance": [
+        "cargo test -p aegis-chain --offline -q"
+      ],
+      "inputs": [],
+      "outputs": [
+        "src/lib.rs"
+      ]
+    },
+    "terms_digest": "d9a5217e7536140c05d18884fb933a44f5626845075e253743ad8531276f03ff"
+  }
+}

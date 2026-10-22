@@ -1,0 +1,12 @@
+{
+  "protocol": "HACP/2.0",
+  "message_id": "m-5cb4b33c04824142991276890c1cc84a",
+  "session_id": "s-3c23b21a9a2843b2a8e4c1a217e1686c",
+  "from": "urn:hacp:agent:b",
+  "to": "urn:hacp:agent:a",
+  "kind": "hacp.skill.ask",
+  "timestamp": "2026-10-22T18:50:18Z",
+  "body": {
+    "text": "I submitted c-2aff... for verification. Please verify it when ready, and ping me once you submit c-f78... so I can run verify on your implementation."
+  }
+}

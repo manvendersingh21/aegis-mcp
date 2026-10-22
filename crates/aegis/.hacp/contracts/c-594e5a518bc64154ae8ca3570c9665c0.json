@@ -1,6 +1,40 @@
 {
-  "artifacts": [],
-  "attempts": [],
+  "artifacts": [
+    {
+      "path": "tests/e2e.rs",
+      "record": {
+        "artifact_id": "urn:hacp:artifact:26315956-0958-4ae9-813e-c9bf62f19534",
+        "contract_id": "c-594e5a518bc64154ae8ca3570c9665c0",
+        "contract_revision": "f46fceeb4d54c28e9efd34ad6f6adefd3d51e79e6727eec08d9d85cb319a64a6",
+        "derived_from": [],
+        "digest": "071e6591b452280ec12941fd0153bae8128a90afe59d7cece20a4134b057634b",
+        "location": ".hacp/artifacts/26315956-0958-4ae9-813e-c9bf62f19534.bin",
+        "media_type": "application/octet-stream",
+        "producer": "urn:hacp:agent:a",
+        "size": 14208,
+        "task_id": "t-d4f6c3f27cd74dfbb08bcdcd382311ef",
+        "visibility": "participants"
+      }
+    }
+  ],
+  "attempts": [
+    {
+      "commands": [
+        {
+          "command": "cargo test -p aegis --test e2e --offline -q",
+          "duration_ms": 5451,
+          "exit_code": 0,
+          "signal": null,
+          "stderr": "",
+          "stdout": "\nrunning 1 test\n.\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 5.01s\n\n",
+          "timed_out": false
+        }
+      ],
+      "id": "v-27fd4d701fca43b7ae94a94d73535f0f",
+      "peer": "b",
+      "status": "completed"
+    }
+  ],
   "contract": {
     "agreed_by": [],
     "agreed_terms_digest": null,
@@ -37,7 +71,7 @@
     ],
     "rework_scope": null,
     "rounds": 0,
-    "state": "executing",
+    "state": "settled",
     "task": {
       "owner": "urn:hacp:agent:a",
       "summary": "e2e privacy test of the full app",
@@ -57,6 +91,46 @@
     ]
   },
   "proposer": "a",
-  "submissions": [],
-  "verifications": []
+  "submissions": [
+    {
+      "against_revision": "f46fceeb4d54c28e9efd34ad6f6adefd3d51e79e6727eec08d9d85cb319a64a6",
+      "artifacts": [
+        "urn:hacp:artifact:26315956-0958-4ae9-813e-c9bf62f19534"
+      ],
+      "claim": "tests/e2e.rs: boots build_app(Options::offline(port)) on a bound 127.0.0.1:0 listener via axum::serve; manual aegis_session cookie handling from Set-Cookie for maya+dev; auto-approver polls /api/state?subject=maya approving CLEAN_ROOM (denies export_contacts); runs Scenarios 1+2 concurrently; asserts no maya secret in any agent-released payload/ledger entry, >=2 violations from shady_coupon_bot, receipt from scenario 1 verifies via /api/receipts/{id}, dev isolation (untouched ledger/pending, 403 cross-tenant, bearer-token MCP call lands in dev ledger), make_payment 120 -> demo_pi_ id with tokenized card, 999999 -> cap violation. Test passes offline in ~5s (cargo test -p aegis --test e2e --offline -q).",
+      "evidence": []
+    }
+  ],
+  "verifications": [
+    {
+      "against_revision": "f46fceeb4d54c28e9efd34ad6f6adefd3d51e79e6727eec08d9d85cb319a64a6",
+      "artifacts": [
+        "urn:hacp:artifact:26315956-0958-4ae9-813e-c9bf62f19534"
+      ],
+      "attests": [],
+      "checks": [
+        {
+          "detail": "SHA-256 071e6591b452280ec12941fd0153bae8128a90afe59d7cece20a4134b057634b and 14208 bytes match working file and immutable copy",
+          "name": "before: tests/e2e.rs",
+          "passed": true
+        },
+        {
+          "detail": "{\"command\":\"cargo test -p aegis --test e2e --offline -q\",\"stdout\":\"\\nrunning 1 test\\n.\\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 5.01s\\n\\n\",\"stderr\":\"\",\"duration_ms\":5451,\"exit_code\":0,\"signal\":null,\"timed_out\":false}",
+          "name": "cargo test -p aegis --test e2e --offline -q",
+          "passed": true
+        },
+        {
+          "detail": "SHA-256 071e6591b452280ec12941fd0153bae8128a90afe59d7cece20a4134b057634b and 14208 bytes match working file and immutable copy",
+          "name": "after: tests/e2e.rs",
+          "passed": true
+        }
+      ],
+      "contract_id": "c-594e5a518bc64154ae8ca3570c9665c0",
+      "evidence": [],
+      "reasons": [],
+      "verdict": "accept",
+      "verification_id": "v-27fd4d701fca43b7ae94a94d73535f0f",
+      "verifier": "urn:hacp:agent:b"
+    }
+  ]
 }

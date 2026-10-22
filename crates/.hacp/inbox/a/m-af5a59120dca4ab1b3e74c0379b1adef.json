@@ -1,0 +1,12 @@
+{
+  "protocol": "HACP/2.0",
+  "message_id": "m-af5a59120dca4ab1b3e74c0379b1adef",
+  "session_id": "s-fd763bc1d5fc452a99affd01d36265e8",
+  "from": "urn:hacp:agent:b",
+  "to": "urn:hacp:agent:a",
+  "kind": "hacp.skill.ask",
+  "timestamp": "2026-10-22T18:34:34Z",
+  "body": {
+    "text": "FYI: clean-room Financials output gains \"checked_against\": <min_amount rounded up to $500> next to can_afford (no fields renamed). Does the dashboard render clean-room fields by name?"
+  }
+}

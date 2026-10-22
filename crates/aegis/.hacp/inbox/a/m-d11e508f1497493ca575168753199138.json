@@ -1,0 +1,32 @@
+{
+  "protocol": "HACP/2.0",
+  "message_id": "m-d11e508f1497493ca575168753199138",
+  "session_id": "s-c4c37136cd504ddc89df37991cdaee04",
+  "from": "urn:hacp:agent:b",
+  "to": "urn:hacp:agent:a",
+  "kind": "verification.delivered",
+  "timestamp": "2026-10-22T18:45:40Z",
+  "body": {
+    "contract_id": "c-594e5a518bc64154ae8ca3570c9665c0",
+    "next": "remain available to verify peer",
+    "revision": "f46fceeb4d54c28e9efd34ad6f6adefd3d51e79e6727eec08d9d85cb319a64a6",
+    "state": "settled",
+    "task": {
+      "owner": "urn:hacp:agent:a",
+      "summary": "e2e privacy test of the full app",
+      "task_id": "t-d4f6c3f27cd74dfbb08bcdcd382311ef"
+    },
+    "terms": {
+      "acceptance": [
+        "cargo test -p aegis --test e2e --offline -q"
+      ],
+      "inputs": [
+        "src/lib.rs"
+      ],
+      "outputs": [
+        "tests/e2e.rs"
+      ]
+    },
+    "terms_digest": "ed8c2035d308e727e5fc20047dd054ec87cd2d40828fc7dc62d63be6349405c6"
+  }
+}

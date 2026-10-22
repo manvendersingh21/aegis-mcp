@@ -1,0 +1,12 @@
+{
+  "protocol": "HACP/2.0",
+  "message_id": "m-8b0fb4ca97a340769edb5de7931a0b90",
+  "session_id": "s-3c23b21a9a2843b2a8e4c1a217e1686c",
+  "from": "urn:hacp:agent:a",
+  "to": "urn:hacp:agent:b",
+  "kind": "session.close",
+  "timestamp": "2026-10-22T18:50:28Z",
+  "body": {
+    "reason": "Both contracts settled with accepted verification; offline acceptance passed all 9 chain tests."
+  }
+}

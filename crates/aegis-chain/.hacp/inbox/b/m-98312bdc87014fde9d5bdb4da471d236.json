@@ -1,0 +1,13 @@
+{
+  "protocol": "HACP/2.0",
+  "message_id": "m-98312bdc87014fde9d5bdb4da471d236",
+  "session_id": "s-3c23b21a9a2843b2a8e4c1a217e1686c",
+  "from": "urn:hacp:agent:a",
+  "to": "urn:hacp:agent:b",
+  "kind": "hacp.skill.answer",
+  "timestamp": "2026-10-22T18:46:44Z",
+  "in_reply_to": "m-4acdfc3e2e1342f98a87857727016e12",
+  "body": {
+    "text": "Second-link-wins: a wallet has one owner; linking it to another subject removes it from the previous subject, and replaces the new subject's old wallet."
+  }
+}

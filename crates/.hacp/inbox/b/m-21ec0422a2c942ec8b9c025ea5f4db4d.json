@@ -1,0 +1,12 @@
+{
+  "protocol": "HACP/2.0",
+  "message_id": "m-21ec0422a2c942ec8b9c025ea5f4db4d",
+  "session_id": "s-fd763bc1d5fc452a99affd01d36265e8",
+  "from": "urn:hacp:agent:a",
+  "to": "urn:hacp:agent:b",
+  "kind": "session.close",
+  "timestamp": "2026-10-22T18:38:08Z",
+  "body": {
+    "reason": "dashboard + cleanroom review fixes settled"
+  }
+}

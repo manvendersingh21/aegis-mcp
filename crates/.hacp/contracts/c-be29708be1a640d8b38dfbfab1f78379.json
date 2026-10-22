@@ -1,0 +1,162 @@
+{
+  "artifacts": [
+    {
+      "path": "aegis-dashboard/src/lib.rs",
+      "record": {
+        "artifact_id": "urn:hacp:artifact:784a16c3-6079-4ed0-9acd-7bbf2f7124c1",
+        "contract_id": "c-be29708be1a640d8b38dfbfab1f78379",
+        "contract_revision": "f019f709432f9fdcf86635ec5eb041917673562cfc32e71acbb38a09c95cb977",
+        "derived_from": [],
+        "digest": "eef4d48dfa566417445c4fbfc5d8a38b723e5f112b3252b803fa37b138b355c1",
+        "location": ".hacp/artifacts/784a16c3-6079-4ed0-9acd-7bbf2f7124c1.bin",
+        "media_type": "application/octet-stream",
+        "producer": "urn:hacp:agent:a",
+        "size": 33737,
+        "task_id": "t-6603eb490f9b4d8b8f188f7baf9d59fe",
+        "visibility": "participants"
+      }
+    },
+    {
+      "path": "aegis-dashboard/tests/review.rs",
+      "record": {
+        "artifact_id": "urn:hacp:artifact:f738bbc5-9979-41ed-8c95-655331dc232f",
+        "contract_id": "c-be29708be1a640d8b38dfbfab1f78379",
+        "contract_revision": "f019f709432f9fdcf86635ec5eb041917673562cfc32e71acbb38a09c95cb977",
+        "derived_from": [],
+        "digest": "a7b1685549249967bfd562c9ceee242da8a86909e39c7667fa6e10b9c0c1e428",
+        "location": ".hacp/artifacts/f738bbc5-9979-41ed-8c95-655331dc232f.bin",
+        "media_type": "application/octet-stream",
+        "producer": "urn:hacp:agent:a",
+        "size": 1146,
+        "task_id": "t-6603eb490f9b4d8b8f188f7baf9d59fe",
+        "visibility": "participants"
+      }
+    }
+  ],
+  "attempts": [
+    {
+      "commands": [
+        {
+          "command": "cargo test -p aegis-dashboard --offline -q",
+          "duration_ms": 1072,
+          "exit_code": 0,
+          "signal": null,
+          "stderr": "",
+          "stdout": "\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 3 tests\n...\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 2 tests\n..\ntest result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n",
+          "timed_out": false
+        }
+      ],
+      "id": "v-4285b90b28894980a206874648f5747e",
+      "peer": "b",
+      "status": "completed"
+    }
+  ],
+  "contract": {
+    "agreed_by": [],
+    "agreed_terms_digest": null,
+    "amendments": 0,
+    "contract_id": "c-be29708be1a640d8b38dfbfab1f78379",
+    "escalation_path": [],
+    "limits": {
+      "max_amendments": 3,
+      "max_rounds": 3
+    },
+    "participants": [
+      "urn:hacp:agent:a",
+      "urn:hacp:agent:b"
+    ],
+    "pending_submission": null,
+    "pending_submitter": null,
+    "relationship": "collaboration",
+    "revisions": [
+      {
+        "content": {
+          "acceptance": [
+            "cargo test -p aegis-dashboard --offline -q"
+          ],
+          "inputs": [],
+          "outputs": [
+            "aegis-dashboard/src/lib.rs",
+            "aegis-dashboard/tests/review.rs"
+          ]
+        },
+        "digest": "f019f709432f9fdcf86635ec5eb041917673562cfc32e71acbb38a09c95cb977",
+        "number": 1
+      }
+    ],
+    "rework_scope": null,
+    "rounds": 0,
+    "state": "settled",
+    "task": {
+      "owner": "urn:hacp:agent:a",
+      "summary": "review fixes: dashboard",
+      "task_id": "t-6603eb490f9b4d8b8f188f7baf9d59fe"
+    }
+  },
+  "pending_digest": "0c31aaef8562d5e492322300f55a6364ae8a35f8fa748fdea2fbb75b4f7e3da4",
+  "pending_terms": {
+    "acceptance": [
+      "cargo test -p aegis-dashboard --offline -q"
+    ],
+    "inputs": [],
+    "outputs": [
+      "aegis-dashboard/src/lib.rs",
+      "aegis-dashboard/tests/review.rs"
+    ]
+  },
+  "proposer": "a",
+  "submissions": [
+    {
+      "against_revision": "f019f709432f9fdcf86635ec5eb041917673562cfc32e71acbb38a09c95cb977",
+      "artifacts": [
+        "urn:hacp:artifact:784a16c3-6079-4ed0-9acd-7bbf2f7124c1",
+        "urn:hacp:artifact:f738bbc5-9979-41ed-8c95-655331dc232f"
+      ],
+      "claim": "Dashboard: pending rebuilt per snapshot + expired dropped; risk_scored chip; payment_executed card; make_payment consent card; RAW disabled for regulated ids; AgentLedger polish; tests/review.rs",
+      "evidence": []
+    }
+  ],
+  "verifications": [
+    {
+      "against_revision": "f019f709432f9fdcf86635ec5eb041917673562cfc32e71acbb38a09c95cb977",
+      "artifacts": [
+        "urn:hacp:artifact:784a16c3-6079-4ed0-9acd-7bbf2f7124c1",
+        "urn:hacp:artifact:f738bbc5-9979-41ed-8c95-655331dc232f"
+      ],
+      "attests": [],
+      "checks": [
+        {
+          "detail": "SHA-256 eef4d48dfa566417445c4fbfc5d8a38b723e5f112b3252b803fa37b138b355c1 and 33737 bytes match working file and immutable copy",
+          "name": "before: aegis-dashboard/src/lib.rs",
+          "passed": true
+        },
+        {
+          "detail": "SHA-256 a7b1685549249967bfd562c9ceee242da8a86909e39c7667fa6e10b9c0c1e428 and 1146 bytes match working file and immutable copy",
+          "name": "before: aegis-dashboard/tests/review.rs",
+          "passed": true
+        },
+        {
+          "detail": "{\"command\":\"cargo test -p aegis-dashboard --offline -q\",\"stdout\":\"\\nrunning 0 tests\\n\\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\\n\\n\\nrunning 3 tests\\n...\\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\\n\\n\\nrunning 2 tests\\n..\\ntest result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\\n\\n\\nrunning 0 tests\\n\\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\\n\\n\",\"stderr\":\"\",\"duration_ms\":1072,\"exit_code\":0,\"signal\":null,\"timed_out\":false}",
+          "name": "cargo test -p aegis-dashboard --offline -q",
+          "passed": true
+        },
+        {
+          "detail": "SHA-256 eef4d48dfa566417445c4fbfc5d8a38b723e5f112b3252b803fa37b138b355c1 and 33737 bytes match working file and immutable copy",
+          "name": "after: aegis-dashboard/src/lib.rs",
+          "passed": true
+        },
+        {
+          "detail": "SHA-256 a7b1685549249967bfd562c9ceee242da8a86909e39c7667fa6e10b9c0c1e428 and 1146 bytes match working file and immutable copy",
+          "name": "after: aegis-dashboard/tests/review.rs",
+          "passed": true
+        }
+      ],
+      "contract_id": "c-be29708be1a640d8b38dfbfab1f78379",
+      "evidence": [],
+      "reasons": [],
+      "verdict": "accept",
+      "verification_id": "v-4285b90b28894980a206874648f5747e",
+      "verifier": "urn:hacp:agent:b"
+    }
+  ]
+}

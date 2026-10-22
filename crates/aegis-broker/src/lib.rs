@@ -1,5 +1,6 @@
 //! Fake-key broker: encrypted provider secrets, short-lived agent credentials,
 //! and a small HTTP proxy that swaps fake keys for real upstream keys.
+pub mod resolve;
 use aegis_core::{now_unix, AegisError, BoxFuture, FakeKeyInfo, IssuedFakeKey, SecretMeta};
 use aes_gcm::{aead::Aead, Aes256Gcm, KeyInit, Nonce};
 use axum::{
@@ -259,6 +260,7 @@ impl BrokerState {
 }
 
 pub fn router(state: BrokerState) -> Router {
+    let resolve = resolve::resolve_router(state.clone());
     Router::new()
         .route("/admin/secrets", post(add_secret).get(list_secrets))
         .route("/admin/fake-keys", post(issue_key).get(list_keys))
@@ -268,6 +270,7 @@ pub fn router(state: BrokerState) -> Router {
         .route("/proxy/jev/{*path}", any(proxy_jev))
         .route("/proxy/llm/{*path}", any(proxy_llm))
         .with_state(state)
+        .merge(resolve)
 }
 
 #[derive(Deserialize)]

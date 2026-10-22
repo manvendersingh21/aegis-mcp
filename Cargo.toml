@@ -11,6 +11,9 @@ members = [
     "crates/aegis-chain",
     "crates/aegis-broker",
     "crates/aegis-store",
+    "crates/aegis-advocate",
+    "crates/aegis-policy",
+    "crates/aegis-passkey",
     "crates/aegis",
 ]
 
@@ -29,6 +32,9 @@ aegis-integrations = { path = "crates/aegis-integrations" }
 aegis-chain = { path = "crates/aegis-chain" }
 aegis-broker = { path = "crates/aegis-broker" }
 aegis-store = { path = "crates/aegis-store" }
+aegis-advocate = { path = "crates/aegis-advocate" }
+aegis-policy = { path = "crates/aegis-policy" }
+aegis-passkey = { path = "crates/aegis-passkey" }
 
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
@@ -51,6 +57,8 @@ hex = "0.4"
 base64 = "0.22"
 sha2 = "0.10"
 aes-gcm = "=0.11.1"
+ciborium = "=0.2.2"
+p256 = { version = "=0.14.0", features = ["ecdsa"] }
 rand_core = { version = "0.6", features = ["getrandom"] }
 tracing = "0.1"
 alloy = { version = "=2.4.2", default-features = false, features = ["std", "providers", "reqwest", "reqwest-rustls-tls", "signers", "signer-local", "network", "rpc-types", "consensus", "eips"] }

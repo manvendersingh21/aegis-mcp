@@ -1,5 +1,52 @@
 # AegisMCP — standing review (newest first)
 
+## Pass 11 — 13:58
+
+**No `.rs`/`.toml`/`.sql`/`.sh` has changed since Pass 7** (newest source mtime
+still 12:47); the only new commit is `a31a193`, which is DEMO.md + Pass 10's
+review text. So every Pass 7/8/9/10 code finding is open exactly as written,
+including the two P0s nobody has touched in eight passes: `connect()` still
+creates the `EventSource` with no `onerror` (dashboard:592-594), and an omitted
+`fields` still falls back to the whole `allowed_fields` (gateway:530-534) while
+the card computes `regulated` from the hardcoded four-name list over the empty
+array (dashboard:407,451), so "Allow RAW 60s" is still **enabled** on a
+`fetch_identity {}` card. Skipped `cargo check` again: no source moved and
+Pass 9 verified it clean.
+
+**Pass 10's chain P0 is fixed, and the fix is already running out.** Someone
+funded `0xD9F2…6e6F` at ~13:45 and `/api/chain/info` + `/api/chain/anchors` are
+now both real: six transactions have landed, the newest at 20:52:28 UTC
+(`0x2cd31b09…`), and maya's ledger column will render a live Basescan link. The
+gas-exhaustion failure mode is gone — but see the first finding, because the
+balance left buys 30 more anchors and the demo needs roughly 190.
+
+This pass is mostly runtime measurement again, plus the first read of
+`crates/aegis/src/auth.rs`, the broker's `supabase_store.rs`, and the broker
+proxy's store calls. **Checked and found correct, so nobody needs to re-review**:
+the SPEC 'Credentials' 401/403 matrix is intact — `authorized_subject`
+(gateway:190-193) 403s on any `?subject=` that is not the session's, `/api/me`
+hands out `mcp_token` only to the session owner (gateway:179-188), the SSE
+stream filters server-side on `envelope.subject == subject` (gateway:227) so no
+person's `PayloadReleased.raw` can reach another tab, and `init()` redirects a
+`dev` session that opens `/u/maya` to its own dashboard (dashboard:662).
+`SessionAuth` (auth.rs:21-34) forwards the caller's cookie only to
+`format!("{base_url}/api/me")` where `base_url` is hardcoded loopback
+(lib.rs:316), so the new `PUBLIC_ADDRESS` in `.env` cannot send a session cookie
+off-box; it is unused by any code path. `MemoryStore::secrets` and
+`SupabaseBrokerStore::secrets` agree on exact-match subject filtering
+(broker:129, supabase_store:102-105), so the platform-key fallback in
+`find_real_secret` behaves the same live as it does in the broker tests. And no
+secret is tracked by git: `.env`, `.env.broker`, `aegis.db*` and `.orchestrator/`
+are all gitignored and `git grep` finds the chain key in no tracked file.
+
+- [P0] `.env`:10 + crates/aegis-chain/src/lib.rs:251-252 — the newly funded anchor key runs dry long before 5:00, and when it does the system returns to exactly the Pass 10 failure. Measured: balance `83,342,799,999,043` wei (0.0000833 ETH), and the last anchor receipt burned 26,440 gas at an `effectiveGasPrice` of 105,000,000 wei = `2,776,200,000,000` wei (0.00000278 ETH) per anchor — i.e. **30 anchors left**, with nonce already at 6. `chain.spawn` polls every 60s (lib.rs:327) and anchors whenever the head moved, and the head is moving every 20-60s right now, so the ~190 minutes to 5:00 need up to ~190 anchors. Most of that cost is self-inflicted: `anchor` pins `max_priority_fee_per_gas` to 0.1 gwei while Base Sepolia's base fee is 0.005 gwei (0.105 total), so each tx pays ~20x the going rate. Fix: top up to ≥0.01 ETH (≈3,600 anchors at the current rate) **and** drop the `with_max_fee_per_gas`/`with_max_priority_fee_per_gas` calls so alloy's gas filler estimates — that alone turns the remaining balance into ~500 anchors. Raising the interval to 120s buys the rest of the margin.
+- [P0] aegis.db `receipts` table + crates/aegis-gateway/src/lib.rs:439 — **no consent has ever been approved on this box.** The `receipts` table holds **0 rows** since the 13:37 boot, while `audit_ledger` holds 5 rows with `outcome: timed_out` / `policy_applied: BLOCK` — four `query_financials` and one `fetch_identity`, all under `acme_travel_broker_v2` with scenario 1's exact purpose ("Verify renter financial qualification for apartment lease"). So scenario 1 has been run at least four times this afternoon and every single consent card sat untouched for the full 90s window. That means the signature beat — human grants CLEAN_ROOM, a receipt is signed, the green release pane fills in — has **zero evidence of ever having worked end-to-end**, and everything downstream of it is equally unrehearsed: lease reuse (scenario 3's "no prompt" re-call), `/api/receipts/{id}` rendering valid, and Step 5's "active leases drop to 0" (which needs a lease to exist). Fix, before anything else on this list: log in as maya, run scenario 1, click **Allow CLEAN_ROOM** inside the 90s window, and confirm a row appears in `receipts`, the card shows in "Active receipts", and `/api/receipts/{id}` answers `"valid":true`.
+- [P0] aegis.db + Supabase `aegis_ledger` — Pass 10's ledger-reset P0 was not acted on and the traffic has more than tripled: **13 rows local, 13 hosted**, all maya, all rehearsal. Breakdown: `check_schedule` released ×5, `query_financials` timed_out ×4, `fetch_identity` timed_out ×1, and **3 violations** (`check_schedule`, `export_contacts`, `get_health_metrics`) — one of them with the literal purpose `"x"`, one carrying an injection test string under `agent_id: "x"`, and one released `check_schedule` under `agent_id: "anyone"`. The opening tiles therefore read **Total calls 13 / Violations 3**, and "Recent ledger" leads with red VIOLATION and grey TIMED_OUT rows carrying someone's scratch strings. Fix unchanged from Pass 10 and now more urgent: `delete from aegis_ledger; delete from aegis_receipts;` in the Supabase SQL editor, `rm -f aegis.db aegis.db-wal aegis.db-shm`, restart, confirm the tiles read 0 — and do it *after* the approval rehearsal above, not before.
+- [P1] crates/aegis/src/onchain.rs:42 + crates/aegis/src/anchor.rs — **`dev` is never anchored anywhere**, so the second dashboard has a permanently broken-looking ledger column. `dev` has 0 ledger rows, so `ledger.recent(Some("dev"), 1)` is empty and both loops `continue` forever; measured, `/api/chain/anchors` and `/api/anchors` each contain **maya only**. On `/u/dev` that means `sbAnchor` stays `''` and `myAnchor` stays `null` with `chainEnabled` true, so `renderAnchor` (dashboard:634) renders a bare "awaiting on-chain anchor…" and nothing else — no Supabase line either. If the isolation beat opens dev's dashboard to show that maya's consent prompts do not appear there, the audience also sees the chain and Supabase claims apparently stuck pending on that person. Fix: in `renderAnchor`, when the person's `recent_ledger` is empty render "no ledger activity yet" instead of "awaiting on-chain anchor…"; or make one `check_schedule` call as `dev` during setup so both loops have a head to anchor.
+- [P1] crates/aegis-broker/src/lib.rs:510,521,629-633 — every key-swap call pays four to five **hosted Supabase round-trips in band**, which eats the timeout budget of the two calls the demo is most sensitive to. `proxy` awaits `fake_key_by_hash` (1 select), then `find_real_secret` (1-2 selects, since it tries `Some(subject)` then `None`), then after the upstream response it awaits `update_fake_key` (upsert) and `log_usage` (insert) **before returning the response to the caller**. Measured PostgREST latency from this box is 180-690 ms per request, so that is ~0.7-3.5 s added to every single Jev score, LLM call and Stripe charge. Jev is scored inline under an 8 s timeout on every MCP call (Pass 9 P2) and the red team's raw-vault client has a 20 s *total* timeout covering 512 tokens (Pass 9 P1), with 2 model calls × 7 probes run strictly sequentially. Fix: `tokio::spawn` the `update_fake_key` + `log_usage` pair instead of awaiting them (the SPEC only asks that every call log a usage row, not that it block on it), and cache resolved secrets in `BrokerState` for a few seconds keyed by `(subject, provider)`.
+- [P1] crates/aegis/src/onchain.rs:17,52-55 — the `anchors` map is in-memory only, so every restart both loses the Basescan link and **pays for a duplicate anchor**. `OnChain.anchors` starts empty, the `already` check (onchain.rs:43-48) therefore reads `None`, and the loop re-anchors a head that is already on chain — one wasted tx per subject per restart, against the 30-anchor budget above, while the ledger column shows "awaiting on-chain anchor…" for up to 60 s after every restart even though the anchor exists. Five agents are restarting this process. Fix: persist the last `ChainAnchor` per subject (the Supabase storage object `anchor.rs` already writes is the obvious place) and preload it into `anchors` at boot, so a restart neither re-pays nor blanks the link.
+- [P1] Supabase `aegis_wallets` is still empty — measured again at 13:58: **0 rows**, unchanged since Pass 10, with ~3 hours left. So the only sign-in that can succeed on either dashboard is still a labelled demo wallet; a real MetaMask tap on stage hits `verify_login`'s "wallet is not linked to a person" (aegis-chain:202-205). Fix is unchanged and takes two minutes: demo-wallet login → "Link wallet" with the presenter's real account → confirm a row lands in `aegis_wallets` → log out → "Sign in with Ethereum". Get it right the first time, because the second link per person still 409s on the `(subject,kind)` index (Pass 7 P1).
+
 ## Pass 10 — 13:43
 
 **No `.rs`/`.toml`/`.sql` has changed since Pass 7** (newest source mtime is

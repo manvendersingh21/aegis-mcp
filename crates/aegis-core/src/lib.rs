@@ -270,6 +270,10 @@ pub struct ConsentDecision {
     /// Lease length. Defaults to 60.
     #[serde(default = "default_ttl")]
     pub ttl_secs: i64,
+    /// "Remember this decision": `Some("this_agent")` or `Some("any_agent")`
+    /// turns the decision into a standing rule for this tool.
+    #[serde(default)]
+    pub remember: Option<String>,
 }
 fn default_grant_mode() -> Mode {
     Mode::CleanRoom
@@ -438,6 +442,10 @@ pub enum Event {
     CallDenied { call_id: String, agent_id: String, tool: String, reason: String },
     PolicyViolation { call_id: String, agent_id: String, tool: String, reason: String, offending: Vec<String> },
     LeaseRevoked { receipt_ids: Vec<String> },
+    /// The person's own advocate agent weighed in on a pending consent request.
+    ConsentAdvice { request_id: String, advice: Advice },
+    /// A standing rule resolved a call without prompting.
+    RuleApplied { call_id: String, agent_id: String, tool: String, rule_id: String, decision: RuleDecision },
     /// `blocked == true` when a score crossed the threshold (→ PolicyViolation follows).
     RiskScored { call_id: String, agent_id: String, tool: String, scores: RiskScores, blocked: bool },
     PaymentExecuted { call_id: String, agent_id: String, receipt: PaymentReceipt },
@@ -640,6 +648,93 @@ pub struct FakeKeyInfo {
     pub revoked: bool,
     pub last_used_at: Option<i64>,
     pub uses: u64,
+}
+
+// ------------------------------------------------------------ advocate ----
+
+/// Recommendation from the person's own agent (runs on the local model, with a
+/// deterministic fallback). Advisory only: the human still decides.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct Advice {
+    /// `Some(mode)` = approve with this mode; `None` = recommend Deny.
+    pub recommend: Option<Mode>,
+    /// One or two plain-language sentences for the person.
+    pub summary: String,
+    /// Concrete concerns, e.g. "SSN is not needed to book a flight".
+    pub red_flags: Vec<String>,
+    /// "local-9b" or "rules".
+    pub source: String,
+}
+
+/// The person's advocate (aegis-advocate). Must time out and fall back; never
+/// on the critical path of the consent wait.
+pub trait Advocate: Send + Sync {
+    fn advise<'a>(&'a self, request: &'a ConsentRequest, spec: &'a ToolSpec) -> BoxFuture<'a, Advice>;
+}
+
+// ------------------------------------------------------- standing rules ----
+
+/// What a standing rule does when it matches.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(tag = "action", rename_all = "snake_case")]
+pub enum RuleDecision {
+    /// Resolve with this mode (a signed receipt is still issued, `purpose` = "rule:<id>").
+    Allow { mode: Mode },
+    /// Deny without prompting.
+    Deny,
+    /// Always ask, even if a lease or another rule would allow it.
+    Ask,
+}
+
+/// A person's standing consent preference ("always free/busy for calendar",
+/// "never share health data", "clean room for payments under $X").
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct PolicyRule {
+    pub rule_id: String,
+    pub subject: String,
+    /// `None` = any tool.
+    pub tool: Option<String>,
+    /// `None` = any resource.
+    pub resource: Option<Resource>,
+    /// `None` = any agent. Matches the VERIFIED agent id.
+    pub agent_id: Option<String>,
+    /// If set, the rule only matches when every requested field is in this list.
+    pub fields_within: Option<Vec<String>>,
+    /// For make_payment: only matches when amount_cents <= this.
+    pub max_amount_cents: Option<i64>,
+    pub decision: RuleDecision,
+    /// Human-readable, e.g. "Calendar: free/busy only, any agent".
+    pub label: String,
+    pub created_at: i64,
+}
+
+/// Evaluates standing rules (aegis-policy). Precedence: Deny > Ask > Allow;
+/// among Allows the most specific wins (agent+tool > tool > resource > any).
+pub trait PolicyEngine: Send + Sync {
+    /// `amount_cents` is `Some` only for make_payment.
+    fn decide(&self, call: &ToolCall, spec: &ToolSpec, requested_fields: &[String], amount_cents: Option<i64>) -> Option<(PolicyRule, RuleDecision)>;
+    fn rules(&self, subject: &str) -> Vec<PolicyRule>;
+    fn add(&self, rule: PolicyRule) -> Result<PolicyRule, AegisError>;
+    fn remove(&self, subject: &str, rule_id: &str) -> bool;
+}
+
+// ---------------------------------------------------- agent credentials ----
+
+/// A verified agent identity, resolved from its credential (never from a
+/// self-asserted header).
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct AgentIdentity {
+    pub subject: String,
+    pub agent_id: String,
+    /// Display prefix of the credential, e.g. "aegis_fk_mcp_ab12…".
+    pub credential_prefix: String,
+}
+
+/// Resolves an agent bearer credential (`aegis_fk_mcp_…`, issued per person
+/// per agent on the Keys card) to who it belongs to. Implemented by the broker
+/// client; leases are keyed by the resolved agent_id.
+pub trait AgentVerifier: Send + Sync {
+    fn verify<'a>(&'a self, bearer: &'a str) -> BoxFuture<'a, Option<AgentIdentity>>;
 }
 
 /// Runs a pre-scripted demo scenario against a gateway base URL (aegis-agent).

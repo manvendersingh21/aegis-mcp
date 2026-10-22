@@ -3,6 +3,7 @@
 //! maud; one inline vanilla-JS `<script>` per page, no build step.
 
 mod p5;
+mod p6;
 
 use aegis_core::{demo_vaults, Person};
 use axum::extract::Path;

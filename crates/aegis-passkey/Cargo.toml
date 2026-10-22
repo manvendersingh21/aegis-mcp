@@ -1,0 +1,21 @@
+[package]
+name = "aegis-passkey"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+aegis-core.workspace = true
+aegis-store.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+tokio.workspace = true
+base64.workspace = true
+sha2.workspace = true
+ciborium.workspace = true
+p256.workspace = true
+rand.workspace = true
+uuid.workspace = true
+tracing.workspace = true
+
+[dev-dependencies]
+tokio.workspace = true

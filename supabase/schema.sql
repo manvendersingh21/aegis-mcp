@@ -67,9 +67,9 @@ create table if not exists aegis_receipts (
 create index if not exists aegis_receipts_subject on aegis_receipts(subject);
 
 create table if not exists aegis_ledger (
-  seq         bigint primary key,
+  entry_hash  text primary key,          -- chain hash; seq is local and informational
+  seq         bigint not null,
   subject     text not null,
-  entry_hash  text not null,
   entry       jsonb not null,
   at          timestamptz not null default now()
 );

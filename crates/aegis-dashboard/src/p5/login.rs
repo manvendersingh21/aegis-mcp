@@ -58,7 +58,12 @@ const LOGIN_JS: &str = r#"
     e.textContent = '';
     if (!window.ethereum) { document.getElementById('nowallet').style.display = ''; return; }
     try { await finish(await post('/api/login/siwe', await siweSign()), e); }
-    catch (x) { e.textContent = (x && x.message) || 'Wallet sign-in cancelled'; }
+    catch (x) {
+      const m = (x && x.message) || 'Wallet sign-in cancelled';
+      e.textContent = /not linked/i.test(m)
+        ? 'This wallet is not linked to anyone yet. Sign in once with your demo wallet below, then use “Link wallet” on your dashboard — after that this wallet signs you in.'
+        : m;
+    }
   });
   document.querySelectorAll('button.demo').forEach(b => b.addEventListener('click', async () => {
     const e = document.getElementById('demo-err');

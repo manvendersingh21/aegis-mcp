@@ -368,7 +368,10 @@ async fn test_mirrored_ledger_append_returns_immediately_and_eventually_mirrored
     .await
     .expect("stub should receive mirrored aegis_ledger row");
 
-    assert!(req.query.contains("on_conflict=seq"));
+    // Identity is the chain hash (a fresh local db must not overwrite history),
+    // and the hosted mirror never carries the released payload in cleartext.
+    assert!(req.query.contains("on_conflict=entry_hash"), "{}", req.query);
+    assert_eq!(req.body["entry"]["payload_returned"]["mirrored"], "hash-only");
     assert_eq!(
         req.body["entry_hash"].as_str().unwrap(),
         stored.entry_hash,

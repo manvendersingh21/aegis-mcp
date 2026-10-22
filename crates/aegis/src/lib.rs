@@ -292,6 +292,7 @@ fn assemble(opts: &Options, providers: Providers) -> anyhow::Result<axum::Router
     }
     let siwe_domain = std::env::var("AEGIS_SIWE_DOMAIN").unwrap_or_else(|_| format!("127.0.0.1:{}", opts.port));
     let chain = onchain::OnChain::from_env();
+    let siwe_domain_for_demo = siwe_domain.clone();
     let siwe = Arc::new(aegis_chain::SiweAuth::new(siwe_domain, 84532));
     for (subject, address) in &wallet_links {
         siwe.preload_link(subject, address);
@@ -307,12 +308,12 @@ fn assemble(opts: &Options, providers: Providers) -> anyhow::Result<axum::Router
         }));
     }
     let subjects: Vec<String> = demo_vaults().iter().map(|v| v.subject()).collect();
-    let demo = demo_wallet::router(&siwe, &subjects);
+    let demo = demo_wallet::enabled().then(|| demo_wallet::router(&siwe, &subjects, siwe_domain_for_demo.clone()));
     let wallet = siwe.clone() as Arc<dyn aegis_core::WalletAuth>;
     let base_url = format!("http://127.0.0.1:{}", opts.port);
     let mut app = router_with_wallet(deps, Some(wallet))
         .merge(aegis_dashboard::router())
-        .merge(demo)
+        .merge(demo.unwrap_or_default())
         .merge(redteam.router())
         .merge(chain.router());
     if let Some(broker) = broker {

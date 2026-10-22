@@ -333,7 +333,7 @@ impl MirroredLedger {
                                         "entry_hash": entry_hash,
                                         "entry": entry,
                                     });
-                                    writer_store.upsert("aegis_ledger", &row, "seq").await
+                                    writer_store.upsert("aegis_ledger", &row, "entry_hash").await
                                 }
                                 MirrorOp::Receipt { row } => {
                                     writer_store.upsert("aegis_receipts", &row, "receipt_id").await
@@ -406,8 +406,15 @@ impl Ledger for MirroredLedger {
             // seq == row count: SQLite assigns monotonically increasing rowids
             // and nothing deletes audit rows.
             let seq = self.inner.recent(None, usize::MAX).len() as i64;
-            let entry_json = serde_json::to_value(&stored)
+            // The hosted mirror keeps the audit trail, not the data: the released
+            // payload is replaced by its sha256 (entry_hash still verifies locally).
+            let mut entry_json = serde_json::to_value(&stored)
                 .map_err(|e| storage_err("mirror ledger encode", e))?;
+            if let Some(obj) = entry_json.as_object_mut() {
+                let payload = obj.remove("payload_returned").unwrap_or(Value::Null);
+                let digest = sha256_hex(payload.to_string().as_bytes());
+                obj.insert("payload_returned".into(), json!({"sha256": digest, "mirrored": "hash-only"}));
+            }
             let _ = tx.send(MirrorOp::Ledger {
                 seq,
                 subject: stored.subject.clone(),

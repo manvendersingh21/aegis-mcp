@@ -18,10 +18,17 @@ use std::sync::Arc;
 #[derive(Clone)]
 struct DemoState {
     wallets: Arc<DemoWallets>,
+    domain: String,
+}
+
+/// Demo wallets are on unless `AEGIS_DEMO_WALLETS=0` (hackathon default).
+pub fn enabled() -> bool {
+    std::env::var("AEGIS_DEMO_WALLETS").as_deref() != Ok("0")
 }
 
 /// Generates one demo wallet per subject and allows it to log that person in.
-pub fn router(siwe: &SiweAuth, subjects: &[String]) -> Router {
+/// The server only signs SIWE messages for its own `domain`.
+pub fn router(siwe: &SiweAuth, subjects: &[String], domain: String) -> Router {
     let wallets = DemoWallets::generate(subjects);
     for subject in subjects {
         if let Some(address) = wallets.address(subject) {
@@ -31,7 +38,7 @@ pub fn router(siwe: &SiweAuth, subjects: &[String]) -> Router {
     Router::new()
         .route("/api/demo-wallet/{subject}", get(address))
         .route("/api/demo-wallet/sign", post(sign))
-        .with_state(DemoState { wallets: Arc::new(wallets) })
+        .with_state(DemoState { wallets: Arc::new(wallets), domain })
 }
 
 async fn address(State(st): State<DemoState>, Path(subject): Path<String>) -> Response {
@@ -48,6 +55,10 @@ struct SignBody {
 }
 
 async fn sign(State(st): State<DemoState>, Json(body): Json<SignBody>) -> Response {
+    let first = body.message.lines().next().unwrap_or_default();
+    if first != format!("{} wants you to sign in with your Ethereum account:", st.domain) {
+        return (StatusCode::BAD_REQUEST, Json(json!({"error": "demo wallet only signs sign-in messages for this server"}))).into_response();
+    }
     match st.wallets.sign(&body.subject, &body.message) {
         Ok(signature) => Json(json!({"signature": signature, "demo": true})).into_response(),
         Err(e) => (StatusCode::BAD_REQUEST, Json(json!({"error": e.to_string()}))).into_response(),

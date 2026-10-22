@@ -15,9 +15,13 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 cd "$REPO_ROOT"
 
-# Clean up server on exit
+# Clean up servers on exit
 SERVER_PID=""
+BROKER_PID=""
 cleanup() {
+  if [ -n "$BROKER_PID" ] && kill -0 "$BROKER_PID" 2>/dev/null; then
+    kill "$BROKER_PID" 2>/dev/null || true
+  fi
   if [ -n "$SERVER_PID" ] && kill -0 "$SERVER_PID" 2>/dev/null; then
     echo ""
     echo "Stopping AegisMCP server (PID $SERVER_PID)..."
@@ -27,8 +31,35 @@ cleanup() {
 }
 trap cleanup EXIT INT TERM
 
-echo "Building target/release/aegis..."
-cargo build --release -p aegis
+echo "Building target/release/aegis and target/release/aegis-broker..."
+cargo build --release -p aegis -p aegis-broker
+
+# Fresh local hot-path db; history is rehydrated from Supabase.
+rm -f aegis.db aegis.db-shm aegis.db-wal
+
+if [ "${AEGIS_OFFLINE:-0}" != "1" ]; then
+  # Local model on the GPU box, loopback only (never the public tunnel).
+  if ! curl -s -o /dev/null --max-time 3 http://127.0.0.1:11436/v1/models; then
+    echo "Opening ssh loopback forward to the GPU box (127.0.0.1:11436)..."
+    ssh -fN -o ExitOnForwardFailure=yes -o ServerAliveInterval=30 \
+      -L 127.0.0.1:11436:127.0.0.1:11436 cis-a6000 || echo "WARN: model forward failed; LLM layers will fall back"
+  fi
+  # The broker is the only process with real provider keys (.env.broker).
+  echo "Starting target/release/aegis-broker on 127.0.0.1:8788 (logs to /tmp/aegis-broker.log)..."
+  : > /tmp/aegis-broker.log
+  target/release/aegis-broker > /tmp/aegis-broker.log 2>&1 &
+  BROKER_PID=$!
+  i=0
+  until curl -s -o /dev/null "http://127.0.0.1:8788/admin/secrets"; do
+    i=$((i + 1))
+    if [ "$i" -gt 50 ] || ! kill -0 "$BROKER_PID" 2>/dev/null; then
+      echo "ERROR: aegis-broker did not start. Logs:" >&2
+      cat /tmp/aegis-broker.log >&2
+      exit 1
+    fi
+    sleep 0.2
+  done
+fi
 
 echo "Starting target/release/aegis in background (logs to /tmp/aegis.log)..."
 : > /tmp/aegis.log

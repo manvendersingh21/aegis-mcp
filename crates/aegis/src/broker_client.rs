@@ -102,7 +102,12 @@ async fn list_keys(State(st): State<KeysState>, headers: HeaderMap) -> Response 
 
 async fn add_secret(State(st): State<KeysState>, headers: HeaderMap, Json(body): Json<Value>) -> Response {
     let Some(subject) = st.auth.subject(&headers).await else { return StatusCode::UNAUTHORIZED.into_response() };
-    let forwarded = json!({"subject": subject, "provider": body["provider"], "label": body["label"], "value": body["value"]});
+    // Internal records (e.g. the sealed `__vault`) are not user-writable.
+    let provider = body["provider"].as_str().unwrap_or_default();
+    if provider.is_empty() || provider.starts_with("__") || !provider.chars().all(|c| c.is_ascii_alphanumeric() || c == '_' || c == '-') {
+        return (StatusCode::BAD_REQUEST, Json(json!({"error": "invalid provider name"}))).into_response();
+    }
+    let forwarded = json!({"subject": subject, "provider": provider, "label": body["label"], "value": body["value"]});
     reply(st.broker.admin(reqwest::Method::POST, "/admin/secrets", Some(forwarded)).await)
 }
 

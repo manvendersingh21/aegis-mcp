@@ -86,7 +86,11 @@ pub fn describe(opts: &Options) -> Vec<String> {
         format!("layer 2 clean room: ON   local 9B judge/narration: {}", on(opts.use_llm)),
         format!("layer 3 Ed25519 receipts + hash-chained ledger: ON"),
         format!("Jev risk scoring: {} (threshold {:.2})", on(opts.use_jev), opts.risk_threshold),
-        format!("payments: {}", if opts.use_stripe { "Stripe TEST mode" } else { "demo provider (labelled)" }),
+        format!("payments: {}", match opts.use_stripe.then(StripePayments::from_env).flatten() {
+            Some(Ok(_)) => "Stripe TEST mode".to_string(),
+            Some(Err(e)) => format!("demo provider (labelled) — Stripe key rejected: {e}"),
+            None => "demo provider (labelled)".to_string(),
+        }),
         format!("ledger anchoring to Supabase Storage: {}", on(opts.use_supabase)),
     ]
 }

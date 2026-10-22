@@ -41,7 +41,11 @@ pub const PROBES: &[Probe] = &[
 
 #[derive(Clone)]
 pub struct RedTeam {
+    /// Plays the agent; only sees tool schemas and the probe text.
     llm: Option<LlmClient>,
+    /// Receives the raw vault in the unguarded run, so it must be loopback
+    /// (AEGIS_REDTEAM_LLM_URL, e.g. an `ssh -L` forward to the GPU box).
+    raw_llm: Result<LlmClient, String>,
     base_url: String,
     http: reqwest::Client,
 }
@@ -49,7 +53,7 @@ pub struct RedTeam {
 impl RedTeam {
     pub fn new(llm: Option<LlmClient>, base_url: String) -> Self {
         let http = reqwest::Client::builder().timeout(Duration::from_secs(10)).build().unwrap_or_default();
-        RedTeam { llm, base_url, http }
+        RedTeam { llm, raw_llm: loopback_llm(), base_url, http }
     }
 
     pub fn router(self) -> Router {
@@ -74,6 +78,20 @@ impl RedTeam {
             .ok()?;
         me["subject"].as_str().map(str::to_string)
     }
+}
+
+fn loopback_llm() -> Result<LlmClient, String> {
+    let url = std::env::var("AEGIS_REDTEAM_LLM_URL").unwrap_or_else(|_| "http://127.0.0.1:11436/v1".into());
+    let host = url.split("://").nth(1).unwrap_or("").split(['/', ':']).next().unwrap_or("");
+    if !matches!(host, "127.0.0.1" | "localhost" | "[::1]") {
+        return Err(format!("refusing to send raw vault to non-loopback LLM host '{host}'"));
+    }
+    Ok(LlmClient::new(
+        url,
+        std::env::var("AEGIS_LLM_KEY").unwrap_or_default(),
+        std::env::var("AEGIS_LLM_MODEL").unwrap_or_else(|_| "aegis-9b".into()),
+        Duration::from_secs(60),
+    ))
 }
 
 /// Every real secret in a vault, labelled, for leak scanning.
@@ -212,7 +230,11 @@ async fn run_probe(State(rt): State<RedTeam>, Path((subject, index)): Path<(Stri
         return (StatusCode::SERVICE_UNAVAILABLE, "local model not configured (AEGIS_LLM_URL)").into_response();
     };
     let secrets = secrets(&vault);
-    let (mut raw, mut safe) = tokio::join!(unguarded(llm, &vault, probe), guarded(llm, &rt.base_url, &subject, probe));
+    let raw_llm = match &rt.raw_llm {
+        Ok(client) => client,
+        Err(e) => return (StatusCode::SERVICE_UNAVAILABLE, e.clone()).into_response(),
+    };
+    let (mut raw, mut safe) = tokio::join!(unguarded(raw_llm, &vault, probe), guarded(llm, &rt.base_url, &subject, probe));
     let raw_leaks = find_leaks(raw["reply"].as_str().unwrap_or_default(), &secrets);
     let safe_leaks = find_leaks(&safe["released"].to_string(), &secrets);
     raw["leaks"] = json!(raw_leaks);

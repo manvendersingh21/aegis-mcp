@@ -340,7 +340,7 @@ async fn call_tool(state: &Arc<AppState>, subject: &str, agent: &str, purpose: &
         let entry = ledger_entry(&call, spec.resource, Mode::Block, Outcome::Violation, Value::Null, 0, 0, None);
         let _ = state.deps.ledger.append(entry);
         emit(state, subject, Event::Metrics { metrics:state.deps.ledger.metrics(Some(subject), now_unix()) });
-        return Ok(tool_error(format!("AEGIS POLICY VIOLATION: {}", violation.reason)));
+        return Ok(tool_error(violation_text(&violation.reason)));
     }
 
     let is_payment = call.tool == "make_payment";
@@ -405,7 +405,7 @@ async fn call_tool(state: &Arc<AppState>, subject: &str, agent: &str, purpose: &
 
     let requested_fields = requested_fields(&call, &spec);
     let mut receipt_id = None;
-    let active_receipt = if !is_payment && !risk_requires_consent {
+    let active_receipt = if !is_payment {
         let now = now_unix();
         let tool_ids = state.lease_tools.lock().await;
         state.deps.ledger.active_receipts(Some(subject), now).into_iter().find(|receipt| {
@@ -486,7 +486,13 @@ async fn call_tool(state: &Arc<AppState>, subject: &str, agent: &str, purpose: &
         let request = PaymentRequest { subject:subject.into(), agent_id:agent.into(), amount_cents, currency:"usd".into(), merchant:merchant.clone(), description, idempotency_key:call.call_id.clone() };
         let receipt = match provider.charge(request).await {
             Ok(receipt) => receipt,
-            Err(error) => return Ok(tool_error(format!("AEGIS: payment failed: {error}"))),
+            Err(error) => {
+                let reason = format!("payment failed: {error}");
+                emit(state, subject, Event::CallDenied { call_id:call.call_id.clone(), agent_id:agent.into(), tool:name.into(), reason:reason.clone() });
+                let _ = state.deps.ledger.append(ledger_entry(&call, spec.resource, Mode::CleanRoom, Outcome::Denied, json!({"error": reason}), 0, 0, None));
+                emit(state, subject, Event::Metrics { metrics:state.deps.ledger.metrics(Some(subject), now_unix()) });
+                return Ok(tool_error(format!("AEGIS: {reason}")));
+            }
         };
         emit(state, subject, Event::PaymentExecuted { call_id:call.call_id.clone(), agent_id:agent.into(), receipt:receipt.clone() });
         let financials = vault.resource(Resource::Financials);
@@ -495,10 +501,10 @@ async fn call_tool(state: &Arc<AppState>, subject: &str, agent: &str, purpose: &
         if let Some(object) = released.as_object_mut() { object.insert("card".into(), json!("[TOKENIZED BY AEGIS]")); }
         let bytes_raw = serde_json::to_vec(&raw).map(|v| v.len()).unwrap_or(0);
         let bytes_released = serde_json::to_vec(&released).map(|v| v.len()).unwrap_or(0);
-        emit(state, subject, Event::PayloadReleased { call_id:call.call_id.clone(), agent_id:agent.into(), tool:name.into(), mode:Mode::Block, raw:raw.clone(), released:released.clone(), bytes_raw, bytes_released, receipt_id:None });
-        let _ = state.deps.ledger.append(ledger_entry(&call, spec.resource, Mode::Block, Outcome::Released, released.clone(), bytes_raw, bytes_released, None));
+        emit(state, subject, Event::PayloadReleased { call_id:call.call_id.clone(), agent_id:agent.into(), tool:name.into(), mode:Mode::CleanRoom, raw:raw.clone(), released:released.clone(), bytes_raw, bytes_released, receipt_id:None });
+        let _ = state.deps.ledger.append(ledger_entry(&call, spec.resource, Mode::CleanRoom, Outcome::Released, released.clone(), bytes_raw, bytes_released, None));
         emit(state, subject, Event::Metrics { metrics:state.deps.ledger.metrics(Some(subject), now_unix()) });
-        return Ok(json!({"content":[{"type":"text","text":released.to_string()}],"structuredContent":released,"_meta":{"aegis":{"mode":"PAYMENT","receipt_id":null}}}));
+        return Ok(json!({"content":[{"type":"text","text":released.to_string()}],"structuredContent":released,"_meta":{"aegis":{"mode":Mode::CleanRoom,"payment":true,"receipt_id":null}}}));
     }
 
     let raw = vault.resource(spec.resource);
@@ -524,13 +530,28 @@ fn requested_fields(call: &ToolCall, spec: &ToolSpec) -> Vec<String> {
     }
 }
 
+/// Keep only the approved fields: top-level keys of an object, or the same
+/// keys inside each element of an array (e.g. `calendar.events`, `contacts`).
 fn project_fields(raw: &Value, fields: &[String]) -> Value {
-    let Some(object) = raw.as_object() else { return Value::Null };
-    let mut projected = serde_json::Map::new();
-    for field in fields {
-        if let Some(value) = object.get(field) { projected.insert(field.clone(), value.clone()); }
+    match raw {
+        Value::Array(items) => Value::Array(items.iter().map(|item| project_fields(item, fields)).collect()),
+        Value::Object(object) => {
+            let mut projected = serde_json::Map::new();
+            for (key, value) in object {
+                if fields.contains(key) {
+                    projected.insert(key.clone(), value.clone());
+                } else if value.is_array() && value.as_array().is_some_and(|xs| xs.iter().any(Value::is_object)) {
+                    projected.insert(key.clone(), project_fields(value, fields));
+                }
+            }
+            Value::Object(projected)
+        }
+        _ => Value::Null,
     }
-    Value::Object(projected)
+}
+
+fn violation_text(reason: &str) -> String {
+    if reason.starts_with("AEGIS POLICY VIOLATION") { reason.to_string() } else { format!("AEGIS POLICY VIOLATION: {reason}") }
 }
 
 fn tool_error(message: String) -> Value { json!({"isError":true,"content":[{"type":"text","text":message}]}) }

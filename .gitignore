@@ -6,3 +6,4 @@ target/
 aegis.db*
 .orchestrator/
 .env.broker
+.DS_Store
